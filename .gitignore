@@ -1,4 +1,5 @@
 *.gs
+google_sheets_script.js
 backend/
 sheets-backend/
 public/
