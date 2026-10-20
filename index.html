@@ -2,262 +2,1038 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b6b4f">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#08503b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Petty Cash expense tracker, receipt scanner, ledger, and claims manager">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>Petty Cash</title>
 <style>
 :root{
-  --bg:#f2f4f3;--surface:#fff;--ink:#16211c;--muted:#5d6b64;--line:#d5dcd8;
-  --accent:#0b6b4f;--accent-ink:#fff;--warn:#9a5a00;--warn-bg:#fdf0d8;--ok-bg:#dff1e8;--bad:#b3261e;--bad-bg:#fbe4e1;
+  --bg:#f4f6f5;
+  --surface:#ffffff;
+  --surface-sub:#f8faf9;
+  --ink:#0f1714;
+  --muted:#57655f;
+  --muted-light:#8b9993;
+  --line:#e2e8e5;
+  --line-sub:#edf1ef;
+  --accent:#08503b;
+  --accent-light:#0e7556;
+  --accent-soft:#e6f4ee;
+  --accent-ink:#ffffff;
+  --warn:#b45309;
+  --warn-bg:#fef3c7;
+  --ok:#08503b;
+  --ok-bg:#d1fae5;
+  --bad:#b91c1c;
+  --bad-bg:#fee2e2;
+  --card-shadow:0 4px 16px -2px rgba(15, 23, 20, 0.05), 0 2px 6px -1px rgba(15, 23, 20, 0.03);
+  --elevated-shadow:0 12px 28px -4px rgba(15, 23, 20, 0.1), 0 4px 10px -2px rgba(15, 23, 20, 0.04);
   color-scheme:light;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0f1512;--surface:#18201c;--ink:#e8efeb;--muted:#9baba3;--line:#2c3832;
-  --accent:#3fb98f;--accent-ink:#06261b;--warn:#f0b45a;--warn-bg:#3a2c10;--ok-bg:#16382b;--bad:#ff8a80;--bad-bg:#40201d;color-scheme:dark;}}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c120f;
+    --surface:#151e19;
+    --surface-sub:#1c2621;
+    --ink:#eff5f2;
+    --muted:#99aaa2;
+    --muted-light:#63746c;
+    --line:#222f28;
+    --line-sub:#1c2721;
+    --accent:#22c55e;
+    --accent-light:#4ade80;
+    --accent-soft:#113123;
+    --accent-ink:#06261b;
+    --warn:#f59e0b;
+    --warn-bg:#2d2109;
+    --ok:#34d399;
+    --ok-bg:#0e2f20;
+    --bad:#f87171;
+    --bad-bg:#3b1816;
+    --card-shadow:0 4px 20px -2px rgba(0, 0, 0, 0.4);
+    --elevated-shadow:0 12px 32px -4px rgba(0, 0, 0, 0.6);
+    color-scheme:dark;
+  }
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  padding:env(safe-area-inset-top,0) 0 calc(96px + env(safe-area-inset-bottom,0)) 0;min-height:100vh}
-header{position:sticky;top:0;z-index:5;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;gap:10px;
-  padding:calc(10px + env(safe-area-inset-top,0)) 14px 10px}
-header h1{font-size:18px;margin:0;flex:1;font-weight:650;letter-spacing:.2px}
-header button{background:transparent;border:1px solid color-mix(in srgb,var(--accent-ink) 40%,transparent);color:inherit;border-radius:10px;padding:7px 11px;font:inherit;font-size:14px}
-.dot{width:9px;height:9px;border-radius:50%;background:#f0b45a;display:inline-block;margin-right:6px}
-.dot.on{background:#8df0c4}
-nav{display:flex;background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:calc(53px + env(safe-area-inset-top,0));z-index:4}
-nav button{flex:1;padding:12px 2px;background:none;border:0;border-bottom:3px solid transparent;font:inherit;font-size:14px;font-weight:600;color:var(--muted)}
-nav button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
-nav button[hidden]{display:none}
-main{max-width:560px;margin:0 auto;padding:14px}
+html,body{margin:0;padding:0;height:100%}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  overscroll-behavior-y:none;
+}
+
+/* App Header */
+header{
+  position:sticky;
+  top:0;
+  z-index:30;
+  background:color-mix(in srgb, var(--surface) 85%, transparent);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;
+  transition:all 0.2s ease;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex:1;
+  min-width:0;
+}
+.brand-icon{
+  width:32px;
+  height:32px;
+  border-radius:9px;
+  background:var(--accent);
+  color:var(--accent-ink);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:750;
+  font-size:16px;
+  flex-shrink:0;
+  box-shadow:0 2px 6px rgba(8, 80, 59, 0.25);
+}
+.brand-icon svg{width:18px;height:18px;fill:currentColor}
+header h1{
+  font-size:18px;
+  font-weight:700;
+  margin:0;
+  letter-spacing:-0.2px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.net-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  font-weight:600;
+  padding:4px 10px;
+  border-radius:99px;
+  background:var(--surface-sub);
+  border:1px solid var(--line);
+  color:var(--muted);
+}
+.dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#f59e0b;
+  display:inline-block;
+  transition:background 0.3s ease;
+}
+.dot.on{
+  background:#10b981;
+  box-shadow:0 0 8px rgba(16, 185, 129, 0.6);
+}
+.btn-icon{
+  background:var(--surface-sub);
+  border:1px solid var(--line);
+  color:var(--ink);
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:all 0.15s ease;
+}
+.btn-icon:active{transform:scale(0.94);background:var(--line-sub)}
+.btn-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Main Content Area */
+main{
+  flex:1;
+  max-width:540px;
+  width:100%;
+  margin:0 auto;
+  padding:14px 16px calc(130px + env(safe-area-inset-bottom, 0px));
+}
 .panel[hidden]{display:none}
-label{display:block;font-size:14px;font-weight:600;margin:14px 0 5px}
-input,textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:12px}
-input:focus,textarea:focus,select:focus,button:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 45%,transparent);outline-offset:1px;border-color:var(--accent)}
-textarea{min-height:84px;resize:vertical}
-.row{display:flex;gap:10px}.row>div{flex:1;min-width:0}
-.amount{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
-.cur{font-size:13px;color:var(--muted);font-weight:500}
-h2{font-size:15px;margin:22px 0 8px;display:flex;justify-content:space-between;align-items:baseline}
-h2 small{color:var(--muted);font-weight:500}
-h3.sec{font-size:14px;margin:18px 0 8px;color:var(--muted);font-weight:650}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--accent);background:var(--surface);color:var(--accent);
-  font:inherit;font-weight:650;padding:12px 14px;border-radius:12px;min-height:48px}
-.btn.primary{background:var(--accent);color:var(--accent-ink)}
-.btn.danger{border-color:var(--bad);color:var(--bad)}
-.btn.small{min-height:38px;padding:7px 11px;font-size:14px;border-radius:9px}
-.btn:disabled{opacity:.5}
-.btn.dim{opacity:.45}
-.cap{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.pages{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
-.pg{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;aspect-ratio:3/4;padding:0;display:block}
-.pg canvas{width:100%;height:100%;object-fit:contain;display:block}
-.pg span{position:absolute;left:6px;bottom:6px;background:rgba(0,0,0,.65);color:#fff;font-size:12px;padding:1px 7px;border-radius:99px}
-.empty{color:var(--muted);font-size:14px;padding:18px;text-align:center;border:1.5px dashed var(--line);border-radius:12px;margin-top:12px}
-.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0));z-index:6}
-.bar .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:1fr 1.5fr;gap:10px}
+
+/* Balance Hero Card */
+.bal{
+  background:linear-gradient(145deg, #074332 0%, #0d5c44 50%, #15795b 100%);
+  color:#ffffff;
+  border-radius:22px;
+  padding:20px 20px 18px;
+  margin-bottom:18px;
+  box-shadow:0 10px 25px -4px rgba(7, 67, 50, 0.35);
+  position:relative;
+  overflow:hidden;
+}
+.bal::after{
+  content:"";
+  position:absolute;
+  top:-40%;
+  right:-20%;
+  width:220px;
+  height:220px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+  pointer-events:none;
+}
+.bal.neg{
+  background:linear-gradient(145deg, #7f1d1d 0%, #991b1b 50%, #b91c1c 100%);
+  box-shadow:0 10px 25px -4px rgba(127, 29, 29, 0.35);
+}
+.bal-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:4px;
+}
+.bal-label{
+  font-size:13px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  opacity:0.85;
+}
+.bal-refresh{
+  background:rgba(255, 255, 255, 0.15);
+  border:0;
+  color:#ffffff;
+  padding:6px 12px;
+  border-radius:99px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  backdrop-filter:blur(8px);
+  transition:all 0.15s ease;
+}
+.bal-refresh:active{transform:scale(0.92);background:rgba(255, 255, 255, 0.25)}
+.bal-refresh svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;transition:transform 0.5s ease}
+.bal-refresh.spinning svg{animation:spin 0.8s linear infinite}
+@keyframes spin{100%{transform:rotate(360deg)}}
+.bal-amt{
+  font-size:36px;
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-0.5px;
+  margin:4px 0 12px;
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+}
+.bal-amt small{font-size:18px;font-weight:600;opacity:0.85}
+.bal-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  background:rgba(0, 0, 0, 0.18);
+  border-radius:14px;
+  padding:10px 12px;
+  backdrop-filter:blur(10px);
+}
+.bal-stat{display:flex;flex-direction:column}
+.bal-stat-title{font-size:11px;font-weight:600;opacity:0.75;text-transform:uppercase;letter-spacing:0.3px}
+.bal-stat-val{font-size:14px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bal-sync-time{
+  font-size:11.5px;
+  opacity:0.7;
+  margin-top:10px;
+  text-align:right;
+}
+
+/* Category Picker (Radio Cards) */
+.cat-section{margin-bottom:16px}
+.cat-label{
+  font-size:13px;
+  font-weight:700;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  margin-bottom:8px;
+  display:block;
+}
+.cats{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+}
+.cats button{
+  background:var(--surface);
+  border:1.5px solid var(--line);
+  color:var(--ink);
+  border-radius:14px;
+  padding:14px 6px;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all 0.15s ease;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  box-shadow:var(--card-shadow);
+}
+.cats button:active{transform:scale(0.97)}
+.cats button[aria-checked="true"]{
+  background:var(--accent-soft);
+  border-color:var(--accent);
+  color:var(--accent);
+  box-shadow:0 0 0 2px var(--accent);
+}
+
+/* Form Styles */
+.form-group{margin-bottom:16px}
+label{
+  display:block;
+  font-size:13.5px;
+  font-weight:700;
+  color:var(--ink);
+  margin-bottom:6px;
+}
+label .cur{font-size:12px;color:var(--muted);font-weight:500}
+input, textarea, select{
+  width:100%;
+  font:inherit;
+  color:var(--ink);
+  background:var(--surface);
+  border:1.5px solid var(--line);
+  border-radius:14px;
+  padding:13px 15px;
+  transition:all 0.15s ease;
+  box-shadow:var(--card-shadow);
+}
+input:focus, textarea:focus, select:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.input-amount-wrap{position:relative}
+input.amount{
+  font-size:28px;
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+  padding:12px 16px;
+  letter-spacing:-0.5px;
+  color:var(--accent);
+}
+textarea{min-height:86px;resize:vertical}
+.row{display:flex;gap:10px}
+.row>div{flex:1;min-width:0}
+.date-quick-bar{display:flex;gap:6px;margin-top:6px}
+.date-quick-btn{
+  background:var(--surface-sub);
+  border:1px solid var(--line);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:600;
+  padding:4px 9px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.date-quick-btn:active{background:var(--line);color:var(--ink)}
+
+/* Receipt Capture Box */
+.section-title{
+  font-size:16px;
+  font-weight:750;
+  margin:24px 0 10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.section-title small{
+  font-size:13px;
+  color:var(--muted);
+  font-weight:600;
+  background:var(--surface-sub);
+  padding:2px 8px;
+  border-radius:99px;
+  border:1px solid var(--line);
+}
+.cap{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:12px;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border:1.5px solid var(--line);
+  background:var(--surface);
+  color:var(--ink);
+  font:inherit;
+  font-weight:700;
+  font-size:14.5px;
+  padding:12px 14px;
+  border-radius:14px;
+  min-height:50px;
+  cursor:pointer;
+  transition:all 0.15s ease;
+  box-shadow:var(--card-shadow);
+}
+.btn:active{transform:scale(0.97)}
+.btn.primary{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:var(--accent-ink);
+  box-shadow:0 6px 16px -2px rgba(8, 80, 59, 0.3);
+}
+.btn.primary:active{background:var(--accent-light)}
+.btn.danger{
+  border-color:color-mix(in srgb, var(--bad) 40%, var(--line));
+  background:var(--bad-bg);
+  color:var(--bad);
+}
+.btn.small{
+  min-height:38px;
+  padding:6px 12px;
+  font-size:13px;
+  border-radius:10px;
+}
+.btn:disabled{opacity:0.45;pointer-events:none}
+.btn.dim{opacity:0.5}
+.btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2}
+
+.pages{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:10px;
+  margin-top:12px;
+}
+.pg{
+  position:relative;
+  background:var(--surface);
+  border:1.5px solid var(--line);
+  border-radius:12px;
+  overflow:hidden;
+  aspect-ratio:3/4;
+  padding:0;
+  display:block;
+  cursor:pointer;
+  box-shadow:var(--card-shadow);
+  transition:all 0.15s ease;
+}
+.pg:active{transform:scale(0.96)}
+.pg canvas{width:100%;height:100%;object-fit:cover;display:block}
+.pg span{
+  position:absolute;
+  left:6px;
+  bottom:6px;
+  background:rgba(0,0,0,0.72);
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  padding:2px 8px;
+  border-radius:99px;
+  backdrop-filter:blur(4px);
+}
+.empty{
+  color:var(--muted);
+  font-size:13.5px;
+  padding:24px 16px;
+  text-align:center;
+  border:1.5px dashed var(--line);
+  border-radius:16px;
+  background:var(--surface-sub);
+  margin-top:10px;
+}
+
+/* Sticky Save Bar (Sits directly above bottom nav) */
+.bar{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:calc(66px + env(safe-area-inset-bottom, 0px));
+  background:color-mix(in srgb, var(--surface) 90%, transparent);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--line);
+  padding:10px 16px;
+  z-index:25;
+}
+.bar .in{
+  max-width:540px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr 1.6fr;
+  gap:10px;
+}
 .bar .btn{width:100%}
-.bar .why{grid-column:1/-1;margin:0;font-size:13px;color:var(--muted);text-align:center}
-.item{display:flex;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px}
-.item img,.item .ph{width:56px;height:74px;object-fit:cover;border-radius:6px;background:var(--line);flex:none}
-.item .ph{display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);text-align:center}
+.bar .why{
+  grid-column:1/-1;
+  margin:4px 0 0;
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--warn);
+  text-align:center;
+}
+
+/* Smartphone Bottom Navigation Bar */
+nav.mobile-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  z-index:35;
+  background:color-mix(in srgb, var(--surface) 95%, transparent);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+  display:flex;
+  box-shadow:0 -4px 20px rgba(0, 0, 0, 0.04);
+}
+.nav-wrap{
+  max-width:540px;
+  margin:0 auto;
+  width:100%;
+  display:flex;
+}
+nav button.tab-btn{
+  flex:1;
+  padding:8px 4px 6px;
+  background:none;
+  border:0;
+  color:var(--muted);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  font-size:11px;
+  font-weight:650;
+  cursor:pointer;
+  position:relative;
+  transition:all 0.15s ease;
+}
+nav button.tab-btn:active{transform:scale(0.92)}
+nav button.tab-btn[aria-selected="true"]{
+  color:var(--accent);
+}
+nav button.tab-btn[aria-selected="true"] .tab-icon{
+  background:var(--accent-soft);
+  color:var(--accent);
+}
+nav button.tab-btn[hidden]{display:none}
+.tab-icon{
+  width:36px;
+  height:28px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all 0.2s ease;
+}
+.tab-icon svg{
+  width:20px;
+  height:20px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2.1;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.tab-badge{
+  position:absolute;
+  top:4px;
+  right:calc(50% - 20px);
+  background:var(--bad);
+  color:#fff;
+  font-size:10px;
+  font-weight:750;
+  min-width:18px;
+  height:18px;
+  line-height:18px;
+  border-radius:99px;
+  padding:0 4px;
+  text-align:center;
+  box-shadow:0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Items List & Cards */
+.item{
+  display:flex;
+  gap:12px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  margin-bottom:12px;
+  box-shadow:var(--card-shadow);
+  transition:all 0.15s ease;
+}
+.item img, .item .ph{
+  width:64px;
+  height:86px;
+  object-fit:cover;
+  border-radius:10px;
+  background:var(--surface-sub);
+  border:1px solid var(--line);
+  flex:none;
+}
+.item .ph{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+  font-weight:600;
+  color:var(--muted);
+  text-align:center;
+  padding:6px;
+}
 .item .t{flex:1;min-width:0}
-.item b{font-variant-numeric:tabular-nums}
-.item p{margin:2px 0;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.chip{display:inline-block;font-size:12px;font-weight:650;padding:2px 9px;border-radius:99px}
-.chip.wait{background:var(--warn-bg);color:var(--warn)}.chip.ok{background:var(--ok-bg);color:var(--accent)}.chip.bad{background:var(--bad-bg);color:var(--bad)}
-.chip.cat{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
-.err{font-size:13px;color:var(--bad);margin:4px 0 0}
-.acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
-dialog{border:0;border-radius:16px;padding:0;width:min(94vw,520px);max-height:92vh;background:var(--surface);color:var(--ink)}
-dialog::backdrop{background:rgba(0,0,0,.55)}
-.dlg{padding:16px}
-.dlg h3{margin:0 0 4px;font-size:18px}
-.hint{font-size:13px;color:var(--muted);margin:4px 0}
-code{font-size:12.5px;background:var(--bg);padding:1px 5px;border-radius:5px;word-break:break-all}
-#viewCanvasWrap{background:#222;display:flex;justify-content:center;max-height:62vh;overflow:auto}
-#viewCanvasWrap canvas{max-width:100%;height:auto;display:block}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(110px + env(safe-area-inset-bottom,0));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:14px;z-index:20;max-width:90vw;text-align:center}
-.seg{display:flex;gap:8px;margin-top:10px}.seg .btn{flex:1}
+.item-head{display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin-bottom:4px}
+.item b{font-size:16px;font-variant-numeric:tabular-nums;font-weight:750}
+.item p{margin:3px 0;color:var(--muted);font-size:13.5px}
+.item .desc{color:var(--ink);font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{
+  display:inline-flex;
+  align-items:center;
+  font-size:11.5px;
+  font-weight:700;
+  padding:3px 9px;
+  border-radius:99px;
+}
+.chip.wait{background:var(--warn-bg);color:var(--warn)}
+.chip.ok{background:var(--ok-bg);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);color:var(--bad)}
+.chip.cat{background:var(--surface-sub);color:var(--ink);border:1px solid var(--line)}
+.acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 
-/* category picker */
-.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.cats button{min-height:52px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;font:inherit;font-weight:700;font-size:16px}
-.cats button[aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.banner{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:9px 12px;font-size:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
-.banner button{background:none;border:0;color:inherit;font:inherit;font-weight:700;text-decoration:underline}
-
-/* balance card */
-.bal{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px}
-.bal-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
-.bal-amt{font-size:32px;font-weight:750;font-variant-numeric:tabular-nums;color:var(--accent);margin:2px 0}
-.bal.neg .bal-amt{color:var(--bad)}
-.bal-sub{font-size:13px;color:var(--muted)}
-
-/* ledger + report */
-.lrow{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
-.lrow .l{min-width:0}.lrow .l p{margin:2px 0;font-size:14px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+/* Ledger & Tables */
+.lrow{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 16px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:16px;
+  margin-bottom:10px;
+  box-shadow:var(--card-shadow);
+}
+.lrow .l{min-width:0}
+.lrow .l p{margin:3px 0;font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
 .lrow .r{text-align:right;flex:none;font-variant-numeric:tabular-nums}
-.lrow .r small{display:block;color:var(--muted);font-size:12px}
-.pos{color:var(--accent)}.neg{color:var(--bad)}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:7px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-tr.tot td{font-weight:700;border-top:2px solid var(--ink)}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:12px}
-.card h4{margin:0 0 6px;font-size:16px}
-input[type=checkbox]{width:auto}
-.claim{font-size:14px;line-height:1.6}
+.lrow .r small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.pos{color:var(--accent);font-weight:750}
+.neg{color:var(--bad);font-weight:750}
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:var(--card-shadow);
+}
+.card h4{margin:0 0 10px;font-size:16px;font-weight:750}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th, td{padding:10px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:0.4px}
+td.n, th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.tot td{font-weight:750;border-top:2px solid var(--ink);padding-top:10px}
+.seg{display:flex;gap:8px;margin-top:12px}
+.seg .btn{flex:1}
+
+/* Modals & Dialogs */
+dialog{
+  border:0;
+  border-radius:22px;
+  padding:0;
+  width:min(94vw, 500px);
+  max-height:90vh;
+  background:var(--surface);
+  color:var(--ink);
+  box-shadow:var(--elevated-shadow);
+}
+dialog::backdrop{
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+.dlg{padding:20px}
+.dlg-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.dlg h3{margin:0;font-size:19px;font-weight:750}
+.close-btn{
+  background:var(--surface-sub);
+  border:1px solid var(--line);
+  color:var(--muted);
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:18px;
+}
+.hint{font-size:13px;color:var(--muted);margin:4px 0 10px}
+#viewCanvasWrap{
+  background:#1a1f1d;
+  display:flex;
+  justify-content:center;
+  border-radius:14px;
+  max-height:55vh;
+  overflow:auto;
+  margin-bottom:14px;
+}
+#viewCanvasWrap canvas{max-width:100%;height:auto;display:block}
+
+/* Toast */
+.toast{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:calc(85px + env(safe-area-inset-bottom, 0px));
+  background:color-mix(in srgb, var(--ink) 95%, transparent);
+  color:var(--bg);
+  padding:12px 20px;
+  border-radius:99px;
+  font-size:14px;
+  font-weight:600;
+  z-index:90;
+  max-width:92vw;
+  text-align:center;
+  box-shadow:var(--elevated-shadow);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  animation:pop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes pop{0%{opacity:0;transform:translate(-50%, 15px) scale(0.95)}100%{opacity:1;transform:translate(-50%, 0) scale(1)}}
+
+/* Kurdish Claim Form */
+.claim{font-size:14px;line-height:1.7}
 .claim table{border:1px solid var(--line)}
-.claim th,.claim td{border:1px solid var(--line);text-align:right}
-.claim .sig{display:flex;justify-content:space-between;margin-top:46px}
-.claim .sig span{border-top:1px solid var(--ink);padding-top:6px;min-width:40%;text-align:center}
+.claim th,.claim td{border:1px solid var(--line);text-align:right;padding:8px}
+.claim .sig{display:flex;justify-content:space-between;margin-top:40px}
+.claim .sig span{border-top:1.5px solid var(--ink);padding-top:8px;min-width:42%;text-align:center;font-weight:600}
+
 @media print{
-  header,nav,.bar,.bal,.noprint,.toast{display:none!important}
+  header, nav, .bar, .bal, .noprint, .toast{display:none!important}
   body{background:#fff;color:#000;padding:0}
   main{max-width:none;padding:0}
-  .card{border:0;padding:0}
-  :root{--ink:#000;--muted:#333;--line:#999;--accent:#000;--bad:#000;--surface:#fff}
+  .card{border:0;padding:0;box-shadow:none}
 }
 </style>
 </head>
 <body>
+
+<!-- Header -->
 <header>
-  <h1>Petty Cash</h1>
-  <span id="net"><span class="dot"></span><span id="netTxt">Offline</span></span>
-  <button id="btnSettings" aria-label="Settings">Settings</button>
+  <div class="brand">
+    <div class="brand-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+    </div>
+    <h1>Petty Cash</h1>
+  </div>
+  <span class="net-pill" id="net">
+    <span class="dot"></span>
+    <span id="netTxt">Offline</span>
+  </span>
+  <button class="btn-icon" id="btnSettings" aria-label="Settings" type="button">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
 </header>
-<nav role="tablist">
-  <button role="tab" id="tabNew" aria-selected="true">New</button>
-  <button role="tab" id="tabExp" aria-selected="false">Expenses<span id="expCount"></span></button>
-  <button role="tab" id="tabLedger" aria-selected="false">Ledger</button>
-  <button role="tab" id="tabReport" aria-selected="false">Report</button>
-  <button role="tab" id="tabCash" aria-selected="false" hidden>Cash</button>
-</nav>
 
 <main>
-<div class="bal" id="bal">
-  <div class="bal-top"><span id="balWho">Petty cash balance</span><button class="btn small" id="btnRefresh" type="button">Refresh</button></div>
-  <div class="bal-amt" id="balAmt">—</div>
-  <div class="bal-sub" id="balSub"></div>
-</div>
-
-<!-- NEW -->
-<section id="pNew" class="panel">
-  <div class="banner" id="editBanner" hidden><span>Editing a draft</span><button id="btnNewForm" type="button">Start new</button></div>
-  <label style="margin-top:0" id="catLbl">Category</label>
-  <div class="cats" id="cats" role="radiogroup" aria-labelledby="catLbl"></div>
-  <div class="row">
-    <div><label for="fDate">Date</label><input id="fDate" type="date"></div>
-    <div><label for="fVoucher">Voucher No</label><input id="fVoucher" type="text" autocomplete="off" placeholder="e.g. 1042"></div>
-  </div>
-  <label for="fAmount">Amount <span class="cur" id="curLabel"></span></label>
-  <input id="fAmount" class="amount" type="number" inputmode="decimal" step="1" min="0" placeholder="0">
-  <label for="fDesc">Description</label>
-  <textarea id="fDesc" dir="auto" placeholder="What was this expense for?"></textarea>
-  <label for="fNote">Note <span class="cur">(optional)</span></label>
-  <input id="fNote" dir="auto" autocomplete="off" placeholder="Anything to add to the claim form">
-
-  <h2>Receipt photos <small id="pgCount">No pages yet</small></h2>
-  <div class="cap">
-    <button class="btn primary" id="btnCam" type="button">Take photo</button>
-    <button class="btn" id="btnGal" type="button">Choose from gallery</button>
-  </div>
-  <input id="inCam" type="file" accept="image/*" capture="environment" hidden>
-  <input id="inGal" type="file" accept="image/*" multiple hidden>
-  <div id="pages" class="pages"></div>
-  <div id="pagesEmpty" class="empty">Lay the receipt flat in good light and fill the frame. Add one photo per page.</div>
-</section>
-
-<!-- EXPENSES -->
-<section id="pExp" class="panel" hidden>
-  <div id="expTools" class="noprint" style="margin-bottom:12px" hidden><button class="btn small primary" id="btnUploadAll">Sync all waiting</button></div>
-  <div id="expList"></div>
-  <div id="expEmpty" class="empty">Drafts and submitted expenses appear here.</div>
-</section>
-
-<!-- LEDGER -->
-<section id="pLedger" class="panel" hidden>
-  <div class="seg noprint" style="margin-top:0"><button class="btn small" id="btnLedgerCsv" type="button">Download CSV</button><button class="btn small" id="btnLedgerPrint" type="button">Print or save PDF</button></div>
-  <div id="ledgerOut" style="margin-top:12px"></div>
-</section>
-
-<!-- REPORT -->
-<section id="pReport" class="panel" hidden>
-  <div class="row noprint">
-    <div><label for="rPeriod" style="margin-top:0">Period</label>
-      <select id="rPeriod"><option value="this">This month</option><option value="last">Last month</option><option value="all">All time</option><option value="custom">Custom dates</option></select></div>
-    <div><label for="rCat" style="margin-top:0">Category</label>
-      <select id="rCat"><option value="">All</option></select></div>
-  </div>
-  <div class="row noprint" id="rCustom" hidden>
-    <div><label for="rFrom">From</label><input id="rFrom" type="date"></div>
-    <div><label for="rTo">To</label><input id="rTo" type="date"></div>
-  </div>
-  <div class="seg noprint"><button class="btn small" id="btnClaim" type="button">Claim form</button><button class="btn small" id="btnRepCsv" type="button">Download CSV</button><button class="btn small" id="btnRepPrint" type="button">Print or save PDF</button></div>
-  <div id="reportOut" style="margin-top:12px"></div>
-</section>
-
-<!-- CASH (manager) -->
-<section id="pCash" class="panel" hidden>
-  <div class="card">
-    <h4>Record cash</h4>
-    <p class="hint">Saved as a new row in the Received or Paid to user sheet. Only your manager key can do this.</p>
-    <label for="cType">What happened?</label>
-    <select id="cType">
-      <option value="paid">I paid cash to the user</option>
-      <option value="recv">I received money from the company</option>
-      <option value="back">I took cash back from the user</option>
-    </select>
-    <div class="row">
-      <div><label for="cDate">Date</label><input id="cDate" type="date"></div>
-      <div><label for="cAmt">Amount <span class="cur" id="cCur"></span></label><input id="cAmt" class="amount" type="number" inputmode="decimal" step="1" min="0" placeholder="0"></div>
+  <!-- Balance Hero Card -->
+  <div class="bal" id="bal">
+    <div class="bal-top">
+      <span class="bal-label" id="balWho">Petty Cash Balance</span>
+      <button class="bal-refresh" id="btnRefresh" type="button">
+        <svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+        <span>Sync</span>
+      </button>
     </div>
-    <label for="cNote">Note</label>
-    <input id="cNote" dir="auto" placeholder="Optional">
-    <div class="seg"><button class="btn primary" id="btnGive" type="button">Save to Excel</button></div>
+    <div class="bal-amt" id="balAmtWrap"><span id="balAmt">—</span> <small id="curLabel"></small></div>
+    <div class="bal-grid">
+      <div class="bal-stat">
+        <span class="bal-stat-title" id="lblRecv">Received</span>
+        <span class="bal-stat-val" id="valRecv">—</span>
+      </div>
+      <div class="bal-stat">
+        <span class="bal-stat-title" id="lblSpent">Spent</span>
+        <span class="bal-stat-val" id="valSpent">—</span>
+      </div>
+      <div class="bal-stat">
+        <span class="bal-stat-title" id="lblCash">In Hand</span>
+        <span class="bal-stat-val" id="valCash">—</span>
+      </div>
+    </div>
+    <div class="bal-sync-time" id="balSub">Open Settings to connect.</div>
   </div>
-  <div id="delReq"></div>
-  <div class="card" id="cashSum"></div>
-</section>
+
+  <!-- TAB: NEW EXPENSE -->
+  <section id="pNew" class="panel">
+    <div class="banner" id="editBanner" hidden style="background:var(--warn-bg);color:var(--warn);padding:10px 14px;border-radius:14px;font-weight:600;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <span>✏️ Editing saved draft</span>
+      <button id="btnNewForm" type="button" class="btn small">Discard & New</button>
+    </div>
+
+    <div class="cat-section">
+      <span class="cat-label" id="catLbl">Select Category</span>
+      <div class="cats" id="cats" role="radiogroup" aria-labelledby="catLbl"></div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label for="fDate">Expense Date</label>
+        <input id="fDate" type="date">
+        <div class="date-quick-bar">
+          <button type="button" class="date-quick-btn" id="btnDateToday">Today</button>
+          <button type="button" class="date-quick-btn" id="btnDateYest">Yesterday</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="fVoucher">Voucher / Receipt No</label>
+        <input id="fVoucher" type="text" autocomplete="off" placeholder="e.g. 1042">
+      </div>
+    </div>
+
+    <div class="form-group input-amount-wrap">
+      <label for="fAmount">Amount <span class="cur" id="fAmountCur"></span></label>
+      <input id="fAmount" class="amount" type="number" inputmode="decimal" step="1" min="0" placeholder="0">
+    </div>
+
+    <div class="form-group">
+      <label for="fDesc">Expense Description</label>
+      <textarea id="fDesc" dir="auto" placeholder="What was this expense for?"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="fNote">Note <span class="cur">(optional, shown on claim)</span></label>
+      <input id="fNote" dir="auto" autocomplete="off" placeholder="Additional details">
+    </div>
+
+    <div class="section-title">
+      <span>Receipt Photos</span>
+      <small id="pgCount">No photos yet</small>
+    </div>
+    
+    <div class="cap">
+      <button class="btn primary" id="btnCam" type="button">
+        <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Take Photo
+      </button>
+      <button class="btn" id="btnGal" type="button">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Gallery
+      </button>
+    </div>
+    <input id="inCam" type="file" accept="image/*" capture="environment" hidden>
+    <input id="inGal" type="file" accept="image/*" multiple hidden>
+    
+    <div id="pages" class="pages"></div>
+    <div id="pagesEmpty" class="empty">
+      📸 Take clear photos of your paper receipt.<br>One photo per page.
+    </div>
+  </section>
+
+  <!-- TAB: EXPENSES LIST -->
+  <section id="pExp" class="panel" hidden>
+    <div id="expTools" class="noprint" style="margin-bottom:14px;display:flex;justify-content:flex-end;" hidden>
+      <button class="btn small primary" id="btnUploadAll" type="button">Sync All Waiting</button>
+    </div>
+    <div id="expList"></div>
+    <div id="expEmpty" class="empty">Drafts and submitted expenses will appear here.</div>
+  </section>
+
+  <!-- TAB: LEDGER -->
+  <section id="pLedger" class="panel" hidden>
+    <div class="seg noprint" style="margin-top:0;margin-bottom:12px;">
+      <button class="btn small" id="btnLedgerCsv" type="button">Download CSV</button>
+      <button class="btn small" id="btnLedgerPrint" type="button">Print / PDF</button>
+    </div>
+    <div id="ledgerOut"></div>
+  </section>
+
+  <!-- TAB: REPORT -->
+  <section id="pReport" class="panel" hidden>
+    <div class="card noprint">
+      <div class="row">
+        <div>
+          <label for="rPeriod">Period</label>
+          <select id="rPeriod">
+            <option value="this">This month</option>
+            <option value="last">Last month</option>
+            <option value="all">All time</option>
+            <option value="custom">Custom dates</option>
+          </select>
+        </div>
+        <div>
+          <label for="rCat">Category</label>
+          <select id="rCat"><option value="">All Categories</option></select>
+        </div>
+      </div>
+      <div class="row" id="rCustom" hidden style="margin-top:10px;">
+        <div><label for="rFrom">From</label><input id="rFrom" type="date"></div>
+        <div><label for="rTo">To</label><input id="rTo" type="date"></div>
+      </div>
+      <div class="seg" style="margin-top:12px;">
+        <button class="btn small primary" id="btnClaim" type="button">Claim Form (Kurdish)</button>
+        <button class="btn small" id="btnRepCsv" type="button">CSV</button>
+        <button class="btn small" id="btnRepPrint" type="button">Print</button>
+      </div>
+    </div>
+    <div id="reportOut"></div>
+  </section>
+
+  <!-- TAB: CASH (MANAGER) -->
+  <section id="pCash" class="panel" hidden>
+    <div class="card">
+      <h4>Record Cash Movement</h4>
+      <p class="hint">Recorded directly into Received or Paid sheet using manager key.</p>
+      <div class="form-group">
+        <label for="cType">Transaction Type</label>
+        <select id="cType">
+          <option value="paid">Paid cash to user (User + / Company -)</option>
+          <option value="recv">Received cash from company (Company +)</option>
+          <option value="back">Took cash back from user (User - / Company +)</option>
+        </select>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label for="cDate">Date</label>
+          <input id="cDate" type="date">
+        </div>
+        <div class="form-group">
+          <label for="cAmt">Amount <span class="cur" id="cCur"></span></label>
+          <input id="cAmt" class="amount" type="number" inputmode="decimal" step="1" min="0" placeholder="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="cNote">Note / Description</label>
+        <input id="cNote" dir="auto" placeholder="e.g. Top up petty cash">
+      </div>
+      <button class="btn primary" id="btnGive" type="button" style="width:100%;">Save Cash Movement</button>
+    </div>
+    <div id="delReq"></div>
+    <div class="card" id="cashSum"></div>
+  </section>
 </main>
 
-<div class="bar" id="saveBar"><div class="in">
-  <button class="btn" id="btnDraft" type="button">Save draft</button>
-  <button class="btn primary" id="btnSubmit" type="button">Submit and upload</button>
-  <p class="why" id="whySubmit" hidden>Add a receipt photo to submit.</p>
-</div></div>
-
-<dialog id="dView"><div class="dlg">
-  <h3 id="viewTitle">Page</h3>
-  <div id="viewCanvasWrap"></div>
-  <div class="seg">
-    <button class="btn small" id="vRotL" type="button">Rotate left</button>
-    <button class="btn small" id="vRotR" type="button">Rotate right</button>
-    <button class="btn small" id="vMode" type="button">Filter</button>
+<!-- Sticky Bottom Save Dock (For New Tab) -->
+<div class="bar" id="saveBar">
+  <div class="in">
+    <button class="btn" id="btnDraft" type="button">Save Draft</button>
+    <button class="btn primary" id="btnSubmit" type="button">Submit & Upload</button>
+    <p class="why" id="whySubmit" hidden>Attach at least one receipt photo to submit.</p>
   </div>
-  <div class="seg">
-    <button class="btn small danger" id="vDel" type="button">Delete page</button>
-    <button class="btn small primary" id="vClose" type="button">Done</button>
-  </div>
-</div></dialog>
+</div>
 
-<dialog id="dSet"><div class="dlg">
-  <h3>Settings</h3>
-  <label for="sName">Your name</label>
-  <input id="sName" placeholder="Shown on your entries">
-  <label for="sUrl">Script address</label>
-  <input id="sUrl" placeholder="https://script.google.com/macros/s/…/exec" inputmode="url" autocomplete="off">
-  <label for="sKey">Access key</label>
-  <input id="sKey" type="password" autocomplete="off" placeholder="Paste your key">
-  <label style="display:flex;gap:10px;align-items:center;font-weight:500"><input type="checkbox" id="sWarn" style="width:auto"> Ask before spending more than the balance</label>
-  <p class="hint" id="connState"></p>
-  <div class="seg"><button class="btn small" id="btnTest" type="button">Test connection</button></div>
-  <div class="seg" id="mgrTools" hidden><button class="btn small" id="btnLink" type="button">Copy setup link for the expense user</button></div>
-  <div class="seg" id="mgrTools2" hidden><button class="btn small danger" id="btnRotate" type="button">Change the expense user’s key</button></div>
-  <div class="seg"><button class="btn small primary" id="btnSetSave" type="button">Save settings</button></div>
-</div></dialog>
+<!-- Bottom Navigation Bar -->
+<nav class="mobile-nav" role="tablist">
+  <div class="nav-wrap">
+    <button role="tab" class="tab-btn" id="tabNew" aria-selected="true">
+      <div class="tab-icon">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+      <span>New</span>
+    </button>
+    <button role="tab" class="tab-btn" id="tabExp" aria-selected="false">
+      <div class="tab-icon">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <span>Expenses</span>
+      <span class="tab-badge" id="expCount" hidden>0</span>
+    </button>
+    <button role="tab" class="tab-btn" id="tabLedger" aria-selected="false">
+      <div class="tab-icon">
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </div>
+      <span>Ledger</span>
+    </button>
+    <button role="tab" class="tab-btn" id="tabReport" aria-selected="false">
+      <div class="tab-icon">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </div>
+      <span>Report</span>
+    </button>
+    <button role="tab" class="tab-btn" id="tabCash" aria-selected="false" hidden>
+      <div class="tab-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      </div>
+      <span>Cash</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Receipt Photo Fullscreen Viewer Dialog -->
+<dialog id="dView">
+  <div class="dlg">
+    <div class="dlg-header">
+      <h3 id="viewTitle">Receipt Page</h3>
+      <button class="close-btn" id="vClose" type="button" aria-label="Close">✕</button>
+    </div>
+    <div id="viewCanvasWrap"></div>
+    <div class="seg">
+      <button class="btn small" id="vRotL" type="button">Rotate Left</button>
+      <button class="btn small" id="vRotR" type="button">Rotate Right</button>
+      <button class="btn small" id="vMode" type="button">Filter</button>
+    </div>
+    <div class="seg" style="margin-top:10px;">
+      <button class="btn small danger" id="vDel" type="button">Delete Page</button>
+      <button class="btn small primary" id="vDone" type="button">Keep</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Settings Modal Dialog -->
+<dialog id="dSet">
+  <div class="dlg">
+    <div class="dlg-header">
+      <h3>App Settings</h3>
+      <button class="close-btn" id="btnSetClose" type="button" aria-label="Close">✕</button>
+    </div>
+    <div class="form-group">
+      <label for="sName">Your Name</label>
+      <input id="sName" placeholder="e.g. John Doe">
+    </div>
+    <div class="form-group">
+      <label for="sUrl">Google Apps Script Web App URL</label>
+      <input id="sUrl" placeholder="https://script.google.com/macros/s/…/exec" inputmode="url" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label for="sKey">Access Key</label>
+      <input id="sKey" type="password" autocomplete="off" placeholder="Paste your manager or user key">
+    </div>
+    <label style="display:flex;gap:10px;align-items:center;font-weight:600;font-size:13.5px;margin:12px 0;">
+      <input type="checkbox" id="sWarn" style="width:auto"> Ask before spending more than the balance
+    </label>
+    <p class="hint" id="connState" style="padding:8px 12px;background:var(--surface-sub);border-radius:10px;border:1px solid var(--line);"></p>
+    <div class="seg">
+      <button class="btn small" id="btnTest" type="button">Test Connection</button>
+    </div>
+    <div class="seg" id="mgrTools" hidden>
+      <button class="btn small" id="btnLink" type="button">Copy Setup Link for Expense User</button>
+    </div>
+    <div class="seg" id="mgrTools2" hidden>
+      <button class="btn small danger" id="btnRotate" type="button">Rotate Expense User's Key</button>
+    </div>
+    <div class="seg" style="margin-top:16px;">
+      <button class="btn primary" id="btnSetSave" type="button" style="width:100%;">Save Settings</button>
+    </div>
+  </div>
+</dialog>
 
 <script>
 "use strict";
@@ -267,33 +1043,53 @@ const MAX_SIDE = 1600, JPEG_Q = 0.72;
 
 /* ---------- settings ---------- */
 const defaults = { name: "", url: "", key: "", warnOver: false };
-function settings() { try { return Object.assign({}, defaults, JSON.parse(localStorage.getItem("settings") || "{}")); } catch (e) { return { ...defaults }; } }
+function settings() {
+  try { return Object.assign({}, defaults, JSON.parse(localStorage.getItem("settings") || "{}")); }
+  catch (e) { return { ...defaults }; }
+}
 function saveSettings(s) { try { localStorage.setItem("settings", JSON.stringify(s)); } catch (e) {} }
 const connected = () => { const s = settings(); return !!(s.url && s.key); };
 const baseUrl = location.origin + location.pathname.replace(/index\.html$/, "");
 const SETUP_KEYS = { u: "url", k: "key", w: "warnOver" };
+
 function applySetupLink() {
-  const p = new URLSearchParams(location.search); let hit = false; const s = settings();
-  for (const k in SETUP_KEYS) if (p.has(k)) { const v = p.get(k); s[SETUP_KEYS[k]] = SETUP_KEYS[k] === "warnOver" ? (v === "1" || v === "true") : v; hit = true; }
-  if (hit) { saveSettings(s); history.replaceState(null, "", location.pathname); }
+  const p = new URLSearchParams(location.search);
+  let hit = false;
+  const s = settings();
+  for (const k in SETUP_KEYS) {
+    if (p.has(k)) {
+      const v = p.get(k);
+      s[SETUP_KEYS[k]] = SETUP_KEYS[k] === "warnOver" ? (v === "1" || v === "true") : v;
+      hit = true;
+    }
+  }
+  if (hit) {
+    saveSettings(s);
+    history.replaceState(null, "", location.pathname);
+  }
   return hit;
 }
+
 function setupLink(userKey) {
-  const s = settings(), p = new URLSearchParams({ u: s.url, k: userKey }); if (s.warnOver) p.set("w", "1");
+  const s = settings(), p = new URLSearchParams({ u: s.url, k: userKey });
+  if (s.warnOver) p.set("w", "1");
   return baseUrl + "?" + p.toString();
 }
 
-/* ---------- local storage (IndexedDB) ---------- */
+/* ---------- IndexedDB Storage ---------- */
 const dbp = new Promise((res, rej) => {
   const r = indexedDB.open("pettycash", 1);
   r.onupgradeneeded = () => r.result.createObjectStore("items", { keyPath: "id" });
-  r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  r.onsuccess = () => res(r.result);
+  r.onerror = () => rej(r.error);
 });
 async function dbTx(mode, fn) {
   const db = await dbp;
   return new Promise((res, rej) => {
-    const t = db.transaction("items", mode); const out = fn(t.objectStore("items"));
-    t.oncomplete = () => res(out && out.result); t.onerror = () => rej(t.error);
+    const t = db.transaction("items", mode);
+    const out = fn(t.objectStore("items"));
+    t.oncomplete = () => res(out && out.result);
+    t.onerror = () => rej(t.error);
   });
 }
 const dbAll = () => dbTx("readonly", s => s.getAll());
@@ -301,127 +1097,182 @@ const dbPut = it => dbTx("readwrite", s => s.put(it));
 const dbDel = id => dbTx("readwrite", s => s.delete(id));
 
 /* ---------- helpers ---------- */
-function toast(msg, ms = 2800) {
-  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t);
+function toast(msg, ms = 3000) {
+  document.querySelectorAll(".toast").forEach(t => t.remove());
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.innerHTML = `<span>${esc(msg)}</span>`;
+  document.body.appendChild(t);
   setTimeout(() => t.remove(), ms);
 }
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const iso = () => new Date().toISOString();
-const today = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
-const safe = s => String(s).trim().replace(/[\\\/:*?"<>|#%~&{}]+/g, "-").replace(/\s+/g, " ").slice(0, 60) || "x";
+const today = () => {
+  const d = new Date();
+  return new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+};
+const yesterday = () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+};
 const toBlob = (c, q) => new Promise(r => c.toBlob(r, "image/jpeg", q));
 const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const ZERO_DEC = ["IQD", "JPY", "KRW", "VND", "XOF", "XAF"];
 const decs = c => ZERO_DEC.includes(String(c || "").toUpperCase()) ? 0 : 2;
 let fmtDec = decs("IQD");
 const fmt = n => Number(n).toLocaleString(undefined, { minimumFractionDigits: fmtDec, maximumFractionDigits: fmtDec });
-const encPath = p => p.split("/").map(encodeURIComponent).join("/");
-const num = v => Number(String(v == null ? "" : v).replace(/,/g, "")) || 0;
-const EPOCH = Date.UTC(1899, 11, 30);
-const toSerial = d => Math.round((Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10)) - EPOCH) / 864e5);
-function fromCell(v) {
-  if (typeof v === "number") return new Date(EPOCH + v * 864e5).toISOString().slice(0, 10);
-  const t = String(v == null ? "" : v).trim();
-  if (/^\d{4}-\d{2}-\d{2}/.test(t)) return t.slice(0, 10);
-  const d = new Date(t); return isNaN(d) ? t : new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-}
 
-/* ---------- state ---------- */
+/* ---------- State ---------- */
 let pages = [];            // { src: canvas, rot, mode }
 let viewIdx = -1, cat = "", editId = null;
-let local = [];            // this phone's items (drafts, queued, done)
-let data = { received: [], paid: [], expenses: [], currency: "IQD", at: null };   // from the Google Sheet
+let local = [];            // local drafts and queued items
+let data = { received: [], paid: [], expenses: [], currency: "IQD", at: null };
 let role = ""; try { role = localStorage.getItem("pc:role") || ""; } catch (e) {}
 let curTab = "new";
 const isManager = () => role === "manager";
 const cur = () => data.currency || "IQD";
 
-/* ---------- photos ---------- */
+/* ---------- Photos & Image Processing ---------- */
 async function loadFile(file) {
   let bmp;
-  try { bmp = await createImageBitmap(file, { imageOrientation: "from-image" }); }
-  catch (e) { bmp = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); }); }
+  try {
+    bmp = await createImageBitmap(file, { imageOrientation: "from-image" });
+  } catch (e) {
+    bmp = await new Promise((res, rej) => {
+      const i = new Image();
+      i.onload = () => res(i);
+      i.onerror = rej;
+      i.src = URL.createObjectURL(file);
+    });
+  }
   const w = bmp.width, h = bmp.height, k = Math.min(1, 2000 / Math.max(w, h));
-  const c = document.createElement("canvas"); c.width = Math.round(w * k); c.height = Math.round(h * k);
+  const c = document.createElement("canvas");
+  c.width = Math.round(w * k);
+  c.height = Math.round(h * k);
   c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
   if (bmp.close) bmp.close();
   return { src: c, rot: 0, mode: "scan" };
 }
-// Flatten lighting and push paper to white, ink to dark: a "scanned" look.
+
 function scanFilter(c) {
   const W = c.width, H = c.height, x = c.getContext("2d");
   const sw = Math.max(1, W >> 3), sh = Math.max(1, H >> 3);
-  const small = document.createElement("canvas"); small.width = sw; small.height = sh;
+  const small = document.createElement("canvas");
+  small.width = sw;
+  small.height = sh;
   small.getContext("2d").drawImage(c, 0, 0, sw, sh);
-  const blurred = document.createElement("canvas"); blurred.width = sw; blurred.height = sh;
-  const bx = blurred.getContext("2d"); bx.filter = "blur(3px)"; bx.drawImage(small, 0, 0);
-  const bg = document.createElement("canvas"); bg.width = W; bg.height = H;
-  const gx = bg.getContext("2d"); gx.imageSmoothingQuality = "high"; gx.drawImage(blurred, 0, 0, W, H);
+  const blurred = document.createElement("canvas");
+  blurred.width = sw;
+  blurred.height = sh;
+  const bx = blurred.getContext("2d");
+  bx.filter = "blur(3px)";
+  bx.drawImage(small, 0, 0);
+  const bg = document.createElement("canvas");
+  bg.width = W;
+  bg.height = H;
+  const gx = bg.getContext("2d");
+  gx.imageSmoothingQuality = "high";
+  gx.drawImage(blurred, 0, 0, W, H);
   const img = x.getImageData(0, 0, W, H), d = img.data, b = gx.getImageData(0, 0, W, H).data;
   const lo = 115, hi = 232, span = 255 / (hi - lo);
   for (let i = 0; i < d.length; i += 4) {
     const g = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
     const bgv = Math.max(40, 0.299 * b[i] + 0.587 * b[i + 1] + 0.114 * b[i + 2]);
-    let v = (g / bgv) * 255; v = (v - lo) * span; v = v < 0 ? 0 : v > 255 ? 255 : v;
+    let v = (g / bgv) * 255;
+    v = (v - lo) * span;
+    v = v < 0 ? 0 : v > 255 ? 255 : v;
     d[i] = d[i + 1] = d[i + 2] = v;
   }
   x.putImageData(img, 0, 0);
 }
+
 function render(p, maxSide) {
   const rot = p.rot % 360, swap = rot === 90 || rot === 270;
   const w = swap ? p.src.height : p.src.width, h = swap ? p.src.width : p.src.height;
   const k = Math.min(1, maxSide / Math.max(w, h)), W = Math.round(w * k), H = Math.round(h * k);
-  const c = document.createElement("canvas"); c.width = W; c.height = H;
-  const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, W, H);
-  x.translate(W / 2, H / 2); x.rotate(rot * Math.PI / 180);
+  const c = document.createElement("canvas");
+  c.width = W;
+  c.height = H;
+  const x = c.getContext("2d");
+  x.fillStyle = "#fff";
+  x.fillRect(0, 0, W, H);
+  x.translate(W / 2, H / 2);
+  x.rotate(rot * Math.PI / 180);
   const dw = swap ? H : W, dh = swap ? W : H;
   x.drawImage(p.src, -dw / 2, -dh / 2, dw, dh);
   x.setTransform(1, 0, 0, 1, 0, 0);
   if (p.mode === "scan") scanFilter(c);
   return c;
 }
+
 function drawPages() {
-  const box = $("#pages"); box.innerHTML = "";
+  const box = $("#pages");
+  box.innerHTML = "";
   pages.forEach((p, i) => {
-    const b = document.createElement("button"); b.type = "button"; b.className = "pg"; b.setAttribute("aria-label", "Open page " + (i + 1));
-    b.appendChild(render(p, 360)); const s = document.createElement("span"); s.textContent = "Page " + (i + 1); b.appendChild(s);
-    b.onclick = () => openView(i); box.appendChild(b);
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "pg";
+    b.setAttribute("aria-label", "View receipt page " + (i + 1));
+    b.appendChild(render(p, 360));
+    const s = document.createElement("span");
+    s.textContent = "Page " + (i + 1);
+    b.appendChild(s);
+    b.onclick = () => openView(i);
+    box.appendChild(b);
   });
   $("#pagesEmpty").hidden = pages.length > 0;
-  $("#pgCount").textContent = pages.length ? pages.length + (pages.length === 1 ? " page" : " pages") : "No pages yet";
+  $("#pgCount").textContent = pages.length ? pages.length + (pages.length === 1 ? " page" : " pages") : "No photos yet";
   $("#btnSubmit").classList.toggle("dim", !pages.length);
   $("#btnSubmit").setAttribute("aria-disabled", String(!pages.length));
   $("#whySubmit").hidden = pages.length > 0;
 }
+
 async function addFiles(files) {
-  for (const f of files) { try { pages.push(await loadFile(f)); } catch (e) { toast("Couldn’t read that photo"); } }
+  for (const f of files) {
+    try { pages.push(await loadFile(f)); }
+    catch (e) { toast("Could not read that photo file."); }
+  }
   drawPages();
 }
+
 function openView(i) {
-  viewIdx = i; const p = pages[i];
+  viewIdx = i;
+  const p = pages[i];
   $("#viewTitle").textContent = "Page " + (i + 1) + " of " + pages.length;
-  $("#vMode").textContent = p.mode === "scan" ? "Show original colors" : "Apply scan filter";
-  const w = $("#viewCanvasWrap"); w.innerHTML = ""; w.appendChild(render(p, 1000));
+  $("#vMode").textContent = p.mode === "scan" ? "Show Original Colors" : "Apply Scan Filter";
+  const w = $("#viewCanvasWrap");
+  w.innerHTML = "";
+  w.appendChild(render(p, 1000));
   if (!$("#dView").open) $("#dView").showModal();
 }
+
 $("#vRotL").onclick = () => { pages[viewIdx].rot = (pages[viewIdx].rot + 270) % 360; openView(viewIdx); drawPages(); };
 $("#vRotR").onclick = () => { pages[viewIdx].rot = (pages[viewIdx].rot + 90) % 360; openView(viewIdx); drawPages(); };
 $("#vMode").onclick = () => { const p = pages[viewIdx]; p.mode = p.mode === "scan" ? "color" : "scan"; openView(viewIdx); drawPages(); };
 $("#vDel").onclick = () => { pages.splice(viewIdx, 1); $("#dView").close(); drawPages(); };
 $("#vClose").onclick = () => $("#dView").close();
+$("#vDone").onclick = () => $("#dView").close();
+
 $("#btnCam").onclick = () => $("#inCam").click();
 $("#btnGal").onclick = () => $("#inGal").click();
 $("#inCam").onchange = async e => { await addFiles([...e.target.files]); e.target.value = ""; };
 $("#inGal").onchange = async e => { await addFiles([...e.target.files]); e.target.value = ""; };
 
-/* ---------- PDF (one JPEG per page) ---------- */
+$("#btnDateToday").onclick = () => { $("#fDate").value = today(); };
+$("#btnDateYest").onclick = () => { $("#fDate").value = yesterday(); };
+
+/* ---------- Client-side PDF Generation ---------- */
 async function buildPdf(blobs) {
-  const enc = new TextEncoder(), chunks = [], offsets = []; let len = 0;
+  const enc = new TextEncoder(), chunks = [], offsets = [];
+  let len = 0;
   const push = d => { const b = typeof d === "string" ? enc.encode(d) : d; chunks.push(b); len += b.length; };
   const imgs = [];
   for (const b of blobs) {
     const bytes = new Uint8Array(await b.arrayBuffer());
-    const bmp = await createImageBitmap(b); imgs.push({ bytes, w: bmp.width, h: bmp.height }); bmp.close();
+    const bmp = await createImageBitmap(b);
+    imgs.push({ bytes, w: bmp.width, h: bmp.height });
+    bmp.close();
   }
   const n = imgs.length, PW = 595.28;
   push("%PDF-1.4\n");
@@ -433,7 +1284,11 @@ async function buildPdf(blobs) {
     obj(pg, () => push("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + PW.toFixed(2) + " " + ph.toFixed(2) + "] /Resources << /XObject << /Im0 " + ig + " 0 R >> >> /Contents " + ct + " 0 R >>"));
     const cs = "q " + PW.toFixed(2) + " 0 0 " + ph.toFixed(2) + " 0 0 cm /Im0 Do Q";
     obj(ct, () => push("<< /Length " + cs.length + " >>\nstream\n" + cs + "\nendstream"));
-    obj(ig, () => { push("<< /Type /XObject /Subtype /Image /Width " + im.w + " /Height " + im.h + " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " + im.bytes.length + " >>\nstream\n"); push(im.bytes); push("\nendstream"); });
+    obj(ig, () => {
+      push("<< /Type /XObject /Subtype /Image /Width " + im.w + " /Height " + im.h + " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " + im.bytes.length + " >>\nstream\n");
+      push(im.bytes);
+      push("\nendstream");
+    });
   });
   const total = 3 + 3 * n, xref = len;
   push("xref\n0 " + total + "\n0000000000 65535 f \n");
@@ -442,237 +1297,540 @@ async function buildPdf(blobs) {
   return new Blob(chunks, { type: "application/pdf" });
 }
 
-/* ---------- Google Sheet connection ---------- */
+/* ---------- Google Apps Script API ---------- */
 async function api(action, payload) {
   const s = settings();
-  if (!s.url || !s.key) throw new Error("Open Settings and enter the script address and access key.");
+  if (!s.url || !s.key) throw new Error("Please open Settings and enter the script URL and access key.");
+  
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 28000); // 28s timeout
+
   let r;
-  try { r = await fetch(s.url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ key: s.key, action, ...(payload || {}) }) }); }
-  catch (e) { throw new Error("Can’t reach the server. Check your connection."); }
-  let j; try { j = await r.json(); } catch (e) { throw new Error("The script didn’t answer correctly. Check the address and that it is deployed for Anyone."); }
-  if (!j.ok) throw new Error(j.error || "Request failed");
+  try {
+    r = await fetch(s.url, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ key: s.key, action, ...(payload || {}) }),
+      signal: ctrl.signal
+    });
+  } catch (e) {
+    if (e.name === "AbortError") throw new Error("Request timed out. Google Apps Script took too long to answer.");
+    throw new Error("Cannot reach Google Apps Script. Check internet connection.");
+  } finally {
+    clearTimeout(timer);
+  }
+
+  let j;
+  try {
+    j = await r.json();
+  } catch (e) {
+    throw new Error("Invalid response from script. Check deployment ('Execute as: Me', 'Who has access: Anyone').");
+  }
+
+  if (!j.ok) throw new Error(j.error || "Request failed.");
   return j;
 }
+
 function cacheSave() { try { localStorage.setItem("pc:data", JSON.stringify(data)); } catch (e) {} }
 function cacheLoad() {
-  try { const c = JSON.parse(localStorage.getItem("pc:data") || "null"); if (c) { data = c; if (c.categories && c.categories.length) CATEGORIES = c.categories; } } catch (e) {}
+  try {
+    const c = JSON.parse(localStorage.getItem("pc:data") || "null");
+    if (c) {
+      data = c;
+      if (c.categories && c.categories.length) CATEGORIES = c.categories;
+    }
+  } catch (e) {}
 }
+
 async function refresh() {
-  const j = await api("state");
-  role = j.role; try { localStorage.setItem("pc:role", role); } catch (e) {}
-  if (j.categories && j.categories.length) CATEGORIES = j.categories;
-  data = { received: j.received || [], paid: j.paid || [], expenses: j.expenses || [], currency: j.currency || "IQD", categories: CATEGORIES, at: iso() };
-  cacheSave();
+  const btn = $("#btnRefresh");
+  btn.classList.add("spinning");
+  try {
+    const j = await api("state");
+    role = j.role;
+    try { localStorage.setItem("pc:role", role); } catch (e) {}
+    if (j.categories && j.categories.length) CATEGORIES = j.categories;
+    data = {
+      received: j.received || [],
+      paid: j.paid || [],
+      expenses: j.expenses || [],
+      currency: j.currency || "IQD",
+      categories: CATEGORIES,
+      at: iso()
+    };
+    cacheSave();
+  } finally {
+    btn.classList.remove("spinning");
+  }
 }
+
 function expenseMap() {
   const m = new Map(), seen = new Set();
   data.expenses.forEach(e => { seen.add(e.id); if (e.status !== "Deleted") m.set(e.id, e); });
   if (!isManager()) local.forEach(it => {
-    if (it.status !== "draft" && !seen.has(it.id)) m.set(it.id, { id: it.id, date: it.date, voucher: it.voucher, category: it.category, amount: Number(it.amount), description: it.description, note: it.note, by: settings().name || "User", at: it.createdAt, pending: true, status: "Active" });
+    if (it.status !== "draft" && !seen.has(it.id)) {
+      m.set(it.id, {
+        id: it.id, date: it.date, voucher: it.voucher, category: it.category,
+        amount: Number(it.amount), description: it.description, note: it.note,
+        by: settings().name || "User", at: it.createdAt, pending: true, status: "Active"
+      });
+    }
   });
   return m;
 }
+
 function compute() {
-  const received = data.received.reduce((a, c) => a + c.amount, 0), paid = data.paid.reduce((a, c) => a + c.amount, 0);
-  let spent = 0; expenseMap().forEach(e => spent += e.amount);
+  const received = data.received.reduce((a, c) => a + c.amount, 0);
+  const paid = data.paid.reduce((a, c) => a + c.amount, 0);
+  let spent = 0;
+  expenseMap().forEach(e => spent += e.amount);
   const drafts = isManager() ? 0 : local.filter(i => i.status === "draft").reduce((a, i) => a + (parseFloat(i.amount) || 0), 0);
   return { received, paid, spent, balance: paid - spent, cashLeft: received - paid, drafts, currency: cur() };
 }
+
 function userRows() {
   const rows = [];
   data.paid.forEach(c => rows.push({ kind: "cash", id: c.id, date: c.date, at: c.at, amount: c.amount, note: c.note }));
-  expenseMap().forEach(e => rows.push({ kind: "exp", id: e.id, date: e.date, at: e.at || "", amount: -e.amount, voucher: e.voucher, category: e.category, note: e.description, extra: e.note || "", by: e.by, pending: !!e.pending, status: e.status, webUrl: e.webUrl || "" }));
+  expenseMap().forEach(e => rows.push({
+    kind: "exp", id: e.id, date: e.date, at: e.at || "", amount: -e.amount,
+    voucher: e.voucher, category: e.category, note: e.description, extra: e.note || "",
+    by: e.by, pending: !!e.pending, status: e.status, webUrl: e.webUrl || ""
+  }));
   rows.sort((a, b) => (a.date + a.at).localeCompare(b.date + b.at));
-  let run = 0; rows.forEach(r => { run += r.amount; r.balance = run; });
+  let run = 0;
+  rows.forEach(r => { run += r.amount; r.balance = run; });
   return rows;
 }
+
 function companyRows() {
   const rows = [];
   data.received.forEach(c => rows.push({ kind: "recv", date: c.date, at: c.at, amount: c.amount, note: c.note }));
   data.paid.forEach(c => rows.push({ kind: "paid", date: c.date, at: c.at, amount: -c.amount, note: c.note }));
   rows.sort((a, b) => (a.date + a.at).localeCompare(b.date + b.at));
-  let run = 0; rows.forEach(r => { run += r.amount; r.balance = run; });
+  let run = 0;
+  rows.forEach(r => { run += r.amount; r.balance = run; });
   return rows;
 }
+
 async function syncNow(manual) {
-  if (!navigator.onLine || !connected()) { if (manual) toast(connected() ? "You’re offline." : "Open Settings to connect first."); return; }
-  try { await refresh(); renderAll(); if (manual) toast("Up to date"); }
-  catch (e) { if (manual) toast(e.message, 5000); }
+  if (!navigator.onLine || !connected()) {
+    if (manual) toast(connected() ? "You are currently offline." : "Open Settings to connect first.");
+    return;
+  }
+  try {
+    await refresh();
+    renderAll();
+    if (manual) toast("Balance & data updated");
+  } catch (e) {
+    if (manual) toast(e.message, 5000);
+  }
 }
 
-/* ---------- drafts and submit ---------- */
-const form = () => ({ category: cat, date: $("#fDate").value, voucher: $("#fVoucher").value.trim(), amount: $("#fAmount").value.trim(), description: $("#fDesc").value.trim(), note: $("#fNote").value.trim() });
+/* ---------- Form, Drafts & Submit ---------- */
+const form = () => ({
+  category: cat,
+  date: $("#fDate").value,
+  voucher: $("#fVoucher").value.trim(),
+  amount: $("#fAmount").value.trim(),
+  description: $("#fDesc").value.trim(),
+  note: $("#fNote").value.trim()
+});
+
 function renderCats() {
-  const box = $("#cats"); box.innerHTML = "";
+  const box = $("#cats");
+  box.innerHTML = "";
   CATEGORIES.forEach(c => {
-    const b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "radio"); b.setAttribute("aria-checked", String(c === cat)); b.textContent = c;
-    b.onclick = () => { cat = c; renderCats(); }; box.appendChild(b);
+    const b = document.createElement("button");
+    b.type = "button";
+    b.setAttribute("role", "radio");
+    b.setAttribute("aria-checked", String(c === cat));
+    b.innerHTML = `<span>${esc(c)}</span>`;
+    b.onclick = () => { cat = c; renderCats(); };
+    box.appendChild(b);
   });
 }
+
 function resetForm() {
-  editId = null; cat = ""; pages = [];
-  $("#fVoucher").value = ""; $("#fAmount").value = ""; $("#fDesc").value = ""; $("#fNote").value = ""; $("#fDate").value = today();
-  $("#editBanner").hidden = true; renderCats(); drawPages();
+  editId = null;
+  cat = "";
+  pages = [];
+  $("#fVoucher").value = "";
+  $("#fAmount").value = "";
+  $("#fDesc").value = "";
+  $("#fNote").value = "";
+  $("#fDate").value = today();
+  $("#editBanner").hidden = true;
+  renderCats();
+  drawPages();
 }
 $("#btnNewForm").onclick = resetForm;
-async function serPages() { const out = []; for (const p of pages) out.push({ blob: await toBlob(p.src, 0.85), rot: p.rot, mode: p.mode }); return out; }
+
+async function serPages() {
+  const out = [];
+  for (const p of pages) out.push({ blob: await toBlob(p.src, 0.85), rot: p.rot, mode: p.mode });
+  return out;
+}
 async function reloadLocal() { local = await dbAll(); }
 async function afterChange() { await reloadLocal(); renderAll(); }
 
 $("#btnDraft").onclick = async () => {
   const f = form();
-  if (!f.category && !f.voucher && !f.amount && !f.description && !f.note && !pages.length) return toast("Fill in something before saving a draft");
+  if (!f.category && !f.voucher && !f.amount && !f.description && !f.note && !pages.length) {
+    return toast("Fill in details or add photos before saving draft.");
+  }
   const old = editId ? local.find(i => i.id === editId) : null, t = iso();
   const it = Object.assign({}, old || {}, f, {
-    id: editId || newId(), status: "draft", pageData: await serPages(), pageCount: pages.length,
-    thumb: pages[0] ? render(pages[0], 160).toDataURL("image/jpeg", 0.6) : "", updatedAt: t, createdAt: old ? old.createdAt : t, error: ""
+    id: editId || newId(),
+    status: "draft",
+    pageData: await serPages(),
+    pageCount: pages.length,
+    thumb: pages[0] ? render(pages[0], 160).toDataURL("image/jpeg", 0.6) : "",
+    updatedAt: t,
+    createdAt: old ? old.createdAt : t,
+    error: ""
   });
-  await dbPut(it); resetForm(); await afterChange(); showTab("exp"); toast("Draft saved on this phone");
-};
-async function editDraft(it) {
-  resetForm(); editId = it.id; cat = it.category || "";
-  $("#fDate").value = it.date || today(); $("#fVoucher").value = it.voucher || ""; $("#fAmount").value = it.amount || ""; $("#fDesc").value = it.description || ""; $("#fNote").value = it.note || "";
-  for (const pd of it.pageData || []) { try { const p = await loadFile(pd.blob); p.rot = pd.rot; p.mode = pd.mode; pages.push(p); } catch (e) {} }
-  $("#editBanner").hidden = false; renderCats(); drawPages(); showTab("new");
-}
-$("#btnSubmit").onclick = async () => {
-  const f = form();
-  if (!f.category) return toast("Choose Tarik, Pulk or Midea");
-  if (!f.date) return toast("Pick a date");
-  if (!f.voucher) return toast("Enter the voucher number");
-  if (!(parseFloat(f.amount) > 0)) return toast("Enter an amount greater than zero");
-  if (!f.description) return toast("Add a short description");
-  if (!pages.length) return toast("Add a receipt photo to submit. You can save a draft for now.", 3600);
-  const amt = parseFloat(f.amount);
-  const sameBook = [...local.filter(i => i.status !== "draft" && i.id !== editId && i.category === f.category).map(i => i.voucher), ...data.expenses.filter(e => e.category === f.category && e.status !== "Deleted").map(e => e.voucher)];
-  const dupNote = sameBook.some(v => String(v).toLowerCase() === f.voucher.toLowerCase()) ? " Voucher " + f.voucher + " was already used in " + f.category + "." : "";
-  const c = compute();
-  if (settings().warnOver && c.balance - amt < 0 && !confirm("This is more than your balance (" + fmt(c.balance) + " " + c.currency + "). Submit anyway?")) return;
-  const btn = $("#btnSubmit"); btn.disabled = true; btn.textContent = "Preparing pages…";
-  try {
-    const blobs = []; for (const p of pages) blobs.push(await toBlob(render(p, MAX_SIDE), JPEG_Q));
-    const pdf = await buildPdf(blobs), th = render(pages[0], 160);
-    const old = editId ? local.find(i => i.id === editId) : null, t = iso();
-    const it = Object.assign({}, old || {}, f, { id: editId || newId(), amount: amt.toFixed(fmtDec), pdf, pageData: null, pageCount: pages.length,
-      thumb: th.toDataURL("image/jpeg", 0.6), status: "queued", error: "", createdAt: old ? old.createdAt : t, submittedAt: t });
-    await dbPut(it); resetForm(); await afterChange(); showTab("exp");
-    if (navigator.onLine && connected()) { toast("Saved." + dupNote + " Syncing…", 4200); uploadPending(it.id); }
-    else toast("Saved on this phone." + dupNote + " It will sync when you’re online and signed in.", 4800);
-  } catch (e) { toast("Couldn’t submit: " + e.message, 5000); }
-  finally { btn.disabled = false; btn.textContent = "Submit and upload"; }
+  await dbPut(it);
+  resetForm();
+  await afterChange();
+  showTab("exp");
+  toast("Draft saved locally");
 };
 
-/* ---------- sync: receipt to Drive, row to the sheet, copy by email ---------- */
-const b64 = blob => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(",")[1]); r.onerror = () => rej(r.error); r.readAsDataURL(blob); });
+async function editDraft(it) {
+  resetForm();
+  editId = it.id;
+  cat = it.category || "";
+  $("#fDate").value = it.date || today();
+  $("#fVoucher").value = it.voucher || "";
+  $("#fAmount").value = it.amount || "";
+  $("#fDesc").value = it.description || "";
+  $("#fNote").value = it.note || "";
+  for (const pd of it.pageData || []) {
+    try {
+      const p = await loadFile(pd.blob);
+      p.rot = pd.rot;
+      p.mode = pd.mode;
+      pages.push(p);
+    } catch (e) {}
+  }
+  $("#editBanner").hidden = false;
+  renderCats();
+  drawPages();
+  showTab("new");
+}
+
+$("#btnSubmit").onclick = async () => {
+  const f = form();
+  if (!f.category) return toast("Please select a category.");
+  if (!f.date) return toast("Please select the expense date.");
+  if (!f.voucher) return toast("Please enter the voucher number.");
+  if (!(parseFloat(f.amount) > 0)) return toast("Please enter a valid amount greater than zero.");
+  if (!f.description) return toast("Please provide a short description.");
+  if (!pages.length) return toast("Add a receipt photo to submit. You can save a draft for now.", 3600);
+
+  const amt = parseFloat(f.amount);
+  const sameBook = [
+    ...local.filter(i => i.status !== "draft" && i.id !== editId && i.category === f.category).map(i => i.voucher),
+    ...data.expenses.filter(e => e.category === f.category && e.status !== "Deleted").map(e => e.voucher)
+  ];
+  const dupNote = sameBook.some(v => String(v).toLowerCase() === f.voucher.toLowerCase())
+    ? " (Note: Voucher #" + f.voucher + " was used before in " + f.category + ")."
+    : "";
+
+  const c = compute();
+  if (settings().warnOver && c.balance - amt < 0 && !confirm("This exceeds your balance (" + fmt(c.balance) + " " + c.currency + "). Submit anyway?")) {
+    return;
+  }
+
+  const btn = $("#btnSubmit");
+  btn.disabled = true;
+  btn.textContent = "Processing PDF…";
+
+  try {
+    const blobs = [];
+    for (const p of pages) blobs.push(await toBlob(render(p, MAX_SIDE), JPEG_Q));
+    const pdf = await buildPdf(blobs), th = render(pages[0], 160);
+    const old = editId ? local.find(i => i.id === editId) : null, t = iso();
+    const it = Object.assign({}, old || {}, f, {
+      id: editId || newId(),
+      amount: amt.toFixed(fmtDec),
+      pdf,
+      pageData: null,
+      pageCount: pages.length,
+      thumb: th.toDataURL("image/jpeg", 0.6),
+      status: "queued",
+      error: "",
+      createdAt: old ? old.createdAt : t,
+      submittedAt: t
+    });
+    await dbPut(it);
+    resetForm();
+    await afterChange();
+    showTab("exp");
+
+    if (navigator.onLine && connected()) {
+      toast("Saved" + dupNote + ". Uploading…", 4000);
+      uploadPending(it.id);
+    } else {
+      toast("Saved on phone" + dupNote + ". Will sync when connected.", 4500);
+    }
+  } catch (e) {
+    toast("Could not submit: " + e.message, 5000);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Submit & Upload";
+  }
+};
+
+/* ---------- Sync: Drive, Sheet, Email ---------- */
+const b64 = blob => new Promise((res, rej) => {
+  const r = new FileReader();
+  r.onload = () => res(String(r.result).split(",")[1]);
+  r.onerror = () => rej(r.error);
+  r.readAsDataURL(blob);
+});
+
 let uploading = false;
 async function uploadItem(it) {
-  if (!connected()) throw new Error("Open Settings and enter the script address and access key.");
-  if (!it.pdf) throw new Error("The receipt file is missing on this phone.");
-  const j = await api("addExpense", { id: it.id, date: it.date, voucher: it.voucher, category: it.category, amount: Number(it.amount), description: it.description, note: it.note || "",
-    pages: it.pageCount, by: settings().name || "User", file: { base64: await b64(it.pdf) } });
-  it.webUrl = j.url || ""; it.emailed = j.emailed !== false; it.status = "done"; it.error = ""; it.uploadedAt = iso(); await dbPut(it);
+  if (!connected()) throw new Error("Open Settings and enter script URL and access key.");
+  if (!it.pdf) throw new Error("Receipt file missing on device.");
+
+  const j = await api("addExpense", {
+    id: it.id,
+    date: it.date,
+    voucher: it.voucher,
+    category: it.category,
+    amount: Number(it.amount),
+    description: it.description,
+    note: it.note || "",
+    pages: it.pageCount,
+    by: settings().name || "User",
+    file: { base64: await b64(it.pdf) }
+  });
+
+  it.webUrl = j.url || "";
+  it.emailed = j.emailed !== false;
+  it.status = "done";
+  it.error = "";
+  it.uploadedAt = iso();
+  await dbPut(it);
   return j;
 }
+
 async function uploadPending(only) {
-  if (uploading) return; uploading = true;
+  if (uploading) return;
+  uploading = true;
   try {
     await reloadLocal();
-    const items = local.filter(i => (i.status === "queued" || i.status === "failed") && (!only || i.id === only)).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+    const items = local.filter(i => (i.status === "queued" || i.status === "failed") && (!only || i.id === only))
+                       .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
     for (const it of items) {
-      try { const j = await uploadItem(it); if (j.emailed === false) toast("Saved, but the email copy didn’t send.", 4500); }
-      catch (e) { it.status = "failed"; it.error = e.message; await dbPut(it); if (/Open Settings|Wrong access key/.test(e.message)) break; }
+      try {
+        const j = await uploadItem(it);
+        if (j.emailed === false) toast("Saved to sheet; email notification failed.", 4000);
+      } catch (e) {
+        it.status = "failed";
+        it.error = e.message;
+        await dbPut(it);
+        if (/Open Settings|Wrong access key/i.test(e.message)) break;
+      }
       await afterChange();
     }
     try { if (connected() && navigator.onLine) await refresh(); } catch (e) {}
-  } finally { uploading = false; await afterChange(); }
-}
-async function reqDelete(id) {
-  const reason = prompt("Why should this entry be deleted? The manager will review it.");
-  if (reason === null) return;
-  if (reason.trim().length < 2) return toast("Please give a short reason");
-  try { await api("requestDelete", { id, reason: reason.trim() }); toast("Deletion requested. It still counts until the manager approves.", 4500); await refresh(); renderAll(); }
-  catch (e) { toast(e.message, 5000); }
-}
-async function decide(id, approve) {
-  if (!confirm(approve ? "Delete this entry? It leaves the balance and stays in the sheet marked Deleted." : "Keep this entry?")) return;
-  try { await api("decideDelete", { id, approve }); toast(approve ? "Marked as deleted" : "Entry kept"); await refresh(); renderAll(); }
-  catch (e) { toast(e.message, 5000); }
+  } finally {
+    uploading = false;
+    await afterChange();
+  }
 }
 
-/* ---------- screens ---------- */
+async function reqDelete(id) {
+  const reason = prompt("Reason for deletion (reviewed by manager):");
+  if (reason === null) return;
+  if (reason.trim().length < 2) return toast("Please give a short reason.");
+  try {
+    await api("requestDelete", { id, reason: reason.trim() });
+    toast("Deletion requested for manager review.", 4000);
+    await refresh();
+    renderAll();
+  } catch (e) {
+    toast(e.message, 5000);
+  }
+}
+
+async function decide(id, approve) {
+  if (!confirm(approve ? "Confirm deletion? Amount will leave balance and be marked Deleted." : "Keep this expense active?")) return;
+  try {
+    await api("decideDelete", { id, approve });
+    toast(approve ? "Marked as Deleted" : "Expense kept Active");
+    await refresh();
+    renderAll();
+  } catch (e) {
+    toast(e.message, 5000);
+  }
+}
+
+/* ---------- Views & Rendering ---------- */
 function renderBalance() {
   const box = $("#bal");
-  if (!connected()) { box.classList.remove("neg"); $("#balAmt").textContent = "—"; $("#balWho").textContent = "Petty cash balance"; $("#balSub").textContent = "Open Settings to connect."; return; }
+  if (!connected()) {
+    box.classList.remove("neg");
+    $("#balAmt").textContent = "—";
+    $("#balWho").textContent = "Petty Cash Balance";
+    $("#valRecv").textContent = "—";
+    $("#valSpent").textContent = "—";
+    $("#valCash").textContent = "—";
+    $("#balSub").textContent = "Open Settings to connect to Google Sheet.";
+    return;
+  }
   const c = compute(), mgr = isManager();
   box.classList.toggle("neg", c.balance < 0);
-  $("#balWho").textContent = mgr ? "Balance held by the user" : "Your petty cash balance";
-  $("#balAmt").textContent = fmt(c.balance) + " " + c.currency;
-  const up = data.at ? " · Updated " + new Date(data.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : " · Not synced yet";
-  $("#balSub").textContent = (mgr ? "Paid to user " + fmt(c.paid) + " · Spent " + fmt(c.spent) + " · Cash with you " + fmt(c.cashLeft)
-    : "Received " + fmt(c.paid) + " · Spent " + fmt(c.spent) + (c.drafts ? " · Drafts " + fmt(c.drafts) + " not deducted yet" : "")) + up;
-  $("#curLabel").textContent = "(" + c.currency + ")"; $("#cCur").textContent = "(" + c.currency + ")";
+  $("#balWho").textContent = mgr ? "Balance Held By User" : "Your Petty Cash Balance";
+  $("#balAmt").textContent = fmt(c.balance);
+  $("#curLabel").textContent = c.currency;
+  $("#fAmountCur").textContent = "(" + c.currency + ")";
+  $("#cCur").textContent = "(" + c.currency + ")";
+
+  if (mgr) {
+    $("#lblRecv").textContent = "Paid to User";
+    $("#valRecv").textContent = fmt(c.paid);
+    $("#lblSpent").textContent = "Spent";
+    $("#valSpent").textContent = fmt(c.spent);
+    $("#lblCash").textContent = "Cash in Hand";
+    $("#valCash").textContent = fmt(c.cashLeft);
+  } else {
+    $("#lblRecv").textContent = "Received";
+    $("#valRecv").textContent = fmt(c.paid);
+    $("#lblSpent").textContent = "Spent";
+    $("#valSpent").textContent = fmt(c.spent);
+    $("#lblCash").textContent = "Drafts";
+    $("#valCash").textContent = c.drafts ? fmt(c.drafts) : "0";
+  }
+
+  const up = data.at ? "Updated " + new Date(data.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "Not synced yet";
+  $("#balSub").textContent = up;
 }
+
 function statusChip(it) {
   const srv = it.status === "done" ? data.expenses.find(e => e.id === it.id) : null;
-  if (srv && srv.status === "Deletion requested") return '<span class="chip wait">Deletion requested</span>';
+  if (srv && srv.status === "Deletion requested") return '<span class="chip wait">Deletion Requested</span>';
   if (srv && srv.status === "Deleted") return '<span class="chip bad">Deleted</span>';
-  return it.status === "draft" ? '<span class="chip wait">Draft</span>' : it.status === "done" ? '<span class="chip ok">Synced</span>'
-    : it.status === "failed" ? '<span class="chip bad">Sync failed</span>' : '<span class="chip wait">Waiting to sync</span>';
+  return it.status === "draft" ? '<span class="chip wait">Draft</span>'
+    : it.status === "done" ? '<span class="chip ok">Synced</span>'
+    : it.status === "failed" ? '<span class="chip bad">Sync Failed</span>'
+    : '<span class="chip wait">Waiting to Sync</span>';
 }
+
 function renderExpenses() {
-  const list = $("#expList"); list.innerHTML = "";
+  const list = $("#expList");
+  list.innerHTML = "";
   const drafts = local.filter(i => i.status === "draft").sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
   const rest = local.filter(i => i.status !== "draft").sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const waiting = rest.filter(i => i.status !== "done").length;
-  $("#expCount").textContent = (drafts.length + waiting) ? " (" + (drafts.length + waiting) + ")" : "";
-  $("#expEmpty").hidden = local.length > 0; $("#expTools").hidden = waiting === 0;
-  const sec = t => { const h = document.createElement("h3"); h.className = "sec"; h.textContent = t; list.appendChild(h); };
+  
+  const badge = $("#expCount");
+  const count = drafts.length + waiting;
+  if (count > 0) {
+    badge.textContent = count;
+    badge.hidden = false;
+  } else {
+    badge.hidden = true;
+  }
+
+  $("#expEmpty").hidden = local.length > 0;
+  $("#expTools").hidden = waiting === 0;
+
+  const sec = t => {
+    const h = document.createElement("h3");
+    h.className = "sec";
+    h.style.cssText = "font-size:14px;font-weight:750;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin:18px 0 8px;";
+    h.textContent = t;
+    list.appendChild(h);
+  };
+
   const add = it => {
-    const div = document.createElement("div"); div.className = "item";
-    div.innerHTML = (it.thumb ? '<img alt="" src="' + it.thumb + '">' : '<div class="ph">No photo yet</div>') + '<div class="t"><div><b>' + (it.amount ? esc(it.amount) : "No amount") + "</b> " + statusChip(it) +
-      (it.category ? ' <span class="chip cat">' + esc(it.category) + "</span>" : "") + "</div>" +
-      "<p>" + (it.voucher ? "Voucher " + esc(it.voucher) : "No voucher no") + " · " + esc(it.date || "") + " · " + (it.pageCount || 0) + (it.pageCount === 1 ? " page" : " pages") + '</p><p dir="auto">' + esc(it.description || "No description") + "</p>" +
-      (it.error ? '<div class="err">' + esc(it.error) + "</div>" : "") + '<div class="acts"></div></div>';
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = (it.thumb ? '<img alt="Receipt" src="' + it.thumb + '">' : '<div class="ph">No Photo</div>') +
+      '<div class="t">' +
+        '<div class="item-head">' +
+          '<b>' + (it.amount ? fmt(it.amount) + " " + esc(cur()) : "No Amount") + '</b>' +
+          statusChip(it) +
+        '</div>' +
+        '<p class="desc" dir="auto">' + esc(it.description || "No description") + '</p>' +
+        '<p>' + (it.category ? '<span class="chip cat" style="margin-right:6px;">' + esc(it.category) + '</span>' : '') +
+          (it.voucher ? '#' + esc(it.voucher) : '') + ' · ' + esc(it.date || '') + ' · ' + (it.pageCount || 0) + ' pg</p>' +
+        (it.error ? '<div class="err" style="color:var(--bad);font-size:12.5px;margin-top:4px;">⚠️ ' + esc(it.error) + '</div>' : '') +
+        '<div class="acts"></div>' +
+      '</div>';
+
     const acts = div.querySelector(".acts");
-    const mk = (txt, cls, fn) => { const b = document.createElement("button"); b.type = "button"; b.className = "btn small " + cls; b.textContent = txt; b.onclick = fn; acts.appendChild(b); };
-    if (it.status === "draft") mk("Edit draft", "primary", () => editDraft(it));
-    if (it.status === "queued" || it.status === "failed") mk(it.status === "failed" ? "Retry sync" : "Sync now", "primary", () => uploadPending(it.id));
-    if (it.status === "done" && it.pdf) mk("View receipt", "", () => window.open(URL.createObjectURL(it.pdf), "_blank"));
+    const mk = (txt, cls, fn) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "btn small " + cls;
+      b.textContent = txt;
+      b.onclick = fn;
+      acts.appendChild(b);
+    };
+
+    if (it.status === "draft") mk("Edit Draft", "primary", () => editDraft(it));
+    if (it.status === "queued" || it.status === "failed") mk(it.status === "failed" ? "Retry" : "Sync Now", "primary", () => uploadPending(it.id));
+    if (it.status === "done" && it.pdf) mk("View PDF", "", () => window.open(URL.createObjectURL(it.pdf), "_blank"));
     const srv = it.status === "done" ? data.expenses.find(e => e.id === it.id) : null;
-    if (srv && srv.status === "Active") mk("Request deletion", "danger", () => reqDelete(it.id));
-    mk(it.status === "done" ? "Remove from phone" : "Delete", "danger", async () => {
-      const msg = it.status === "done" ? "Remove this entry from the phone? The sheet entry and receipt stay." : it.status === "draft" ? "Delete this draft?" : "Delete this submitted expense? It has not synced yet.";
-      if (confirm(msg)) { await dbDel(it.id); await afterChange(); }
+    if (srv && srv.status === "Active") mk("Request Delete", "danger", () => reqDelete(it.id));
+    mk(it.status === "done" ? "Clear from Phone" : "Delete", "danger", async () => {
+      const msg = it.status === "done"
+        ? "Remove entry from this phone? The Google Sheet entry and Drive receipt remain safe."
+        : "Delete this " + it.status + "?";
+      if (confirm(msg)) {
+        await dbDel(it.id);
+        await afterChange();
+      }
     });
     list.appendChild(div);
   };
-  if (drafts.length) { sec("Drafts"); drafts.forEach(add); }
-  if (rest.length) { sec("Submitted"); rest.forEach(add); }
+
+  if (drafts.length) { sec("Drafts (" + drafts.length + ")"); drafts.forEach(add); }
+  if (rest.length) { sec("Submitted (" + rest.length + ")"); rest.forEach(add); }
 }
+
 function ledgerRowHtml(label, r, extraHtml) {
-  return '<div class="lrow"><div class="l"><b>' + label + "</b><p>" + esc(r.date) + (r.pending ? " · waiting to sync" : "") + (r.note ? ' · <span dir="auto">' + esc(r.note) + "</span>" : "") +
-    '</p>' + (extraHtml || "") + '</div><div class="r"><b class="' + (r.amount >= 0 ? "pos" : "neg") + '">' + (r.amount >= 0 ? "+" : "−") + fmt(Math.abs(r.amount)) + "</b><small>Balance " + fmt(r.balance) + " " + esc(cur()) + "</small></div></div>";
+  return '<div class="lrow">' +
+    '<div class="l"><b>' + label + '</b><p>' + esc(r.date) + (r.pending ? " · waiting to sync" : "") +
+    (r.note ? ' · <span dir="auto">' + esc(r.note) + '</span>' : '') + '</p>' + (extraHtml || "") + '</div>' +
+    '<div class="r"><b class="' + (r.amount >= 0 ? "pos" : "neg") + '">' + (r.amount >= 0 ? "+" : "−") + fmt(Math.abs(r.amount)) + '</b>' +
+    '<small>Bal ' + fmt(r.balance) + ' ' + esc(cur()) + '</small></div>' +
+  '</div>';
 }
+
 function renderLedger() {
   const out = $("#ledgerOut");
-  if (!connected()) { out.innerHTML = '<div class="empty">Open Settings to connect.</div>'; return; }
+  if (!connected()) {
+    out.innerHTML = '<div class="empty">Connect in Settings to view ledger.</div>';
+    return;
+  }
   const mgr = isManager(), rows = userRows();
   let h = rows.length ? rows.slice().reverse().map(r => {
-    if (r.kind === "cash") return ledgerRowHtml(mgr ? (r.amount >= 0 ? "Paid to user" : "Taken back") : (r.amount >= 0 ? "Cash received" : "Cash taken back"), r);
+    if (r.kind === "cash") {
+      return ledgerRowHtml(mgr ? (r.amount >= 0 ? "Paid to User" : "Cash Taken Back") : (r.amount >= 0 ? "Cash Received" : "Cash Taken Back"), r);
+    }
     let x = "";
     if (r.status === "Deletion requested") x = '<p class="neg">Deletion requested</p>';
-    else if (!mgr && !r.pending) x = '<div class="acts"><button class="btn small danger" data-del="' + esc(r.id) + '" type="button">Request deletion</button></div>';
-    if (mgr && r.webUrl) x += '<p><a href="' + esc(r.webUrl) + '" target="_blank" rel="noopener">Open receipt</a></p>';
-    return ledgerRowHtml(esc(r.category || "Expense") + " · Voucher " + esc(r.voucher), r, x);
-  }).join("") : '<div class="empty">No transactions yet.</div>';
+    else if (!mgr && !r.pending) x = '<div class="acts"><button class="btn small danger" data-del="' + esc(r.id) + '" type="button">Request Deletion</button></div>';
+    if (mgr && r.webUrl) x += '<p><a href="' + esc(r.webUrl) + '" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">View Drive Receipt ↗</a></p>';
+    return ledgerRowHtml(esc(r.category || "Expense") + " #" + esc(r.voucher), r, x);
+  }).join("") : '<div class="empty">No transactions recorded yet.</div>';
+
   if (mgr) {
     const cr = companyRows();
-    h = '<h3 class="sec" style="margin-top:0">User’s ledger</h3>' + h + '<h3 class="sec">Company cash (with you)</h3>' +
-      (cr.length ? cr.slice().reverse().map(r => ledgerRowHtml(r.kind === "recv" ? "Received from company" : r.amount < 0 ? "Paid to user" : "Taken back from user", r)).join("") : '<div class="empty">Nothing recorded yet.</div>');
+    h = '<h3 style="font-size:14px;color:var(--muted);text-transform:uppercase;margin:0 0 10px;">User Ledger</h3>' + h +
+      '<h3 style="font-size:14px;color:var(--muted);text-transform:uppercase;margin:24px 0 10px;">Company Cash Ledger</h3>' +
+      (cr.length ? cr.slice().reverse().map(r => ledgerRowHtml(r.kind === "recv" ? "Received from Company" : r.amount < 0 ? "Paid to User" : "Taken back from User", r)).join("") : '<div class="empty">No company cash transactions.</div>');
   }
   out.innerHTML = h;
 }
 $("#ledgerOut").onclick = e => { const b = e.target.closest("[data-del]"); if (b) reqDelete(b.dataset.del); };
+
 function period() {
   const v = $("#rPeriod").value, d = new Date(), y = d.getFullYear(), m = d.getMonth();
   const day = (yy, mm, dd) => new Date(Date.UTC(yy, mm, dd)).toISOString().slice(0, 10);
@@ -681,6 +1839,7 @@ function period() {
   if (v === "all") return ["", "9999-12-31"];
   return [$("#rFrom").value || "", $("#rTo").value || "9999-12-31"];
 }
+
 function reportData() {
   const [from, to] = period(), rows = userRows();
   const sum = a => a.reduce((t, r) => t + r.amount, 0);
@@ -693,150 +1852,271 @@ function reportData() {
   const f = $("#rCat").value, detail = f ? exps.filter(r => r.category === f) : exps;
   return { from, to, cur: cur(), before, cashIn: sum(cash), byCat, totalExp: -sum(exps), closing: before + sum(inr), detail };
 }
+
 let repMode = "summary";
 function claimHtml(r) {
   const cat = $("#rCat").value, rows = r.detail;
   const from = r.from || (rows[0] && rows[0].date) || "", to = r.to === "9999-12-31" ? (rows.length ? rows[rows.length - 1].date : "") : r.to;
   const nm = (rows.find(x => x.by) || {}).by || settings().name || "";
   const total = rows.reduce((t, x) => t - x.amount, 0);
-  return '<div class="claim" dir="rtl"><p><b>بۆ بەڕێز/ ئەنجومەنی کارگێری</b></p>' +
+  return '<div class="claim" dir="rtl"><p style="font-size:16px;"><b>بۆ بەڕێز/ ئەنجومەنی کارگێری</b></p>' +
     "<p>داواکارم لە بەڕێزتان ئەم بڕە پارانەی لای خوارەوەم بۆ خەرج بکەنەوە کە خەرج کراوە</p>" +
-    '<p dir="ltr" style="text-align:right">' + esc(cat || "All") + " · " + esc(from) + " → " + esc(to) + "</p>" +
+    '<p dir="ltr" style="text-align:right;color:var(--muted);">' + esc(cat || "All Categories") + " · " + esc(from) + " → " + esc(to) + "</p>" +
     '<table><tr><th>ژ</th><th>بڕی پارە</th><th>بابەت</th><th>ژ. وەسڵی دەستی</th><th>بەروار</th>' + (cat ? "" : "<th>Category</th>") + "<th>تێبینی</th></tr>" +
     rows.map((x, i) => "<tr><td>" + (i + 1) + '</td><td class="n">' + fmt(-x.amount) + '</td><td dir="auto">' + esc(x.note) + "</td><td>" + esc(x.voucher) + "</td><td>" + esc(x.date) + "</td>" +
       (cat ? "" : "<td>" + esc(x.category) + "</td>") + '<td dir="auto">' + esc(x.extra) + "</td></tr>").join("") +
     '<tr class="tot"><td></td><td class="n">' + fmt(total) + '</td><td colspan="' + (cat ? 5 : 6) + '">کۆی گشتی · ' + esc(r.cur) + "</td></tr></table>" +
-    '<div class="sig"><span>' + esc(nm) + "</span><span>ناو &amp; واژووی لێپرسراوی ژمێریاری</span></div></div>";
+    '<div class="sig"><span>' + esc(nm) + "</span><span>ناو &amp; واژووی لێپرسراوی ژمێریاری</span></div></div>';
 }
+
 function renderReport() {
   const out = $("#reportOut");
-  if (!connected()) { out.innerHTML = '<div class="empty">Open Settings to connect.</div>'; return; }
+  if (!connected()) {
+    out.innerHTML = '<div class="empty">Connect in Settings to view reports.</div>';
+    return;
+  }
   const r = reportData();
   if (repMode === "claim") { out.innerHTML = claimHtml(r); return; }
-  const per = r.from ? r.from + " to " + (r.to === "9999-12-31" ? "today" : r.to) : "All time";
-  const line = (a, b, cls) => '<tr class="' + (cls || "") + '"><td>' + a + '</td><td class="n">' + b + "</td></tr>";
-  out.innerHTML = '<div class="card"><h4>Petty cash report</h4><p class="hint" style="margin:0">' + esc(per) + " · " + esc(r.cur) + "</p>" +
-    '<table style="margin-top:8px">' + line("Opening balance", fmt(r.before)) + line("Cash received (net)", fmt(r.cashIn)) +
+  const per = r.from ? r.from + " to " + (r.to === "9999-12-31" ? "today" : r.to) : "All Time";
+  const line = (a, b, cls) => '<tr class="' + (cls || "") + '"><td>' + a + '</td><td class="n">' + b + '</td></tr>';
+  out.innerHTML = '<div class="card"><h4>Summary Statistics</h4><p class="hint" style="margin:0">' + esc(per) + " · " + esc(r.cur) + '</p>' +
+    '<table style="margin-top:8px">' + line("Opening Balance", fmt(r.before)) + line("Cash Received (net)", fmt(r.cashIn)) +
     r.byCat.map(k => line("Spent on " + esc(k.cat) + " (" + k.n + ")", "−" + fmt(k.total))).join("") +
-    line("Total spent", "−" + fmt(r.totalExp)) + line("Closing balance", fmt(r.closing), "tot") + "</table></div>" +
-    '<div class="card"><h4>Expenses' + ($("#rCat").value ? " · " + esc($("#rCat").value) : "") + "</h4>" +
+    line("Total Spent", "−" + fmt(r.totalExp)) + line("Closing Balance", fmt(r.closing), "tot") + '</table></div>' +
+    '<div class="card"><h4>Itemized Expenses' + ($("#rCat").value ? " · " + esc($("#rCat").value) : "") + '</h4>' +
     (r.detail.length ? '<table><tr><th>Date</th><th>Voucher</th><th>Category</th><th class="n">Amount</th></tr>' +
-      r.detail.map(x => "<tr><td>" + esc(x.date) + "</td><td>" + esc(x.voucher) + "<br><span class='hint' dir='auto'>" + esc(x.note) + "</span></td><td>" + esc(x.category) + '</td><td class="n">' + fmt(-x.amount) + "</td></tr>").join("") +
-      '<tr class="tot"><td colspan="3">Total</td><td class="n">' + fmt(r.detail.reduce((t, x) => t - x.amount, 0)) + "</td></tr></table>" : '<p class="hint">No expenses in this period.</p>') + "</div>";
+      r.detail.map(x => "<tr><td>" + esc(x.date) + "</td><td>#" + esc(x.voucher) + "<br><span class='hint' dir='auto'>" + esc(x.note) + "</span></td><td>" + esc(x.category) + '</td><td class="n">' + fmt(-x.amount) + "</td></tr>").join("") +
+      '<tr class="tot"><td colspan="3">Total</td><td class="n">' + fmt(r.detail.reduce((t, x) => t - x.amount, 0)) + "</td></tr></table>" : '<p class="hint">No expenses recorded for this period.</p>') + '</div>';
 }
+
 function renderCash() {
   const c = compute(), box = $("#cashSum");
-  const line = (a, b, cls) => '<tr class="' + (cls || "") + '"><td>' + a + '</td><td class="n">' + fmt(b) + "</td></tr>";
-  box.innerHTML = "<h4>Where the money is</h4><table>" + line("Received from the company", c.received) + line("Paid to the user (net)", c.paid) + line("Cash left with you", c.cashLeft, "tot") +
-    line("Spent by the user", c.spent) + line("Balance still held by the user", c.balance, "tot") + '</table><p class="hint">' + esc(c.currency) + "</p>";
+  const line = (a, b, cls) => '<tr class="' + (cls || "") + '"><td>' + a + '</td><td class="n">' + fmt(b) + '</td></tr>';
+  box.innerHTML = "<h4>Company Cash Breakdown</h4><table>" +
+    line("Received from Company", c.received) +
+    line("Paid to User (net)", c.paid) +
+    line("Cash Left with Manager", c.cashLeft, "tot") +
+    line("Spent by User", c.spent) +
+    line("Balance Held by User", c.balance, "tot") +
+    '</table><p class="hint">' + esc(c.currency) + "</p>";
+
   const reqs = data.expenses.filter(e => e.status === "Deletion requested"), dr = $("#delReq");
-  dr.innerHTML = reqs.length ? '<div class="card"><h4>Deletion requests (' + reqs.length + ")</h4>" + reqs.map(e =>
-    '<div class="lrow" style="flex-direction:column"><div><b>' + esc(e.category) + " · Voucher " + esc(e.voucher) + " · " + fmt(e.amount) + "</b><p class=\"hint\" dir=\"auto\" style=\"margin:2px 0\">" + esc(e.date) + " · " + esc(e.description) +
-    '</p><p dir="auto" style="margin:2px 0">Reason: ' + esc(e.reason) + "</p>" + (e.webUrl ? '<p style="margin:2px 0"><a href="' + esc(e.webUrl) + '" target="_blank" rel="noopener">Open receipt</a></p>' : "") + '</div><div class="acts">' +
-    '<button class="btn small danger" data-dec="1" data-id="' + esc(e.id) + '" type="button">Approve deletion</button><button class="btn small" data-dec="0" data-id="' + esc(e.id) + '" type="button">Keep entry</button></div></div>').join("") + "</div>" : "";
+  dr.innerHTML = reqs.length ? '<div class="card"><h4>Pending Deletion Requests (' + reqs.length + ')</h4>' + reqs.map(e =>
+    '<div class="lrow" style="flex-direction:column;margin-bottom:12px;"><div><b>' + esc(e.category) + " #" + esc(e.voucher) + " · " + fmt(e.amount) + ' ' + esc(cur()) + '</b><p class="hint" dir="auto" style="margin:2px 0">' + esc(e.date) + " · " + esc(e.description) +
+    '</p><p dir="auto" style="margin:2px 0;font-weight:600;color:var(--bad);">Reason: ' + esc(e.reason) + '</p>' + (e.webUrl ? '<p style="margin:2px 0"><a href="' + esc(e.webUrl) + '" target="_blank" rel="noopener" style="color:var(--accent);">View Drive Receipt</a></p>' : "") + '</div><div class="acts">' +
+    '<button class="btn small danger" data-dec="1" data-id="' + esc(e.id) + '" type="button">Approve Delete</button><button class="btn small" data-dec="0" data-id="' + esc(e.id) + '" type="button">Keep Entry</button></div></div>').join("") + "</div>" : "";
 }
 $("#delReq").onclick = e => { const b = e.target.closest("[data-dec]"); if (b) decide(b.dataset.id, b.dataset.dec === "1"); };
+
 $("#btnGive").onclick = async () => {
-  if (!isManager()) return toast("Only the manager can record cash");
+  if (!isManager()) return toast("Only the manager can record cash movements.");
   const type = $("#cType").value, amt = parseFloat($("#cAmt").value), date = $("#cDate").value, note = $("#cNote").value.trim();
-  if (!(amt > 0)) return toast("Enter an amount greater than zero");
-  if (!date) return toast("Pick a date");
-  const what = type === "recv" ? "Record " + fmt(amt) + " received from the company?" : type === "paid" ? "Record " + fmt(amt) + " paid to the user?" : "Record " + fmt(amt) + " taken back from the user?";
+  if (!(amt > 0)) return toast("Enter an amount greater than zero.");
+  if (!date) return toast("Select a date.");
+  const what = type === "recv" ? "Record " + fmt(amt) + " received from the company?" : type === "paid" ? "Record " + fmt(amt) + " paid to user?" : "Record " + fmt(amt) + " taken back from user?";
   if (!confirm(what)) return;
-  const btn = $("#btnGive"); btn.disabled = true;
+  const btn = $("#btnGive");
+  btn.disabled = true;
   try {
     await api("addCash", { id: newId(), type, date, amount: amt, note, by: settings().name || "Manager" });
-    $("#cAmt").value = ""; $("#cNote").value = ""; toast("Saved to the sheet");
-    await refresh(); renderAll();
-  } catch (e) { toast(e.message, 5000); }
-  finally { btn.disabled = false; }
+    $("#cAmt").value = "";
+    $("#cNote").value = "";
+    toast("Cash movement saved to Google Sheet.");
+    await refresh();
+    renderAll();
+  } catch (e) {
+    toast(e.message, 5000);
+  } finally {
+    btn.disabled = false;
+  }
 };
 
-function csv(rows) { return rows.map(r => r.map(v => { v = String(v == null ? "" : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(",")).join("\r\n"); }
+function csv(rows) {
+  return rows.map(r => r.map(v => {
+    v = String(v == null ? "" : v);
+    return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  }).join(",")).join("\r\n");
+}
 function download(name, text) {
-  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + text], { type: "text/csv" })); a.download = name;
-  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob(["\ufeff" + text], { type: "text/csv" }));
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }
 $("#btnLedgerCsv").onclick = () => download("ledger.csv", csv([["Date", "Type", "Voucher", "Category", "Description", "Amount (" + cur() + ")", "Balance"],
   ...userRows().map(r => [r.date, r.kind === "cash" ? "Cash" : "Expense", r.voucher || "", r.category || "", r.note, r.amount.toFixed(fmtDec), r.balance.toFixed(fmtDec)])]));
 $("#btnRepCsv").onclick = () => { const r = reportData(); download("report.csv", csv([["Date", "Voucher", "Category", "Description", "Amount (" + r.cur + ")"], ...r.detail.map(x => [x.date, x.voucher, x.category, x.note, (-x.amount).toFixed(fmtDec)])])); };
-$("#btnClaim").onclick = () => { repMode = repMode === "claim" ? "summary" : "claim"; $("#btnClaim").textContent = repMode === "claim" ? "Summary" : "Claim form"; renderReport(); };
-$("#btnLedgerPrint").onclick = () => window.print(); $("#btnRepPrint").onclick = () => window.print();
+$("#btnClaim").onclick = () => {
+  repMode = repMode === "claim" ? "summary" : "claim";
+  $("#btnClaim").textContent = repMode === "claim" ? "Summary View" : "Claim Form (Kurdish)";
+  renderReport();
+};
+$("#btnLedgerPrint").onclick = () => window.print();
+$("#btnRepPrint").onclick = () => window.print();
 $("#rPeriod").onchange = () => { $("#rCustom").hidden = $("#rPeriod").value !== "custom"; renderReport(); };
 for (const id of ["#rCat", "#rFrom", "#rTo"]) $(id).onchange = renderReport;
 
 function fillCatSelect() {
   const sel = $("#rCat"), v = sel.value;
-  sel.innerHTML = '<option value="">All</option>' + CATEGORIES.map(c => "<option>" + esc(c) + "</option>").join(""); sel.value = v;
+  sel.innerHTML = '<option value="">All Categories</option>' + CATEGORIES.map(c => "<option>" + esc(c) + "</option>").join("");
+  sel.value = v;
 }
+
 function applyRole() {
   const m = isManager();
-  $("#tabNew").hidden = m; $("#tabExp").hidden = m; $("#tabCash").hidden = !m;
+  $("#tabCash").hidden = !m;
   if (m && (curTab === "new" || curTab === "exp")) showTab("cash");
   else if (!m && curTab === "cash") showTab("new");
 }
+
 function renderAll() {
   fmtDec = decs(cur());
-  for (const id of ["#fAmount", "#cAmt"]) { $(id).step = fmtDec ? "0.01" : "1"; $(id).placeholder = fmtDec ? "0.00" : "0"; }
-  renderCats(); fillCatSelect(); renderBalance(); renderExpenses(); renderLedger(); renderReport(); renderCash(); applyRole(); renderConn();
+  for (const id of ["#fAmount", "#cAmt"]) {
+    $(id).step = fmtDec ? "0.01" : "1";
+    $(id).placeholder = fmtDec ? "0.00" : "0";
+  }
+  renderCats();
+  fillCatSelect();
+  renderBalance();
+  renderExpenses();
+  renderLedger();
+  renderReport();
+  renderCash();
+  applyRole();
+  renderConn();
 }
+
 $("#btnUploadAll").onclick = () => uploadPending();
 $("#btnRefresh").onclick = () => syncNow(true);
 
-/* ---------- tabs, settings, network ---------- */
-const TABS = { new: ["pNew", "tabNew"], exp: ["pExp", "tabExp"], ledger: ["pLedger", "tabLedger"], report: ["pReport", "tabReport"], cash: ["pCash", "tabCash"] };
+/* ---------- Navigation & Tabs ---------- */
+const TABS = {
+  new: ["pNew", "tabNew"],
+  exp: ["pExp", "tabExp"],
+  ledger: ["pLedger", "tabLedger"],
+  report: ["pReport", "tabReport"],
+  cash: ["pCash", "tabCash"]
+};
+
 function showTab(t) {
   curTab = t;
-  for (const k in TABS) { $("#" + TABS[k][0]).hidden = k !== t; $("#" + TABS[k][1]).setAttribute("aria-selected", String(k === t)); }
-  $("#saveBar").hidden = t !== "new"; window.scrollTo(0, 0);
+  for (const k in TABS) {
+    $("#" + TABS[k][0]).hidden = k !== t;
+    $("#" + TABS[k][1]).setAttribute("aria-selected", String(k === t));
+  }
+  $("#saveBar").hidden = t !== "new";
+  window.scrollTo({ top: 0, behavior: "smooth" });
   if (t === "ledger" || t === "report" || t === "cash") syncNow();
 }
 for (const k in TABS) $("#" + TABS[k][1]).onclick = () => showTab(k);
 
+/* ---------- Settings Dialog ---------- */
 function renderConn() {
-  const el = $("#connState"); if (!el) return;
-  el.textContent = !connected() ? "Enter the script address and key, then tap Test connection." : role ? "Connected as " + (role === "manager" ? "the manager" : "the expense user") + "." : "Saved. Tap Test connection.";
-  $("#mgrTools").hidden = !isManager(); $("#mgrTools2").hidden = !isManager();
+  const el = $("#connState");
+  if (!el) return;
+  el.textContent = !connected()
+    ? "Enter the script address and key, then tap Test connection."
+    : role ? "Connected as " + (role === "manager" ? "Manager (Full Access)" : "Expense User") + "."
+    : "Settings saved. Tap Test connection to verify.";
+  $("#mgrTools").hidden = !isManager();
+  $("#mgrTools2").hidden = !isManager();
 }
+
 function fillSettings() {
-  const s = settings(); $("#sName").value = s.name; $("#sUrl").value = s.url; $("#sKey").value = s.key; $("#sWarn").checked = !!s.warnOver; renderConn();
+  const s = settings();
+  $("#sName").value = s.name;
+  $("#sUrl").value = s.url;
+  $("#sKey").value = s.key;
+  $("#sWarn").checked = !!s.warnOver;
+  renderConn();
 }
-const readSettings = () => ({ name: $("#sName").value.trim(), url: $("#sUrl").value.trim(), key: $("#sKey").value.trim(), warnOver: $("#sWarn").checked });
+
+const readSettings = () => ({
+  name: $("#sName").value.trim(),
+  url: $("#sUrl").value.trim(),
+  key: $("#sKey").value.trim(),
+  warnOver: $("#sWarn").checked
+});
+
 $("#btnSettings").onclick = () => { fillSettings(); $("#dSet").showModal(); };
+$("#btnSetClose").onclick = () => $("#dSet").close();
+
 $("#btnTest").onclick = async () => {
-  saveSettings(readSettings()); renderConn();
-  try { await refresh(); renderAll(); toast("Connected as " + (role === "manager" ? "the manager" : "the expense user")); }
-  catch (e) { toast(e.message, 5000); }
+  saveSettings(readSettings());
+  renderConn();
+  try {
+    await refresh();
+    renderAll();
+    toast("Connected as " + (role === "manager" ? "Manager" : "Expense User"));
+  } catch (e) {
+    toast(e.message, 5000);
+  }
 };
-$("#btnSetSave").onclick = async () => { saveSettings(readSettings()); $("#dSet").close(); await start2(); toast("Settings saved"); };
+
+$("#btnSetSave").onclick = async () => {
+  saveSettings(readSettings());
+  $("#dSet").close();
+  await start2();
+  toast("Settings saved");
+};
+
 $("#btnLink").onclick = async () => {
   try {
     const j = await api("keys"), l = setupLink(j.userKey);
-    try { await navigator.clipboard.writeText(l); toast("Setup link copied. Send it only to the expense user.", 4500); } catch (e) { prompt("Copy this setup link:", l); }
-  } catch (e) { toast(e.message, 5000); }
+    try { await navigator.clipboard.writeText(l); toast("Setup link copied to clipboard.", 4000); }
+    catch (e) { prompt("Copy this setup link:", l); }
+  } catch (e) {
+    toast(e.message, 5000);
+  }
 };
+
 $("#btnRotate").onclick = async () => {
-  if (!confirm("This signs the expense user’s phone out until you send them the new setup link. Continue?")) return;
+  if (!confirm("This invalidates the current user key and signs out the expense user until they open the new setup link. Continue?")) return;
   try {
     const j = await api("rotateUserKey"), l = setupLink(j.userKey);
-    try { await navigator.clipboard.writeText(l); toast("New key created. The new setup link is copied.", 5000); } catch (e) { prompt("New setup link:", l); }
-  } catch (e) { toast(e.message, 5000); }
+    try { await navigator.clipboard.writeText(l); toast("New key generated & setup link copied.", 5000); }
+    catch (e) { prompt("New setup link:", l); }
+  } catch (e) {
+    toast(e.message, 5000);
+  }
 };
-function net() { const on = navigator.onLine; $("#net .dot").classList.toggle("on", on); $("#netTxt").textContent = on ? "Online" : "Offline"; }
-window.addEventListener("online", () => { net(); if (connected()) { uploadPending(); syncNow(); } });
+
+function net() {
+  const on = navigator.onLine;
+  $("#net .dot").classList.toggle("on", on);
+  $("#netTxt").textContent = on ? "Online" : "Offline";
+}
+window.addEventListener("online", () => {
+  net();
+  if (connected()) { uploadPending(); syncNow(); }
+});
 window.addEventListener("offline", net);
 
 async function start2() {
-  cacheLoad(); renderAll();
-  if (connected() && navigator.onLine) { await syncNow(); await uploadPending(); }
+  cacheLoad();
+  renderAll();
+  if (connected() && navigator.onLine) {
+    await syncNow();
+    await uploadPending();
+  }
 }
+
 (async function start() {
   const applied = applySetupLink();
-  $("#fDate").value = today(); $("#cDate").value = today(); net(); fillSettings(); drawPages();
-  await reloadLocal(); await start2();
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
-  if (applied) toast("Setup applied. You’re connected.", 4500);
-  else if (!connected()) setTimeout(() => toast("Open Settings to connect", 4000), 600);
+  $("#fDate").value = today();
+  $("#cDate").value = today();
+  net();
+  fillSettings();
+  drawPages();
+  await reloadLocal();
+  await start2();
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  }
+  if (applied) toast("Setup link applied. You are connected.", 4500);
+  else if (!connected()) setTimeout(() => toast("Tap Settings (top right) to connect.", 4000), 700);
 })();
 </script>
 </body>

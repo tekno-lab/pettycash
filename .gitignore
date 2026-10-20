@@ -1,0 +1,8 @@
+node_modules/
+backend/
+sheets-backend/
+bun.lock
+bun.lockb
+.env
+.env.local
+.DS_Store
