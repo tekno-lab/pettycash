@@ -1866,7 +1866,7 @@ function claimHtml(r) {
     rows.map((x, i) => "<tr><td>" + (i + 1) + '</td><td class="n">' + fmt(-x.amount) + '</td><td dir="auto">' + esc(x.note) + "</td><td>" + esc(x.voucher) + "</td><td>" + esc(x.date) + "</td>" +
       (cat ? "" : "<td>" + esc(x.category) + "</td>") + '<td dir="auto">' + esc(x.extra) + "</td></tr>").join("") +
     '<tr class="tot"><td></td><td class="n">' + fmt(total) + '</td><td colspan="' + (cat ? 5 : 6) + '">کۆی گشتی · ' + esc(r.cur) + "</td></tr></table>" +
-    '<div class="sig"><span>' + esc(nm) + "</span><span>ناو &amp; واژووی لێپرسراوی ژمێریاری</span></div></div>';
+    '<div class="sig"><span>' + esc(nm) + '</span><span>' + "ناو &amp; واژووی لێپرسراوی ژمێریاری" + '</span></div></div>';
 }
 
 function renderReport() {

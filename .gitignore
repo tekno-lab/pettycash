@@ -1,6 +1,8 @@
-node_modules/
+*.gs
 backend/
 sheets-backend/
+public/
+node_modules/
 bun.lock
 bun.lockb
 .env
