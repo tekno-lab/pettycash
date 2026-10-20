@@ -1,0 +1,8 @@
+{
+  "name": "Petty Cash",
+  "description": "Petty Cash Management System - PWA for tracking expenses, receipts, and cash ledger",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ],
+  "permissions": []
+}

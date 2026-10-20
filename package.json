@@ -1,0 +1,14 @@
+{
+  "name": "pettycash",
+  "version": "1.0.0",
+  "description": "Petty Cash Management System - PWA for tracking expenses, receipts, and cash ledger",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "echo 'Ready for GitHub Pages deployment'"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
