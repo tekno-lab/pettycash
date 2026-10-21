@@ -70,6 +70,7 @@ body{
   display:flex;
   flex-direction:column;
   overscroll-behavior-y:none;
+  transition:background-color 0.4s ease;
 }
 
 /* App Header */
@@ -383,7 +384,8 @@ main{
 }
 .cats button{
   background:var(--surface);
-  border:1.5px solid var(--line);
+  border:none;
+  outline:none;
   color:var(--ink);
   border-radius:14px;
   padding:14px 6px;
@@ -395,14 +397,15 @@ main{
   flex-direction:column;
   align-items:center;
   gap:4px;
-  box-shadow:var(--card-shadow);
+  box-shadow:0 1px 4px rgba(0, 0, 0, 0.06);
 }
 .cats button:active{transform:scale(0.97)}
 .cats button[aria-checked="true"]{
-  background:var(--accent-soft);
-  border-color:var(--accent);
-  color:var(--accent);
-  box-shadow:0 0 0 2px var(--accent);
+  background:var(--accent);
+  border:none;
+  outline:none;
+  color:#ffffff;
+  box-shadow:0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
 /* Form Styles */
@@ -928,23 +931,27 @@ dialog.dlg-scanner {
   position:fixed;
   left:50%;
   transform:translateX(-50%);
-  bottom:calc(85px + env(safe-area-inset-bottom, 0px));
+  top:calc(18px + env(safe-area-inset-top, 0px));
   background:color-mix(in srgb, var(--ink) 95%, transparent);
-  color:var(--bg);
-  padding:12px 20px;
+  color:#ffffff;
+  padding:12px 22px;
   border-radius:99px;
-  font-size:14px;
-  font-weight:600;
-  z-index:90;
+  font-size:14.5px;
+  font-weight:700;
+  z-index:999999;
   max-width:92vw;
   text-align:center;
-  box-shadow:var(--elevated-shadow);
+  box-shadow:0 10px 30px rgba(0, 0, 0, 0.35);
   display:flex;
   align-items:center;
-  gap:8px;
-  animation:pop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  gap:10px;
+  pointer-events:none;
+  animation:toastSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
-@keyframes pop{0%{opacity:0;transform:translate(-50%, 15px) scale(0.95)}100%{opacity:1;transform:translate(-50%, 0) scale(1)}}
+@keyframes toastSlideIn{
+  0%{opacity:0;transform:translate(-50%, -15px) scale(0.96)}
+  100%{opacity:1;transform:translate(-50%, 0) scale(1)}
+}
 
 /* Kurdish Claim Form */
 .claim{font-size:14px;line-height:1.7}
@@ -1590,17 +1597,58 @@ function getCompanyPalette(name) {
 }
 
 function updateCompanyTheme() {
-  const panel = $("#pNew");
-  if (!panel) return;
   const pal = getCompanyPalette(cat);
+  const panel = $("#pNew");
+  const saveBar = $("#saveBar");
+  const nav = $("nav.mobile-nav");
+  const header = $("header");
+  const main = $("main");
+
   if (pal && cat) {
-    panel.style.backgroundColor = pal.softBg;
-    panel.style.border = "1.5px solid " + pal.border;
-    panel.style.boxShadow = "0 8px 24px " + (pal.softBg.length === 9 ? pal.softBg : pal.softBg + "30");
+    const bg = pal.softBg;
+    document.documentElement.style.backgroundColor = bg;
+    document.documentElement.style.setProperty("--bg", bg);
+    document.body.style.backgroundColor = bg;
+    if (main) main.style.backgroundColor = "transparent";
+    if (header) {
+      header.style.backgroundColor = bg;
+      header.style.borderBottom = "none";
+    }
+    if (panel) {
+      panel.style.backgroundColor = "transparent";
+      panel.style.border = "none";
+      panel.style.boxShadow = "none";
+    }
+    if (saveBar) {
+      saveBar.style.backgroundColor = bg;
+      saveBar.style.borderTop = "none";
+    }
+    if (nav) {
+      nav.style.backgroundColor = bg;
+      nav.style.borderTop = "none";
+    }
   } else {
-    panel.style.backgroundColor = "";
-    panel.style.border = "";
-    panel.style.boxShadow = "";
+    document.documentElement.style.backgroundColor = "";
+    document.documentElement.style.removeProperty("--bg");
+    document.body.style.backgroundColor = "";
+    if (main) main.style.backgroundColor = "";
+    if (header) {
+      header.style.backgroundColor = "";
+      header.style.borderBottom = "";
+    }
+    if (panel) {
+      panel.style.backgroundColor = "";
+      panel.style.border = "";
+      panel.style.boxShadow = "";
+    }
+    if (saveBar) {
+      saveBar.style.backgroundColor = "";
+      saveBar.style.borderTop = "";
+    }
+    if (nav) {
+      nav.style.backgroundColor = "";
+      nav.style.borderTop = "";
+    }
   }
 }
 
@@ -1937,21 +1985,18 @@ const dbPut = it => dbTx("readwrite", s => s.put(it));
 const dbDel = id => dbTx("readwrite", s => s.delete(id));
 
 /* ---------- helpers ---------- */
-function toast(msg, ms = 3200) {
+function toast(msg, ms = 3600) {
   document.querySelectorAll(".toast").forEach(t => t.remove());
   const t = document.createElement("div");
   t.className = "toast";
   t.innerHTML = `<span>${esc(msg)}</span>`;
-  const openDlg = document.querySelector("dialog[open]");
-  if (openDlg) {
-    t.style.position = "absolute";
-    t.style.bottom = "16px";
-    t.style.zIndex = "999";
-    openDlg.appendChild(t);
-  } else {
-    document.body.appendChild(t);
-  }
-  setTimeout(() => t.remove(), ms);
+  document.body.appendChild(t);
+  setTimeout(() => {
+    t.style.transition = "opacity 0.25s ease, transform 0.25s ease";
+    t.style.opacity = "0";
+    t.style.transform = "translate(-50%, -12px) scale(0.96)";
+    setTimeout(() => t.remove(), 280);
+  }, ms);
 }
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const iso = () => new Date().toISOString();
@@ -2032,10 +2077,156 @@ function getFullCorners(canvas) {
   };
 }
 
+function detectDocumentCornersSmart(canvas) {
+  const W = canvas.width, H = canvas.height;
+  const scale = Math.min(1, 480 / Math.max(W, H));
+  const sw = Math.max(10, Math.round(W * scale));
+  const sh = Math.max(10, Math.round(H * scale));
+  const sc = document.createElement("canvas");
+  sc.width = sw; sc.height = sh;
+  const sctx = sc.getContext("2d", { willReadFrequently: true });
+  sctx.drawImage(canvas, 0, 0, sw, sh);
+  const imgData = sctx.getImageData(0, 0, sw, sh);
+  const data = imgData.data;
+
+  // 1. Grayscale luminance
+  const gray = new Float32Array(sw * sh);
+  for (let i = 0, j = 0; i < data.length; i += 4, j++) {
+    gray[j] = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+  }
+
+  // 2. Sobel gradients
+  const grad = new Float32Array(sw * sh);
+  let maxGrad = 0;
+  for (let y = 1; y < sh - 1; y++) {
+    for (let x = 1; x < sw - 1; x++) {
+      const idx = y * sw + x;
+      const gx = -gray[idx - sw - 1] + gray[idx - sw + 1]
+                 -2 * gray[idx - 1]   + 2 * gray[idx + 1]
+                 -gray[idx + sw - 1] + gray[idx + sw + 1];
+      const gy = -gray[idx - sw - 1] - 2 * gray[idx - sw] - gray[idx - sw + 1]
+                 +gray[idx + sw - 1] + 2 * gray[idx + sw] + gray[idx + sw + 1];
+      const mag = Math.hypot(gx, gy);
+      grad[idx] = mag;
+      if (mag > maxGrad) maxGrad = mag;
+    }
+  }
+
+  if (maxGrad < 14) return null; // Very low contrast image
+
+  const threshold = Math.max(12, maxGrad * 0.20);
+  const cx = sw / 2, cy = sh / 2;
+  const numRays = 72;
+  const topPts = [], rightPts = [], bottomPts = [], leftPts = [];
+
+  for (let r = 0; r < numRays; r++) {
+    const angle = (r * 360 / numRays) * (Math.PI / 180);
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const maxDist = Math.min(
+      cos > 0 ? (sw - 2 - cx) / cos : (2 - cx) / cos,
+      sin > 0 ? (sh - 2 - cy) / sin : (2 - cy) / sin
+    );
+
+    let foundPt = null;
+    for (let dist = Math.min(maxDist, 14); dist < maxDist; dist += 2) {
+      const px = Math.round(cx + cos * dist);
+      const py = Math.round(cy + sin * dist);
+      if (px < 1 || px >= sw - 1 || py < 1 || py >= sh - 1) break;
+      if (grad[py * sw + px] >= threshold) {
+        foundPt = { x: px / scale, y: py / scale };
+        break;
+      }
+    }
+
+    if (foundPt) {
+      const deg = (r * 360 / numRays) % 360;
+      if (deg >= 45 && deg < 135) bottomPts.push(foundPt);
+      else if (deg >= 135 && deg < 225) leftPts.push(foundPt);
+      else if (deg >= 225 && deg < 315) topPts.push(foundPt);
+      else rightPts.push(foundPt);
+    }
+  }
+
+  function fitLine(points, isVertical) {
+    if (points.length < 3) return null;
+    let sumX = 0, sumY = 0, sumXX = 0, sumYY = 0, sumXY = 0;
+    const N = points.length;
+    for (const p of points) {
+      sumX += p.x; sumY += p.y;
+      sumXX += p.x * p.x; sumYY += p.y * p.y;
+      sumXY += p.x * p.y;
+    }
+    if (!isVertical) {
+      const denom = N * sumXX - sumX * sumX;
+      if (Math.abs(denom) < 1e-4) return { a: 1, b: 0, c: -(sumX / N) };
+      const m = (N * sumXY - sumX * sumY) / denom;
+      const k = (sumY - m * sumX) / N;
+      return { a: m, b: -1, c: k };
+    } else {
+      const denom = N * sumYY - sumY * sumY;
+      if (Math.abs(denom) < 1e-4) return { a: 0, b: 1, c: -(sumY / N) };
+      const m = (N * sumXY - sumX * sumY) / denom;
+      const k = (sumX - m * sumY) / N;
+      return { a: 1, b: -m, c: -k };
+    }
+  }
+
+  function intersectLines(l1, l2) {
+    if (!l1 || !l2) return null;
+    const d = l1.a * l2.b - l1.b * l2.a;
+    if (Math.abs(d) < 1e-6) return null;
+    return {
+      x: (l1.b * l2.c - l2.b * l1.c) / d,
+      y: (l2.a * l1.c - l1.a * l2.c) / d
+    };
+  }
+
+  const lTop = fitLine(topPts, false);
+  const lBot = fitLine(bottomPts, false);
+  const lLeft = fitLine(leftPts, true);
+  const lRight = fitLine(rightPts, true);
+
+  const tl = intersectLines(lTop, lLeft);
+  const tr = intersectLines(lTop, lRight);
+  const br = intersectLines(lBot, lRight);
+  const bl = intersectLines(lBot, lLeft);
+
+  if (!tl || !tr || !br || !bl) return null;
+
+  const marginX = W * 0.08, marginY = H * 0.08;
+  const isInside = p => p.x >= -marginX && p.x <= W + marginX && p.y >= -marginY && p.y <= H + marginY;
+  if (!isInside(tl) || !isInside(tr) || !isInside(br) || !isInside(bl)) return null;
+
+  const clamp = p => ({
+    x: Math.max(0, Math.min(W, Math.round(p.x))),
+    y: Math.max(0, Math.min(H, Math.round(p.y)))
+  });
+
+  const res = {
+    topLeft: clamp(tl),
+    topRight: clamp(tr),
+    bottomRight: clamp(br),
+    bottomLeft: clamp(bl)
+  };
+
+  const area = 0.5 * Math.abs(
+    (res.topLeft.x * res.topRight.y - res.topRight.x * res.topLeft.y) +
+    (res.topRight.x * res.bottomRight.y - res.bottomRight.x * res.topRight.y) +
+    (res.bottomRight.x * res.bottomLeft.y - res.bottomLeft.x * res.bottomRight.y) +
+    (res.bottomLeft.x * res.topLeft.y - res.topLeft.x * res.bottomLeft.y)
+  );
+  if (area < (W * H * 0.15) || area > (W * H * 0.98)) return null;
+
+  return res;
+}
+
 async function detectDocCorners(canvas) {
-  if (window.scanic && typeof window.scanic.scanDocument === "function") {
+  // Pass 1: Scanic detector if loaded
+  const sc = window.scanic || globalThis.scanic;
+  if (sc && typeof sc.scanDocument === "function") {
     try {
-      const res = await window.scanic.scanDocument(canvas, {
+      const res = await sc.scanDocument(canvas, {
         mode: "detect",
         maxProcessingDimension: 900
       });
@@ -2043,9 +2234,19 @@ async function detectDocCorners(canvas) {
         return res.corners;
       }
     } catch (e) {
-      console.warn("Scanic detect notice:", e);
+      console.warn("Scanic edge detector notice:", e);
     }
   }
+
+  // Pass 2: Smart boundary ray line-fitting detector
+  try {
+    const smartCorners = detectDocumentCornersSmart(canvas);
+    if (smartCorners) return smartCorners;
+  } catch (e) {
+    console.warn("Smart edge detector notice:", e);
+  }
+
+  // Pass 3: Inset 6% border fallback framing the receipt
   return getDefaultInsetCorners(canvas);
 }
 
@@ -2394,32 +2595,65 @@ $("#btnScannerApply").onclick = async () => {
     raw: currentScannerRaw,
     corners: corners,
     warped: warped,
-    mode: currentScannerMode,
+    mode: currentScannerMode || "color",
     rot: 0
   };
   closeScanner(scannedPage);
-  toast("✓ " + (t("pageOf") || "Page") + " " + (pages.length) + " scanned!");
 };
 
 async function processUploadedFiles(files) {
+  let addedCount = 0;
+
   for (let idx = 0; idx < files.length; idx++) {
     const f = files[idx];
     try {
       const raw = await loadRawImage(f);
-      const savedPage = await startDocumentScanner({
+      toast(lang === "ku" ? "🔍 پشکنینی لێوارەکانی بەڵگەنامە…" : "🔍 Auto-detecting document edges…", 1400);
+      const corners = await detectDocCorners(raw);
+
+      // Open the interactive Microsoft Teams-style scanner modal
+      const scannedPage = await startDocumentScanner({
         raw,
+        corners,
+        mode: "color", // Vibrant natural color by default!
         pageIndex: idx + 1,
-        totalPages: files.length,
-        mode: "color"
+        totalPages: files.length
       });
-      if (savedPage) {
-        pages.push(savedPage);
+
+      if (scannedPage) {
+        pages.push(scannedPage);
+        addedCount++;
         drawPages();
       }
     } catch (e) {
-      console.error("Photo processing error:", e);
-      toast(t("scanErr") || "Could not read that photo file.");
+      console.error("Scanner workflow error:", e);
+      try {
+        const raw = await loadRawImage(f);
+        pages.push({
+          raw,
+          corners: getFullCorners(raw),
+          warped: raw,
+          mode: "color",
+          rot: 0
+        });
+        addedCount++;
+        drawPages();
+      } catch (err2) {
+        toast(t("scanErr") || "Could not read that photo file.");
+      }
     }
+  }
+
+  drawPages();
+
+  if (addedCount > 0) {
+    navigator.vibrate?.([30, 50]);
+    toast(
+      lang === "ku" 
+        ? `✓ ${addedCount} لاپەڕەی پسوڵە بە ڕەنگی تەواو پشکنرا و زیادکرا!` 
+        : `✓ ${addedCount} receipt page${addedCount > 1 ? "s" : ""} scanned & attached in full color!`,
+      4000
+    );
   }
 }
 
@@ -2692,16 +2926,17 @@ function renderCats() {
     b.type = "button";
     b.setAttribute("role", "radio");
     b.setAttribute("aria-checked", String(isSel));
+    b.style.border = "none";
+    b.style.outline = "none";
     if (pal) {
       if (isSel) {
-        b.style.borderColor = pal.border;
         b.style.backgroundColor = pal.accent;
         b.style.color = "#ffffff";
-        b.style.boxShadow = "0 4px 14px " + (pal.accent.length === 7 ? pal.accent + "55" : "rgba(0,0,0,0.2)");
+        b.style.boxShadow = "0 6px 16px " + (pal.accent.length === 7 ? pal.accent + "45" : "rgba(0,0,0,0.25)");
       } else {
-        b.style.borderColor = pal.border;
         b.style.backgroundColor = pal.badge;
         b.style.color = pal.text;
+        b.style.boxShadow = "0 1px 4px rgba(0, 0, 0, 0.06)";
       }
     }
     b.innerHTML = `<span>${esc(c)}</span>`;
@@ -2733,33 +2968,100 @@ $("#btnNewForm").onclick = resetForm;
 
 async function serPages() {
   const out = [];
-  for (const p of pages) out.push({ blob: await toBlob(p.src, 0.85), rot: p.rot, mode: p.mode });
+  for (const p of pages) {
+    try {
+      const srcCanvas = p.warped || p.raw || p.src || render(p, 1600);
+      const blob = await toBlob(srcCanvas, 0.85);
+      out.push({
+        blob,
+        corners: p.corners || null,
+        rot: p.rot || 0,
+        mode: p.mode || "color"
+      });
+    } catch (e) {
+      console.warn("Error serializing page:", e);
+    }
+  }
   return out;
 }
 async function reloadLocal() { local = await dbAll(); }
 async function afterChange() { await reloadLocal(); renderAll(); }
 
 $("#btnDraft").onclick = async () => {
+  const btn = $("#btnDraft");
+  const oldText = btn.textContent;
   const f = form();
   if (!f.category && !f.voucher && !f.amount && !f.description && !f.note && !pages.length) {
-    return toast("Fill in details or add photos before saving draft.");
+    navigator.vibrate?.([40, 50]);
+    $("#fAmount").focus();
+    return toast(lang === "ku" ? "⚠️ تکایە بڕی پارە، کۆمپانیا یان وێنەی پسوڵە دابنێ پێش پاشەکەوتکردن." : "⚠️ Please enter an amount, select a company, or attach a photo before saving draft.", 3500);
   }
-  const old = editId ? local.find(i => i.id === editId) : null, t = iso();
-  const it = Object.assign({}, old || {}, f, {
-    id: editId || newId(),
-    status: "draft",
-    pageData: await serPages(),
-    pageCount: pages.length,
-    thumb: pages[0] ? render(pages[0], 160).toDataURL("image/jpeg", 0.6) : "",
-    updatedAt: t,
-    createdAt: old ? old.createdAt : t,
-    error: ""
-  });
-  await dbPut(it);
-  resetForm();
-  await afterChange();
-  showTab("exp");
-  toast("Draft saved locally");
+  try {
+    btn.disabled = true;
+    btn.style.transition = "all 0.2s ease";
+    btn.style.backgroundColor = "var(--ok)";
+    btn.style.color = "#ffffff";
+    btn.textContent = lang === "ku" ? "✓ پاشەکەوت دەکرێت…" : "✓ Saving Draft…";
+
+    const old = editId ? local.find(i => i.id === editId) : null, t = iso();
+    const it = Object.assign({}, old || {}, f, {
+      id: editId || newId(),
+      status: "draft",
+      pageData: await serPages(),
+      pageCount: pages.length,
+      thumb: pages[0] ? render(pages[0], 160).toDataURL("image/jpeg", 0.6) : "",
+      updatedAt: t,
+      createdAt: old ? old.createdAt : t,
+      error: ""
+    });
+    await dbPut(it);
+    editId = it.id;
+    await afterChange();
+
+    navigator.vibrate?.([40, 80, 40]);
+    btn.textContent = lang === "ku" ? "✓ ڕەشنووس پاشەکەوتکرا!" : "✓ Draft Saved!";
+
+    // Prominent notification banner inside the form
+    const banner = $("#editBanner");
+    if (banner) {
+      banner.hidden = false;
+      banner.style.background = "var(--ok-bg)";
+      banner.style.color = "var(--ok)";
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      banner.innerHTML = `
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:18px;">✅</span>
+          <div>
+            <strong>${lang === "ku" ? "ڕەشنووس پاشەکەوتکرا (" + timeStr + ")" : "Draft saved successfully (" + timeStr + ")"}</strong>
+            <div style="font-size:12px;opacity:0.85;">${lang === "ku" ? "لەسەر مۆبایلەکەت پارێزراوە. دەتوانیت بەردەوام بیت یان بچیتە خەرجییەکان." : "Saved locally on your phone. You can keep editing or view drafts."}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button id="btnBannerGoExp" type="button" class="btn small primary" style="min-height:30px;padding:4px 10px;font-size:12px;">${lang === "ku" ? "خەرجییەکان" : "View in Expenses"}</button>
+          <button id="btnNewForm" type="button" class="btn small" style="min-height:30px;padding:4px 10px;font-size:12px;">${lang === "ku" ? "نوێ" : "New Form"}</button>
+        </div>
+      `;
+      $("#btnBannerGoExp").onclick = () => showTab("exp");
+      $("#btnNewForm").onclick = resetForm;
+    }
+
+    toast(lang === "ku" ? "✅ ڕەشنووس پاشەکەوتکرا! دەتوانیت لە بەشی خەرجییەکان بینیت." : "✅ Draft saved! You can find and edit it anytime in the Expenses tab.", 4000);
+
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.style.backgroundColor = "";
+      btn.style.color = "";
+      btn.textContent = t("saveDraft") || "Save Draft";
+    }, 2200);
+
+  } catch (err) {
+    console.error("Save draft error:", err);
+    toast(lang === "ku" ? "هەڵەیەک ڕوویدا لە پاشەکەوتکردنی ڕەشنووس." : "Could not save draft: " + err.message, 4500);
+    btn.disabled = false;
+    btn.style.backgroundColor = "";
+    btn.style.color = "";
+    btn.textContent = oldText;
+  }
 };
 
 async function editDraft(it) {
@@ -2773,11 +3075,18 @@ async function editDraft(it) {
   $("#fNote").value = it.note || "";
   for (const pd of it.pageData || []) {
     try {
-      const p = await loadFile(pd.blob);
-      p.rot = pd.rot;
-      p.mode = pd.mode;
-      pages.push(p);
-    } catch (e) {}
+      const raw = await loadRawImage(pd.blob);
+      const warped = pd.corners ? await extractWarpedDocument(raw, pd.corners) : raw;
+      pages.push({
+        raw,
+        corners: pd.corners,
+        warped,
+        mode: pd.mode || "color",
+        rot: pd.rot || 0
+      });
+    } catch (e) {
+      console.warn("Failed to restore draft page:", e);
+    }
   }
   $("#editBanner").hidden = false;
   renderCats();
@@ -3744,6 +4053,21 @@ function showTab(t) {
   }
   $("#saveBar").hidden = t !== "new";
   window.scrollTo({ top: 0, behavior: "smooth" });
+  if (t === "new") {
+    updateCompanyTheme();
+  } else {
+    document.documentElement.style.backgroundColor = "";
+    document.documentElement.style.removeProperty("--bg");
+    document.body.style.backgroundColor = "";
+    const main = $("main");
+    if (main) main.style.backgroundColor = "";
+    const header = $("header");
+    if (header) { header.style.backgroundColor = ""; header.style.borderBottom = ""; }
+    const nav = $("nav.mobile-nav");
+    if (nav) { nav.style.backgroundColor = ""; nav.style.borderTop = ""; }
+    const saveBar = $("#saveBar");
+    if (saveBar) { saveBar.style.backgroundColor = ""; saveBar.style.borderTop = ""; }
+  }
   if (t === "ledger" || t === "report" || t === "cash") syncNow();
 }
 for (const k in TABS) $("#" + TABS[k][1]).onclick = () => showTab(k);
