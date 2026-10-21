@@ -5,8 +5,8 @@
     ? (module.exports = factory())
     : typeof define === "function" && define.amd
       ? define(factory)
-      : (global.jscanify = factory());
-})(this, function () {
+      : ((typeof window !== "undefined" ? window : (typeof globalThis !== "undefined" ? globalThis : global)).jscanify = factory());
+})(typeof window !== "undefined" ? window : (typeof globalThis !== "undefined" ? globalThis : this), function () {
   "use strict";
 
   /**
@@ -90,10 +90,32 @@
      * @param {*} options options for highlighting. Accepts `color` and `thickness` parameter
      * @returns `HTMLCanvasElement` with original image and paper highlighted
      */
+    /**
+     * Converts image source to canvas if it's a video element
+     */
+    _prepareSource(image) {
+      if (typeof HTMLVideoElement !== "undefined" && image instanceof HTMLVideoElement) {
+        const c = document.createElement("canvas");
+        c.width = image.videoWidth || 640;
+        c.height = image.videoHeight || 480;
+        const ctx = c.getContext("2d", { willReadFrequently: true });
+        ctx.drawImage(image, 0, 0, c.width, c.height);
+        return c;
+      }
+      return image;
+    }
+
+    /**
+     * Highlights the paper detected inside the image.
+     * @param {*} image image to process
+     * @param {*} options options for highlighting. Accepts `color` and `thickness` parameter
+     * @returns `HTMLCanvasElement` with original image and paper highlighted
+     */
     highlightPaper(image, options) {
       options = options || {};
       options.color = options.color || "orange";
       options.thickness = options.thickness || 10;
+      image = this._prepareSource(image);
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
       const img = cv.imread(image);
@@ -124,6 +146,7 @@
           ctx.lineTo(...Object.values(topLeftCorner));
           ctx.stroke();
         }
+        maxContour.delete();
       }
 
       img.delete();
@@ -135,18 +158,20 @@
      * 
      * Returns `null` if no paper is detected.
      *  
-    * @param {*} image image to process
+     * @param {*} image image to process (video, canvas, or img)
      * @param {*} resultWidth desired result paper width
      * @param {*} resultHeight desired result paper height
      * @param {*} cornerPoints optional custom corner points, in case automatic corner points are incorrect
      * @returns `HTMLCanvasElement` containing undistorted image
      */
     extractPaper(image, resultWidth, resultHeight, cornerPoints) {
+      image = this._prepareSource(image);
       const canvas = document.createElement("canvas");
       const img = cv.imread(image);
       const maxContour = cornerPoints ? null : this.findPaperContour(img);
 
-      if(maxContour == null && cornerPoints === undefined){
+      if (maxContour == null && cornerPoints === undefined) {
+        img.delete();
         return null;
       }
 
@@ -156,6 +181,13 @@
         bottomLeftCorner,
         bottomRightCorner,
       } = cornerPoints || this.getCornerPoints(maxContour, img);
+
+      if (!topLeftCorner || !topRightCorner || !bottomLeftCorner || !bottomRightCorner) {
+        if (maxContour) maxContour.delete();
+        img.delete();
+        return null;
+      }
+
       let warpedDst = new cv.Mat();
 
       let dsize = new cv.Size(resultWidth, resultHeight);
@@ -194,30 +226,35 @@
 
       cv.imshow(canvas, warpedDst);
 
-      img.delete()
-      warpedDst.delete()
+      img.delete();
+      warpedDst.delete();
+      srcTri.delete();
+      dstTri.delete();
+      M.delete();
+      if (maxContour) maxContour.delete();
       return canvas;
     }
 
     /**
      * Calculates the corner points of a contour.
      * @param {*} contour contour from {@link findPaperContour}
+     * @param {*} img optional cv.Mat image for bounds fallback
      * @returns object with properties `topLeftCorner`, `topRightCorner`, `bottomLeftCorner`, `bottomRightCorner`, each with `x` and `y` property
      */
-    getCornerPoints(contour) {
+    getCornerPoints(contour, img) {
       let rect = cv.minAreaRect(contour);
       const center = rect.center;
 
-      let topLeftCorner;
+      let topLeftCorner = null;
       let topLeftCornerDist = 0;
 
-      let topRightCorner;
+      let topRightCorner = null;
       let topRightCornerDist = 0;
 
-      let bottomLeftCorner;
+      let bottomLeftCorner = null;
       let bottomLeftCornerDist = 0;
 
-      let bottomRightCorner;
+      let bottomRightCorner = null;
       let bottomRightCornerDist = 0;
 
       for (let i = 0; i < contour.data32S.length; i += 2) {
@@ -249,6 +286,15 @@
           }
         }
       }
+
+      const imgW = img ? img.cols : (center.x * 2 || 800);
+      const imgH = img ? img.rows : (center.y * 2 || 1100);
+
+      // Fallback for missing corners to prevent undefined exceptions
+      if (!topLeftCorner) topLeftCorner = { x: Math.max(0, Math.round(center.x - rect.size.width / 2)), y: Math.max(0, Math.round(center.y - rect.size.height / 2)) };
+      if (!topRightCorner) topRightCorner = { x: Math.min(imgW, Math.round(center.x + rect.size.width / 2)), y: Math.max(0, Math.round(center.y - rect.size.height / 2)) };
+      if (!bottomLeftCorner) bottomLeftCorner = { x: Math.max(0, Math.round(center.x - rect.size.width / 2)), y: Math.min(imgH, Math.round(center.y + rect.size.height / 2)) };
+      if (!bottomRightCorner) bottomRightCorner = { x: Math.min(imgW, Math.round(center.x + rect.size.width / 2)), y: Math.min(imgH, Math.round(center.y + rect.size.height / 2)) };
 
       return {
         topLeftCorner,

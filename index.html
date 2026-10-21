@@ -122,22 +122,54 @@ header h1{
 .net-pill{
   display:inline-flex;
   align-items:center;
-  gap:6px;
+  justify-content:center;
+  gap:0;
   font-size:12px;
   font-weight:600;
-  padding:4px 10px;
+  padding:5px 7px;
+  min-width:24px;
+  height:26px;
+  box-sizing:border-box;
   border-radius:99px;
   background:var(--surface-sub);
   border:1px solid var(--line);
   color:var(--muted);
+  cursor:pointer;
+  transition:all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow:hidden;
+  white-space:nowrap;
+  user-select:none;
 }
-.dot{
-  width:8px;
-  height:8px;
+.net-pill .dot{
+  width:9px;
+  height:9px;
   border-radius:50%;
   background:#9ca3af;
   display:inline-block;
+  flex-shrink:0;
   transition:all 0.3s ease;
+}
+.net-pill #netTxt{
+  max-width:0;
+  opacity:0;
+  margin-left:0;
+  overflow:hidden;
+  white-space:nowrap;
+  transition:max-width 0.25s ease, opacity 0.2s ease, margin 0.2s ease;
+  display:inline-block;
+}
+.net-pill.show-text, .net-pill:hover{
+  gap:6px;
+  padding:4px 10px;
+}
+.net-pill.show-text #netTxt, .net-pill:hover #netTxt{
+  max-width:140px;
+  opacity:1;
+  margin-left:2px;
+}
+[dir="rtl"] .net-pill.show-text #netTxt, [dir="rtl"] .net-pill:hover #netTxt{
+  margin-left:0;
+  margin-right:2px;
 }
 .dot.on{
   background:#10b981;
@@ -379,25 +411,29 @@ main{
 }
 .cats{
   display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(100px, 1fr));
-  gap:8px;
+  grid-template-columns:repeat(4, 1fr);
+  gap:6px;
 }
 .cats button{
   background:var(--surface);
   border:none;
   outline:none;
   color:var(--ink);
-  border-radius:14px;
-  padding:14px 6px;
-  font-size:15px;
+  border-radius:12px;
+  padding:10px 4px;
+  font-size:clamp(12px, 3.2vw, 14px);
   font-weight:700;
   cursor:pointer;
   transition:all 0.15s ease;
   display:flex;
   flex-direction:column;
   align-items:center;
+  justify-content:center;
   gap:4px;
   box-shadow:0 1px 4px rgba(0, 0, 0, 0.06);
+  min-height:44px;
+  text-align:center;
+  word-break:break-word;
 }
 .cats button:active{transform:scale(0.97)}
 .cats button[aria-checked="true"]{
@@ -809,6 +845,110 @@ dialog::backdrop{
 }
 #viewCanvasWrap canvas{max-width:100%;height:auto;display:block}
 
+/* Submit Choice Dialog (Save Draft vs Submit & Upload) */
+dialog.dlg-choice {
+  width: min(92vw, 420px);
+  border-radius: 24px;
+  overflow: hidden;
+}
+.choice-modal-wrap {
+  padding: 0;
+}
+.choice-modal-header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.choice-options-list {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.choice-card-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1.5px solid var(--line);
+  background: var(--surface-sub);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  width: 100%;
+}
+[dir="rtl"] .choice-card-btn {
+  text-align: right;
+}
+.choice-card-btn:hover {
+  border-color: var(--accent-light);
+  background: var(--accent-soft);
+  transform: translateY(-1px);
+}
+.choice-card-btn:active {
+  transform: scale(0.98);
+}
+.choice-card-btn.primary-choice {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.choice-card-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.choice-card-icon.draft-icon {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+.choice-card-icon.upload-icon {
+  background: var(--accent);
+  color: #fff;
+}
+.choice-card-body {
+  flex: 1;
+}
+.choice-card-body strong {
+  display: block;
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.choice-card-btn.primary-choice .choice-card-body strong {
+  color: var(--accent);
+}
+.choice-card-body span {
+  display: block;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.choice-arrow {
+  width: 18px;
+  height: 18px;
+  stroke: var(--muted);
+  fill: none;
+  stroke-width: 2.2;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+[dir="rtl"] .choice-arrow {
+  transform: rotate(180deg);
+}
+.choice-modal-footer {
+  padding: 8px 20px 18px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* Document Scanner (Microsoft Teams / Office Lens Style) */
 dialog.dlg-scanner {
   width: min(96vw, 760px);
@@ -925,6 +1065,145 @@ dialog.dlg-scanner {
 [dir="rtl"] .scanner-header, [dir="rtl"] .scanner-toolbar, [dir="rtl"] .scanner-filters, [dir="rtl"] .scanner-footer {
   flex-direction: row-reverse;
 }
+/* Live Camera Document Scanner (OpenCV & jscanify) */
+.live-view-stage {
+  position: relative;
+  width: 100%;
+  height: min(62vh, 480px);
+  background: #090d16;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.camera-stream-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.camera-reticle {
+  position: absolute;
+  top: 7%;
+  left: 7%;
+  right: 7%;
+  bottom: 7%;
+  pointer-events: none;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.reticle-corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-color: #38bdf8;
+  border-style: solid;
+}
+.reticle-corner.tl { top: 0; left: 0; border-width: 3.5px 0 0 3.5px; border-top-left-radius: 8px; }
+.reticle-corner.tr { top: 0; right: 0; border-width: 3.5px 3.5px 0 0; border-top-right-radius: 8px; }
+.reticle-corner.br { bottom: 0; right: 0; border-width: 0 3.5px 3.5px 0; border-bottom-right-radius: 8px; }
+.reticle-corner.bl { bottom: 0; left: 0; border-width: 0 0 3.5px 3.5px; border-bottom-left-radius: 8px; }
+.reticle-laser {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #38bdf8, #10b981, transparent);
+  box-shadow: 0 0 10px #38bdf8;
+  animation: scanLaser 2.4s ease-in-out infinite alternate;
+}
+@keyframes scanLaser {
+  0% { top: 6%; opacity: 0.3; }
+  50% { opacity: 0.95; }
+  100% { top: 92%; opacity: 0.3; }
+}
+.reticle-hint {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  background: rgba(15, 23, 42, 0.75);
+  padding: 4px 12px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+  backdrop-filter: blur(6px);
+  letter-spacing: 0.3px;
+}
+.btn-cam-overlay {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  backdrop-filter: blur(8px);
+}
+.btn-cam-overlay:active { transform: scale(0.92); }
+.live-status-pill {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 99px;
+  backdrop-filter: blur(8px);
+  z-index: 5;
+}
+.live-status-pill .status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+.capture-result-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  box-sizing: border-box;
+}
+.result-canvas-container {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.result-badge-bar {
+  margin-top: 6px;
+}
+.badge-success {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #34d399;
+  background: rgba(6, 78, 59, 0.5);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  padding: 3px 10px;
+  border-radius: 99px;
+}
 
 /* Toast */
 .toast{
@@ -953,12 +1232,6 @@ dialog.dlg-scanner {
   100%{opacity:1;transform:translate(-50%, 0) scale(1)}
 }
 
-/* Kurdish Claim Form */
-.claim{font-size:14px;line-height:1.7}
-.claim table{border:1px solid var(--line)}
-.claim th,.claim td{border:1px solid var(--line);text-align:right;padding:8px}
-.claim .sig{display:flex;justify-content:space-between;margin-top:40px}
-.claim .sig span{border-top:1.5px solid var(--ink);padding-top:8px;min-width:42%;text-align:center;font-weight:600}
 
 .btn.icon-btn{
   min-height:36px;
@@ -1062,7 +1335,6 @@ dialog.dlg-scanner {
   border-left:1.5px solid var(--accent);
   border-right:5px solid var(--accent);
 }
-[dir="rtl"] .claim th, [dir="rtl"] .claim td{text-align:right}
 
 @media print{
   header, nav, .bar, .bal, .noprint, .toast{display:none!important}
@@ -1194,7 +1466,7 @@ dialog.dlg-scanner {
     </div>
 
     <div class="form-group">
-      <label for="fNote">Note <span class="cur">(optional, shown on claim)</span></label>
+      <label for="fNote">Note <span class="cur">(optional)</span></label>
       <input id="fNote" dir="auto" autocomplete="off" placeholder="Additional details">
     </div>
 
@@ -1206,7 +1478,7 @@ dialog.dlg-scanner {
     <div class="cap">
       <button class="btn primary" id="btnCam" type="button">
         <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        Take Photo
+        <span id="lblBtnCam">Auto-Scan Document</span>
       </button>
       <button class="btn" id="btnGal" type="button">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -1288,8 +1560,7 @@ dialog.dlg-scanner {
         <div><label for="rTo">To</label><input id="rTo" type="date"></div>
       </div>
       <div class="seg" style="margin-top:12px;">
-        <button class="btn small primary" id="btnClaim" type="button">Claim Form (Kurdish)</button>
-        <button class="btn small" id="btnRepCsv" type="button">CSV</button>
+        <button class="btn small primary" id="btnRepCsv" type="button">CSV</button>
         <button class="btn small" id="btnRepPrint" type="button">Print</button>
       </div>
     </div>
@@ -1376,6 +1647,98 @@ dialog.dlg-scanner {
     </button>
   </div>
 </nav>
+
+<!-- Front-end Live Document Scanner with jscanify & OpenCV.js -->
+<dialog id="dLiveScanner" class="dlg-scanner dlg-live-scanner">
+  <div class="scanner-container">
+    <div class="scanner-header">
+      <div class="scanner-title-group">
+        <h3 id="lblLiveScanTitle">
+          <svg style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          <span>Auto-Scan Document</span>
+        </h3>
+        <p id="lblLiveScanSub">Point camera at receipt. Tap Capture & Auto-Crop to flatten.</p>
+      </div>
+      <button class="close-btn" id="btnLiveClose" type="button" aria-label="Close">✕</button>
+    </div>
+
+    <!-- Live Camera Viewport Area -->
+    <div class="live-view-stage" id="liveViewStage">
+      <!-- Live Video Feed -->
+      <div class="camera-stream-wrap" id="cameraWrap">
+        <video id="camera" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; display: block;"></video>
+        
+        <!-- Document Framing Reticle -->
+        <div class="camera-reticle">
+          <div class="reticle-corner tl"></div>
+          <div class="reticle-corner tr"></div>
+          <div class="reticle-corner br"></div>
+          <div class="reticle-corner bl"></div>
+          <div class="reticle-laser"></div>
+          <div class="reticle-hint" id="lblReticleHint">Align receipt within frame</div>
+        </div>
+
+        <!-- Camera Switch Overlay Button -->
+        <button type="button" class="btn-cam-overlay" id="btnFlipCam" title="Flip Camera">
+          <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;"><path d="M20 16v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4m16-8V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v4m14 4H4m4-4l-4 4 4 4m8-8l4 4-4 4"/></svg>
+        </button>
+
+        <div class="live-status-pill" id="liveStatusPill">
+          <span class="status-dot on"></span>
+          <span id="lblLiveStatus">Live Camera Ready</span>
+        </div>
+      </div>
+
+      <!-- Deskewed Result Preview Container (shown after capture) -->
+      <div class="capture-result-wrap" id="captureResultWrap" hidden>
+        <div class="result-canvas-container">
+          <canvas id="outputCanvas" style="max-width: 100%; max-height: 100%; display: block; box-shadow: 0 8px 24px rgba(0,0,0,0.5); border-radius: 4px;"></canvas>
+        </div>
+        <div class="result-badge-bar">
+          <span class="badge-success">✓ Auto-Cropped & Perspective Flattened</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Modes (Visible when viewing preview) -->
+    <div class="scanner-filters" id="liveFilterBar" hidden>
+      <span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-right:4px;">Filter:</span>
+      <button type="button" class="filter-chip active" data-lmode="color" id="lModeColor">🎨 Color</button>
+      <button type="button" class="filter-chip" data-lmode="magic" id="lModeMagic">✨ Magic Color</button>
+      <button type="button" class="filter-chip" data-lmode="gray" id="lModeGray">⚪ Grayscale</button>
+      <button type="button" class="filter-chip" data-lmode="bw" id="lModeBw">🔲 B&W</button>
+    </div>
+
+    <!-- Actions Footer -->
+    <div class="scanner-footer" id="liveActionsLive">
+      <button type="button" class="btn small" id="btnLiveFallbackUpload" style="min-width:100px;">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span>Upload File</span>
+      </button>
+      <button type="button" class="btn primary" id="scanBtn" style="flex:1.5;min-height:48px;font-size:15px;font-weight:800;gap:8px;">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
+        <span id="lblScanBtnText">Capture & Auto-Crop</span>
+      </button>
+    </div>
+
+    <div class="scanner-footer" id="liveActionsPreview" hidden>
+      <button type="button" class="btn small" id="btnLiveRetake" style="min-width:90px;">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        <span>Retake</span>
+      </button>
+      <button type="button" class="btn small" id="btnLiveManualAdjust" style="font-weight:600;">
+        <span>📐 Adjust Edges</span>
+      </button>
+      <button type="button" class="btn small primary" id="btnLiveAccept" style="flex:1;min-height:46px;font-weight:800;">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>Attach Receipt</span>
+      </button>
+    </div>
+  </div>
+</dialog>
 
 <!-- Microsoft Teams-style Document Scanner Modal -->
 <dialog id="dScanner" class="dlg-scanner">
@@ -1556,6 +1919,34 @@ dialog.dlg-scanner {
   </div>
 </dialog>
 
+<!-- Load OpenCV.js & jscanify (Open-source client-side WebAssembly document scanner) -->
+<script>
+  window.cvReady = false;
+  window.Module = {
+    onRuntimeInitialized: function() {
+      window.cvReady = true;
+      if (typeof cv !== "undefined" && cv.imread) {
+        const origImread = cv.imread;
+        cv.imread = function(source) {
+          if (typeof HTMLVideoElement !== "undefined" && source instanceof HTMLVideoElement) {
+            const c = document.createElement("canvas");
+            c.width = source.videoWidth || 640;
+            c.height = source.videoHeight || 480;
+            const ctx = c.getContext("2d", { willReadFrequently: true });
+            ctx.drawImage(source, 0, 0, c.width, c.height);
+            return origImread.call(this, c);
+          }
+          return origImread.call(this, source);
+        };
+      }
+      console.log("OpenCV.js runtime initialized!");
+      const el = document.getElementById("lblLiveStatus");
+      if (el) el.textContent = "Live Camera (OpenCV Ready)";
+    }
+  };
+</script>
+<script async src="./opencv.js" onerror="this.onerror=null;this.src='https://docs.opencv.org/4.8.0/opencv.js'"></script>
+<script src="./jscanify.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/colonelparrot/jscanify@master/src/jscanify.min.js'"></script>
 <script src="scanic.umd.js"></script>
 <script>
 "use strict";
@@ -1691,9 +2082,9 @@ const I18N = {
     amount: "Amount",
     description: "Expense Description",
     descPlaceholder: "What was this expense for?",
-    note: "Note (optional, shown on claim)",
+    note: "Note (optional)",
     receiptPhotos: "Receipt Photos",
-    takePhoto: "Take Photo",
+    takePhoto: "Auto-Scan Document",
     gallery: "Gallery",
     saveDraft: "Save Draft",
     submitUpload: "Submit & Upload",
@@ -1785,7 +2176,7 @@ const I18N = {
     descPlaceholder: "ئەم خەرجییە بۆ چی کراوە؟",
     note: "تێبینی (ئارەزوومەندانە)",
     receiptPhotos: "وێنەکانی پسوڵە",
-    takePhoto: "وێنە بگرە",
+    takePhoto: "سکانی خۆکاری پسوڵە",
     gallery: "گەلەری",
     saveDraft: "پاشەکەوتی ڕەشنووس",
     submitUpload: "تۆمارکردن و ناردن",
@@ -1882,7 +2273,8 @@ function applyLang() {
   if ($("#fDesc")) $("#fDesc").placeholder = t("descPlaceholder");
   const lblNote = $("label[for='fNote']");
   if (lblNote && lblNote.firstChild) lblNote.firstChild.textContent = t("note") + " ";
-  if ($("#btnSnap")) $("#btnSnap").innerHTML = '<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> ' + t("takePhoto");
+  const btnCam = $("#btnCam");
+  if (btnCam) btnCam.innerHTML = '<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> <span id="lblBtnCam">' + esc(t("takePhoto")) + '</span>';
   if ($("#btnGal")) $("#btnGal").innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> ' + t("gallery");
   if ($("#btnDraft")) $("#btnDraft").textContent = t("saveDraft");
   if ($("#btnSubmit")) $("#btnSubmit").textContent = t("submitUpload");
@@ -2711,9 +3103,261 @@ $("#vRotL").onclick = () => { pages[viewIdx].rot = (pages[viewIdx].rot + 270) % 
 $("#vRotR").onclick = () => { pages[viewIdx].rot = (pages[viewIdx].rot + 90) % 360; openView(viewIdx); drawPages(); };
 $("#vDel").onclick = () => { pages.splice(viewIdx, 1); $("#dView").close(); drawPages(); };
 $("#vClose").onclick = () => $("#dView").close();
-$("#vDone").onclick = () => $("#dView").close();
+/* ---------- Live Front-end Document Scanner (jscanify & OpenCV.js) ---------- */
+let liveStream = null;
+let currentFacingMode = "environment";
+let liveCapturedRaw = null;
+let liveWarpedCanvas = null;
+let liveCapturedCorners = null;
+let liveFilterMode = "color";
 
-$("#btnCam").onclick = () => $("#inCam").click();
+function getJScanner() {
+  if (typeof jscanify !== "undefined" && typeof cv !== "undefined" && cv.Mat) {
+    try {
+      return new jscanify();
+    } catch (e) {
+      console.warn("jscanify init notice:", e);
+    }
+  }
+  return null;
+}
+
+async function startLiveCameraScanner() {
+  const dlg = $("#dLiveScanner");
+  if (!dlg) return;
+
+  $("#cameraWrap").hidden = false;
+  $("#captureResultWrap").hidden = true;
+  $("#liveFilterBar").hidden = true;
+  $("#liveActionsLive").hidden = false;
+  $("#liveActionsPreview").hidden = true;
+
+  const statusEl = $("#lblLiveStatus");
+  if (statusEl) {
+    statusEl.textContent = (typeof cv !== "undefined" && cv.Mat) ? "Live Camera (OpenCV Ready)" : "Live Camera Ready";
+  }
+
+  if (!dlg.open) dlg.showModal();
+
+  await openCameraStream(currentFacingMode);
+}
+
+async function openCameraStream(facing) {
+  stopCameraStream();
+  const video = $("#camera");
+  try {
+    const constraints = {
+      video: {
+        facingMode: { ideal: facing },
+        width: { ideal: 1920 },
+        height: { ideal: 1080 }
+      },
+      audio: false
+    };
+    liveStream = await navigator.mediaDevices.getUserMedia(constraints);
+    if (video) {
+      video.srcObject = liveStream;
+      await video.play().catch(() => {});
+    }
+  } catch (err) {
+    console.warn("High-res stream constraint error, falling back to standard video:", err);
+    try {
+      liveStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      if (video) {
+        video.srcObject = liveStream;
+        await video.play().catch(() => {});
+      }
+    } catch (err2) {
+      console.error("Camera access failed entirely:", err2);
+      toast(lang === "ku" ? "مۆڵەتی کامێرا بەردەست نییە. پەڕگەی وێنە هەڵبژێرە." : "Camera access not available or denied. Please upload a photo.", 3500);
+      closeLiveScanner();
+      $("#inCam").click();
+    }
+  }
+}
+
+function stopCameraStream() {
+  if (liveStream) {
+    liveStream.getTracks().forEach(t => t.stop());
+    liveStream = null;
+  }
+  const video = $("#camera");
+  if (video) video.srcObject = null;
+}
+
+function closeLiveScanner() {
+  stopCameraStream();
+  const dlg = $("#dLiveScanner");
+  if (dlg && dlg.open) dlg.close();
+}
+
+$("#btnLiveClose").onclick = closeLiveScanner;
+
+$("#btnFlipCam").onclick = () => {
+  currentFacingMode = (currentFacingMode === "environment" ? "user" : "environment");
+  openCameraStream(currentFacingMode);
+};
+
+$("#btnLiveFallbackUpload").onclick = () => {
+  closeLiveScanner();
+  $("#inGal").click();
+};
+
+$("#scanBtn").onclick = async () => {
+  const video = $("#camera");
+  if (!video || !video.videoWidth) {
+    return toast(lang === "ku" ? "کامێرا هێشتا ئامادە نییە، کەمێک بوەستە." : "Camera is not ready yet. Please wait a moment.");
+  }
+
+  // Visual capture flash animation
+  const stage = $("#liveViewStage");
+  if (stage) {
+    stage.style.filter = "brightness(2.2)";
+    setTimeout(() => { stage.style.filter = ""; }, 120);
+  }
+  navigator.vibrate?.([30, 40]);
+
+  // Capture current high-res frame from video
+  const vw = video.videoWidth, vh = video.videoHeight;
+  const frameCanvas = document.createElement("canvas");
+  frameCanvas.width = vw;
+  frameCanvas.height = vh;
+  const fctx = frameCanvas.getContext("2d");
+  fctx.drawImage(video, 0, 0, vw, vh);
+
+  liveCapturedRaw = frameCanvas;
+
+  let deskewedCanvas = null;
+  let corners = null;
+
+  // 1. Process frame client-side using jscanify (OpenCV.js WebAssembly)
+  const scanner = getJScanner();
+  if (scanner) {
+    try {
+      deskewedCanvas = scanner.extractPaper(video, 800, 1100);
+      if (deskewedCanvas) {
+        try {
+          const img = cv.imread(frameCanvas);
+          const contour = scanner.findPaperContour(img);
+          if (contour) {
+            const pts = scanner.getCornerPoints(contour);
+            if (pts && pts.topLeftCorner) {
+              corners = {
+                topLeft: pts.topLeftCorner,
+                topRight: pts.topRightCorner,
+                bottomRight: pts.bottomRightCorner,
+                bottomLeft: pts.bottomLeftCorner
+              };
+            }
+          }
+          img.delete();
+        } catch (e) {}
+      }
+    } catch (err) {
+      console.warn("jscanify extractPaper warning:", err);
+    }
+  }
+
+  // 2. High-precision client-side ray detector fallback if paper contour was low-contrast
+  if (!deskewedCanvas) {
+    corners = await detectDocCorners(frameCanvas);
+    deskewedCanvas = await extractWarpedDocument(frameCanvas, corners);
+  }
+
+  liveWarpedCanvas = deskewedCanvas || frameCanvas;
+  liveCapturedCorners = corners || getFullCorners(frameCanvas);
+  liveFilterMode = "color";
+
+  // Pause video feed during preview
+  video.pause();
+
+  // Render deskewed document onto #outputCanvas
+  const outCanvas = document.getElementById("outputCanvas");
+  outCanvas.width = liveWarpedCanvas.width;
+  outCanvas.height = liveWarpedCanvas.height;
+  const outCtx = outCanvas.getContext("2d");
+  outCtx.drawImage(liveWarpedCanvas, 0, 0);
+
+  // Switch UI to preview mode
+  $("#cameraWrap").hidden = true;
+  $("#captureResultWrap").hidden = false;
+  $("#liveFilterBar").hidden = false;
+  $("#liveActionsLive").hidden = true;
+  $("#liveActionsPreview").hidden = false;
+
+  document.querySelectorAll("#liveFilterBar .filter-chip").forEach(ch => {
+    ch.classList.toggle("active", ch.getAttribute("data-lmode") === "color");
+  });
+
+  toast(lang === "ku" ? "✓ لێوارەکانی پسوڵە دۆزرایەوە و تەختکرا!" : "✓ Document auto-detected & perspective flattened!", 2500);
+};
+
+document.querySelectorAll("#liveFilterBar .filter-chip").forEach(ch => {
+  ch.onclick = () => {
+    document.querySelectorAll("#liveFilterBar .filter-chip").forEach(c => c.classList.remove("active"));
+    ch.classList.add("active");
+    liveFilterMode = ch.getAttribute("data-lmode") || "color";
+
+    const outCanvas = document.getElementById("outputCanvas");
+    if (!liveWarpedCanvas || !outCanvas) return;
+    outCanvas.width = liveWarpedCanvas.width;
+    outCanvas.height = liveWarpedCanvas.height;
+    const ctx = outCanvas.getContext("2d");
+    ctx.drawImage(liveWarpedCanvas, 0, 0);
+
+    if (liveFilterMode === "magic") applyMagicColor(outCanvas);
+    else if (liveFilterMode === "gray") applyGrayscale(outCanvas);
+    else if (liveFilterMode === "bw") applyBwFilter(outCanvas);
+  };
+});
+
+$("#btnLiveRetake").onclick = () => {
+  $("#cameraWrap").hidden = false;
+  $("#captureResultWrap").hidden = true;
+  $("#liveFilterBar").hidden = true;
+  $("#liveActionsLive").hidden = false;
+  $("#liveActionsPreview").hidden = true;
+  const video = $("#camera");
+  if (video) video.play().catch(() => {});
+};
+
+$("#btnLiveManualAdjust").onclick = async () => {
+  closeLiveScanner();
+  const adjusted = await startDocumentScanner({
+    raw: liveCapturedRaw,
+    corners: liveCapturedCorners,
+    mode: liveFilterMode
+  });
+  if (adjusted) {
+    pages.push(adjusted);
+    drawPages();
+    toast(lang === "ku" ? "✓ پسوڵە زیادکرا!" : "✓ Receipt attached!");
+  }
+};
+
+$("#btnLiveAccept").onclick = async () => {
+  const outCanvas = document.getElementById("outputCanvas");
+  // Convert to Base64 image data (as requested)
+  const base64Data = outCanvas.toDataURL("image/jpeg", 0.85);
+
+  pages.push({
+    raw: liveCapturedRaw,
+    corners: liveCapturedCorners,
+    warped: liveWarpedCanvas,
+    mode: liveFilterMode,
+    rot: 0,
+    base64Data: base64Data
+  });
+
+  drawPages();
+  closeLiveScanner();
+  navigator.vibrate?.([30, 60]);
+  toast(lang === "ku" ? "✓ لاپەڕەی پسوڵە بە سەرکەوتوویی زیادکرا!" : "✓ Receipt scanned & attached in full color!", 3500);
+};
+
+$("#btnCam").onclick = () => {
+  startLiveCameraScanner();
+};
 $("#btnGal").onclick = () => $("#inGal").click();
 $("#inCam").onchange = async e => { const files = [...e.target.files]; e.target.value = ""; if (files.length) await processUploadedFiles(files); };
 $("#inGal").onchange = async e => { const files = [...e.target.files]; e.target.value = ""; if (files.length) await processUploadedFiles(files); };
@@ -3660,22 +4304,6 @@ function reportData() {
   return { from, to, cur: cur(), before, cashIn: sum(cash), byCat, totalExp: -sum(exps), closing: before + sum(inr), detail };
 }
 
-let repMode = "summary";
-function claimHtml(r) {
-  const cat = $("#rCat").value, rows = r.detail;
-  const from = r.from || (rows[0] && rows[0].date) || "", to = r.to === "9999-12-31" ? (rows.length ? rows[rows.length - 1].date : "") : r.to;
-  const nm = (rows.find(x => x.by) || {}).by || settings().name || "";
-  const total = rows.reduce((t, x) => t - x.amount, 0);
-  return '<div class="claim" dir="rtl"><p style="font-size:16px;"><b>بۆ بەڕێز/ ئەنجومەنی کارگێری</b></p>' +
-    "<p>داواکارم لە بەڕێزتان ئەم بڕە پارانەی لای خوارەوەم بۆ خەرج بکەنەوە کە خەرج کراوە</p>" +
-    '<p dir="ltr" style="text-align:right;color:var(--muted);">' + esc(cat || (lang === "ku" ? "هەموو کۆمپانیاکان" : "All Companies")) + " · " + esc(from) + " → " + esc(to) + "</p>" +
-    '<table><tr><th>ژ</th><th>بڕی پارە</th><th>بابەت</th><th>ژ. وەسڵی دەستی</th><th>بەروار</th>' + (cat ? "" : "<th>" + (lang === "ku" ? "کۆمپانیا" : "Company") + "</th>") + "<th>تێبینی</th></tr>" +
-    rows.map((x, i) => "<tr><td>" + (i + 1) + '</td><td class="n">' + fmt(-x.amount) + '</td><td dir="auto">' + esc(x.note) + "</td><td>" + esc(x.voucher) + "</td><td>" + esc(x.date) + "</td>" +
-      (cat ? "" : "<td>" + esc(x.category) + "</td>") + '<td dir="auto">' + esc(x.extra) + "</td></tr>").join("") +
-    '<tr class="tot"><td></td><td class="n">' + fmt(total) + '</td><td colspan="' + (cat ? 5 : 6) + '">کۆی گشتی · ' + esc(r.cur) + "</td></tr></table>" +
-    '<div class="sig"><span>' + esc(nm) + '</span><span>' + "ناو &amp; واژووی لێپرسراوی ژمێریاری" + '</span></div></div>';
-}
-
 function renderReport() {
   const out = $("#reportOut");
   if (!connected()) {
@@ -3683,7 +4311,6 @@ function renderReport() {
     return;
   }
   const r = reportData();
-  if (repMode === "claim") { out.innerHTML = claimHtml(r); return; }
   const per = r.from ? r.from + " to " + (r.to === "9999-12-31" ? (lang === "ku" ? "ئەمڕۆ" : "today") : r.to) : (lang === "ku" ? "هەموو کات" : "All Time");
   const line = (a, b, cls) => '<tr class="' + (cls || "") + '"><td>' + a + '</td><td class="n">' + b + '</td></tr>';
   out.innerHTML = '<div class="card"><h4>' + (lang === "ku" ? "پوختەی ئامارەکان" : "Summary Statistics") + '</h4><p class="hint" style="margin:0">' + esc(per) + " · " + esc(r.cur) + '</p>' +
@@ -3894,11 +4521,7 @@ function download(name, text) {
 $("#btnLedgerCsv").onclick = () => download("ledger.csv", csv([["Date", "Type", "Voucher", "Category", "Description", "Amount (" + cur() + ")", "Balance"],
   ...userRows().map(r => [r.date, r.kind === "cash" ? "Cash" : "Expense", r.voucher || "", r.category || "", r.note, r.amount.toFixed(fmtDec), r.balance.toFixed(fmtDec)])]));
 $("#btnRepCsv").onclick = () => { const r = reportData(); download("report.csv", csv([["Date", "Voucher", "Category", "Description", "Amount (" + r.cur + ")"], ...r.detail.map(x => [x.date, x.voucher, x.category, x.note, (-x.amount).toFixed(fmtDec)])])); };
-$("#btnClaim").onclick = () => {
-  repMode = repMode === "claim" ? "summary" : "claim";
-  $("#btnClaim").textContent = repMode === "claim" ? "Summary View" : "Claim Form (Kurdish)";
-  renderReport();
-};
+
 $("#btnLedgerPrint").onclick = () => window.print();
 $("#btnRepPrint").onclick = () => window.print();
 $("#rPeriod").onchange = () => { $("#rCustom").hidden = $("#rPeriod").value !== "custom"; renderReport(); };
