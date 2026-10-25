@@ -609,29 +609,189 @@ textarea{min-height:86px;resize:vertical}
   position:fixed;
   left:0;
   right:0;
-  bottom:calc(66px + env(safe-area-inset-bottom, 0px));
-  background:color-mix(in srgb, var(--surface) 90%, transparent);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
+  bottom:calc(64px + env(safe-area-inset-bottom, 0px));
+  background:color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
   border-top:1px solid var(--line);
   padding:10px 16px;
   z-index:25;
+  box-shadow:0 -4px 20px rgba(0, 0, 0, 0.05);
 }
 .bar .in{
   max-width:540px;
   margin:0 auto;
-  display:grid;
-  grid-template-columns:1fr 1.6fr;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+}
+[dir="rtl"] .bar .in,
+[dir="rtl"] .form-action-buttons{
+  flex-direction:row;
+}
+
+/* Action Buttons (Save Draft & Submit/Upload) */
+.btn-action-draft{
+  flex:1;
+  min-height:48px;
+  padding:10px 14px;
+  border-radius:14px;
+  border:1.5px solid var(--line);
+  background:var(--surface);
+  color:var(--ink);
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space:nowrap;
+  box-shadow:0 1px 3px rgba(0, 0, 0, 0.03);
+  user-select:none;
+}
+.btn-action-draft:hover{
+  background:var(--surface-sub);
+  border-color:color-mix(in srgb, var(--ink) 25%, var(--line));
+  transform:translateY(-1px);
+}
+.btn-action-draft:active{
+  transform:scale(0.97);
+  background:var(--line);
+}
+.btn-action-draft svg{
+  width:18px;
+  height:18px;
+  stroke:currentColor;
+  stroke-width:2.2;
+  fill:none;
+  flex-shrink:0;
+}
+
+.btn-action-submit{
+  flex:1.75;
+  min-height:48px;
+  padding:10px 16px;
+  border-radius:14px;
+  border:none;
+  background:var(--accent);
+  color:#ffffff;
+  font-size:15px;
+  font-weight:750;
+  letter-spacing:0.15px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space:nowrap;
+  box-shadow:0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent);
+  user-select:none;
+}
+.btn-action-submit:hover{
+  filter:brightness(1.06);
+  transform:translateY(-1px);
+  box-shadow:0 6px 18px color-mix(in srgb, var(--accent) 42%, transparent);
+}
+.btn-action-submit:active{
+  transform:scale(0.97);
+  filter:brightness(0.96);
+  box-shadow:0 2px 8px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.btn-action-submit:disabled, .btn-action-draft:disabled{
+  opacity:0.65;
+  cursor:not-allowed;
+  transform:none;
+  filter:none;
+  box-shadow:none;
+}
+.btn-action-submit svg{
+  width:19px;
+  height:19px;
+  stroke:currentColor;
+  stroke-width:2.2;
+  fill:none;
+  flex-shrink:0;
+}
+
+/* In-flow Form Action Card */
+.form-action-card{
+  margin-top:20px;
+  padding:14px 16px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:var(--surface-sub);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.form-action-summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.form-summary-info{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  width:100%;
+}
+.form-summary-label{
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  color:var(--muted);
+}
+.form-summary-badges{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:14px;
+}
+.form-summary-comp{
+  font-weight:750;
+  color:var(--accent);
+}
+.form-summary-sep{
+  color:var(--muted);
+}
+.form-summary-amt{
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+  color:var(--ink);
+}
+.form-action-buttons{
+  display:flex;
+  align-items:center;
   gap:10px;
 }
-.bar .btn{width:100%}
-.bar .why{
-  grid-column:1/-1;
-  margin:4px 0 0;
-  font-size:12.5px;
-  font-weight:600;
-  color:var(--warn);
-  text-align:center;
+
+/* Soft Red Validation Highlights */
+.field-error-soft{
+  border-color:#ef4444 !important;
+  background-color:color-mix(in srgb, #ef4444 7%, var(--surface)) !important;
+  box-shadow:0 0 0 3.5px rgba(239, 68, 68, 0.16) !important;
+  transition:all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation:softShake 0.35s ease;
+}
+.section-error-soft{
+  border:1.5px dashed #ef4444 !important;
+  background-color:color-mix(in srgb, #ef4444 5%, var(--surface)) !important;
+  border-radius:16px;
+  padding:8px;
+  box-shadow:0 0 0 3.5px rgba(239, 68, 68, 0.12) !important;
+  transition:all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation:softShake 0.35s ease;
+}
+
+@keyframes softShake{
+  0%, 100%{transform:translateX(0)}
+  25%{transform:translateX(-3px)}
+  75%{transform:translateX(3px)}
 }
 
 /* Smartphone Bottom Navigation Bar */
@@ -1062,9 +1222,6 @@ dialog.dlg-scanner {
   background: var(--surface);
   border-top: 1px solid var(--line);
 }
-[dir="rtl"] .scanner-header, [dir="rtl"] .scanner-toolbar, [dir="rtl"] .scanner-filters, [dir="rtl"] .scanner-footer {
-  flex-direction: row-reverse;
-}
 /* Live Camera Document Scanner (OpenCV & jscanify) */
 .live-view-stage {
   position: relative;
@@ -1387,25 +1544,113 @@ dialog.dlg-scanner {
   justify-content:space-between;
 }
 
-/* Kurdish RTL Styling */
-[dir="rtl"]{
-  font-family:system-ui, -apple-system, "Segoe UI", Tahoma, "Noto Sans Arabic", sans-serif;
-  text-align:right;
+/* Kurdish & Arabic RTL Typography and Layout */
+[dir="rtl"] {
+  font-family: system-ui, -apple-system, "Vazirmatn", "Noto Sans Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
+  text-align: right;
+  letter-spacing: normal !important;
 }
-[dir="rtl"] .brand h1{margin-left:0;margin-right:10px}
-[dir="rtl"] header{flex-direction:row-reverse}
-[dir="rtl"] .lrow{direction:rtl}
-[dir="rtl"] .lrow .l{text-align:right}
-[dir="rtl"] .lrow .r{text-align:left}
-[dir="rtl"] .bal-top, [dir="rtl"] .item-head, [dir="rtl"] .section-title, [dir="rtl"] .dlg-header, [dir="rtl"] .exp-filters-head{
-  flex-direction:row-reverse;
+[dir="rtl"] * {
+  letter-spacing: normal !important;
 }
-[dir="rtl"] .acts{
-  flex-direction:row-reverse;
+
+/* Ensure clean text alignment on form elements */
+[dir="rtl"] input[type="text"],
+[dir="rtl"] input[type="search"],
+[dir="rtl"] textarea {
+  text-align: right;
+  direction: rtl;
 }
-[dir="rtl"] .pwa-banner{
-  border-left:1.5px solid var(--accent);
-  border-right:5px solid var(--accent);
+[dir="rtl"] input[type="date"],
+[dir="rtl"] input[type="number"],
+[dir="rtl"] input[type="password"],
+[dir="rtl"] input[type="url"],
+[dir="rtl"] input.amount {
+  direction: ltr;
+  text-align: left;
+}
+[dir="rtl"] select {
+  text-align: right;
+  direction: rtl;
+}
+
+/* Balance Hero in RTL */
+[dir="rtl"] .bal-sync-time {
+  text-align: left;
+}
+
+/* Tables in RTL */
+[dir="rtl"] th, [dir="rtl"] td {
+  text-align: right;
+}
+[dir="rtl"] td.n, [dir="rtl"] th.n {
+  text-align: left;
+}
+
+/* Ledger Rows in RTL */
+[dir="rtl"] .lrow {
+  display: flex;
+  justify-content: space-between;
+}
+[dir="rtl"] .lrow .l {
+  text-align: right;
+}
+[dir="rtl"] .lrow .r {
+  text-align: left;
+}
+
+/* Mobile Nav Badges in RTL */
+[dir="rtl"] .tab-badge {
+  right: auto;
+  left: calc(50% - 20px);
+}
+
+/* Executive Manager Stat Boxes in RTL */
+[dir="rtl"] .exec-stat-box.in-hand {
+  border-left: 1px solid var(--line);
+  border-right: 3.5px solid #10b981;
+}
+[dir="rtl"] .exec-stat-box.held {
+  border-left: 1px solid var(--line);
+  border-right: 3.5px solid #f59e0b;
+}
+[dir="rtl"] .exec-stat-box.spent {
+  border-left: 1px solid var(--line);
+  border-right: 3.5px solid #ef4444;
+}
+
+/* PWA Banner border in RTL */
+[dir="rtl"] .pwa-banner {
+  border: 1.5px solid var(--accent);
+  border-right: 5px solid var(--accent);
+}
+
+/* Pending Deletion Card in RTL */
+[dir="rtl"] #delReq .card {
+  border-left: 1px solid var(--line) !important;
+  border-right: 4px solid var(--warn) !important;
+}
+
+/* Choice card alignment & arrow in RTL */
+[dir="rtl"] .choice-card-btn {
+  text-align: right;
+}
+[dir="rtl"] .choice-arrow {
+  transform: rotate(180deg);
+}
+
+/* Form summary alignment */
+[dir="rtl"] .form-summary-info {
+  text-align: right;
+}
+
+/* Dialog close buttons and header alignment */
+[dir="rtl"] .dlg-header,
+[dir="rtl"] .scanner-header,
+[dir="rtl"] .choice-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* Global Sync & Pending Bar (Directly below Header) */
@@ -1509,9 +1754,6 @@ dialog.dlg-scanner {
   background: var(--danger);
   color: #fff;
 }
-[dir="rtl"] .global-sync-content, [dir="rtl"] .global-sync-left {
-  flex-direction: row-reverse;
-}
 
 @media print{
   header, nav, .bar, .bal, .noprint, .toast, .global-sync-bar{display:none!important}
@@ -1531,7 +1773,7 @@ dialog.dlg-scanner {
     </div>
     <div style="display:flex;flex-direction:column;justify-content:center;line-height:1.15;">
       <h1 id="appTitle">Petty Cash</h1>
-      <span class="app-version" id="appVersion">v2.1.0</span>
+      <span class="app-version" id="appVersion">v2.2.1</span>
     </div>
   </div>
   <button class="btn-lang" id="btnLang" aria-label="Language Toggle" title="Switch English / کوردی" type="button">
@@ -1567,8 +1809,8 @@ dialog.dlg-scanner {
       <img src="icon-192.png" alt="Petty Cash" style="width:38px;height:38px;border-radius:10px;">
     </div>
     <div class="pwa-banner-content">
-      <strong>Install Petty Cash App</strong>
-      <p>Install on your home screen for instant offline receipts & quick access.</p>
+      <strong id="lblPwaTitle">Install Petty Cash App</strong>
+      <p id="lblPwaSub">Install on your home screen for instant offline receipts & quick access.</p>
     </div>
     <div class="pwa-banner-actions">
       <button class="btn small primary" id="btnPwaInstall" type="button">Install</button>
@@ -1582,7 +1824,7 @@ dialog.dlg-scanner {
       <span class="bal-label" id="balWho">Petty Cash Balance</span>
       <button class="bal-refresh" id="btnRefresh" type="button">
         <svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
-        <span>Sync</span>
+        <span id="lblBtnRefresh">Sync</span>
       </button>
     </div>
     <div class="bal-amt" id="balAmtWrap"><span id="balAmt">—</span> <small id="curLabel"></small></div>
@@ -1622,7 +1864,7 @@ dialog.dlg-scanner {
   <!-- TAB: NEW EXPENSE -->
   <section id="pNew" class="panel">
     <div class="banner" id="editBanner" hidden style="background:var(--warn-bg);color:var(--warn);padding:10px 14px;border-radius:14px;font-weight:600;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <span>✏️ Editing saved draft</span>
+      <span id="lblEditBanner">✏️ Editing saved draft</span>
       <button id="btnNewForm" type="button" class="btn small">Discard & New</button>
     </div>
 
@@ -1632,33 +1874,35 @@ dialog.dlg-scanner {
     </div>
 
     <!-- Receipt Photos directly below Select Company -->
-    <div class="section-title">
-      <span>Receipt Photos</span>
-      <small id="pgCount">No photos yet</small>
-    </div>
-    
-    <div class="cap">
-      <button class="btn primary" id="btnCam" type="button">
-        <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        <span id="lblBtnCam">Auto-Scan Document</span>
-      </button>
-      <button class="btn" id="btnGal" type="button">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        <span>Gallery</span>
-      </button>
-    </div>
-    <input id="inCam" type="file" accept="image/*" capture="environment" hidden>
-    <input id="inGal" type="file" accept="image/*" multiple hidden>
-    
-    <div id="pages" class="pages"></div>
-    <div id="pagesEmpty" class="empty">
-      📸 Take clear photos of your paper receipt.<br>One photo per page.
+    <div id="receiptSection" class="receipt-section">
+      <div class="section-title">
+        <span id="lblReceiptTitle">Receipt Photos</span>
+        <small id="pgCount">No photos yet</small>
+      </div>
+      
+      <div class="cap">
+        <button class="btn primary" id="btnCam" type="button">
+          <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span id="lblBtnCam">Auto-Scan Document</span>
+        </button>
+        <button class="btn" id="btnGal" type="button">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span id="lblBtnGal">Gallery</span>
+        </button>
+      </div>
+      <input id="inCam" type="file" accept="image/*" capture="environment" hidden>
+      <input id="inGal" type="file" accept="image/*" multiple hidden>
+      
+      <div id="pages" class="pages"></div>
+      <div id="pagesEmpty" class="empty">
+        📸 Take clear photos of your paper receipt.<br>One photo per page.
+      </div>
     </div>
 
     <!-- Data Entry Section -->
     <div class="row">
       <div class="form-group">
-        <label for="fDate">Expense Date</label>
+        <label for="fDate" id="lblFDate">Expense Date</label>
         <input id="fDate" type="date">
         <div class="date-quick-bar">
           <button type="button" class="date-quick-btn" id="btnDateToday">Today</button>
@@ -1666,19 +1910,43 @@ dialog.dlg-scanner {
         </div>
       </div>
       <div class="form-group">
-        <label for="fVoucher">Voucher / Receipt No</label>
+        <label for="fVoucher" id="lblFVoucher">Voucher / Receipt No</label>
         <input id="fVoucher" type="text" autocomplete="off" placeholder="e.g. 1042">
       </div>
     </div>
 
     <div class="form-group input-amount-wrap">
-      <label for="fAmount">Amount <span class="cur" id="fAmountCur"></span></label>
+      <label for="fAmount" id="lblFAmount">Amount <span class="cur" id="fAmountCur"></span></label>
       <input id="fAmount" class="amount" type="number" inputmode="decimal" step="1" min="0" placeholder="0">
     </div>
 
     <div class="form-group">
-      <label for="fDesc">Expense Description</label>
+      <label for="fDesc" id="lblFDesc">Expense Description</label>
       <textarea id="fDesc" dir="auto" placeholder="What was this expense for?"></textarea>
+    </div>
+
+    <!-- In-flow Action Dock at bottom of form -->
+    <div class="form-action-card noprint" id="formActionCard">
+      <div class="form-action-summary" id="formActionSummary">
+        <div class="form-summary-info">
+          <span class="form-summary-label" id="lblFormSummary">Ready to submit</span>
+          <div class="form-summary-badges">
+            <span class="form-summary-comp" id="formSummaryComp">No company selected</span>
+            <span class="form-summary-sep">·</span>
+            <span class="form-summary-amt" id="formSummaryAmt">0 IQD</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-action-buttons">
+        <button class="btn-action-draft" id="btnDraftInline" type="button">
+          <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span id="lblBtnDraftInline">Save Draft</span>
+        </button>
+        <button class="btn-action-submit" id="btnSubmitInline" type="button">
+          <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <span id="lblBtnSubmitInline">Submit &amp; Upload</span>
+        </button>
+      </div>
     </div>
   </section>
 
@@ -1745,13 +2013,13 @@ dialog.dlg-scanner {
           </select>
         </div>
         <div>
-          <label for="rCat">Category</label>
+          <label for="rCat" id="lblRCat">Category</label>
           <select id="rCat"><option value="">All Categories</option></select>
         </div>
       </div>
       <div class="row" id="rCustom" hidden style="margin-top:10px;">
-        <div><label for="rFrom">From</label><input id="rFrom" type="date"></div>
-        <div><label for="rTo">To</label><input id="rTo" type="date"></div>
+        <div><label for="rFrom" id="lblRFrom">From</label><input id="rFrom" type="date"></div>
+        <div><label for="rTo" id="lblRTo">To</label><input id="rTo" type="date"></div>
       </div>
       <div class="seg" style="margin-top:12px;">
         <button class="btn small primary" id="btnRepCsv" type="button">CSV</button>
@@ -1764,28 +2032,28 @@ dialog.dlg-scanner {
   <!-- TAB: CASH (MANAGER) -->
   <section id="pCash" class="panel" hidden>
     <div class="card">
-      <h4>Record Cash Movement</h4>
-      <p class="hint">Recorded directly into Received or Paid sheet using manager key.</p>
+      <h4 id="lblCashHead">Record Cash Movement</h4>
+      <p class="hint" id="lblCashHint">Recorded directly into Received or Paid sheet using manager key.</p>
       <div class="form-group">
-        <label for="cType">Transaction Type</label>
+        <label for="cType" id="lblCType">Transaction Type</label>
         <select id="cType">
-          <option value="paid">Paid cash to user (User + / Company -)</option>
-          <option value="recv">Received cash from company (Company +)</option>
-          <option value="back">Took cash back from user (User - / Company +)</option>
+          <option value="paid" id="optPaid">Paid cash to user (User + / Company -)</option>
+          <option value="recv" id="optRecv">Received cash from company (Company +)</option>
+          <option value="back" id="optBack">Took cash back from user (User - / Company +)</option>
         </select>
       </div>
       <div class="row">
         <div class="form-group">
-          <label for="cDate">Date</label>
+          <label for="cDate" id="lblCDate">Date</label>
           <input id="cDate" type="date">
         </div>
         <div class="form-group">
-          <label for="cAmt">Amount <span class="cur" id="cCur"></span></label>
+          <label for="cAmt" id="lblCAmt">Amount <span class="cur" id="cCur"></span></label>
           <input id="cAmt" class="amount" type="number" inputmode="decimal" step="1" min="0" placeholder="0">
         </div>
       </div>
       <div class="form-group">
-        <label for="cNote">Note / Description</label>
+        <label for="cNote" id="lblCNote">Note / Description</label>
         <input id="cNote" dir="auto" placeholder="e.g. Top up petty cash">
       </div>
       <button class="btn primary" id="btnGive" type="button" style="width:100%;">Save Cash Movement</button>
@@ -1799,12 +2067,15 @@ dialog.dlg-scanner {
 <!-- Sticky Bottom Save Dock (For New Tab) -->
 <div class="bar" id="saveBar">
   <div class="in">
-    <button class="btn primary" id="btnSaveSubmit" type="button" style="width:100%;min-height:50px;font-size:16px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:10px;">
-      <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-      <span id="lblSubmitAction">Submit Expense</span>
+    <button class="btn-action-draft" id="btnDraft" type="button" title="Save locally as draft">
+      <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      <span id="lblBtnDraft">Save Draft</span>
     </button>
-    <button id="btnDraft" type="button" hidden></button>
-    <button id="btnSubmit" type="button" hidden></button>
+    <button class="btn-action-submit" id="btnSubmit" type="button" title="Compile receipt PDF and sync to Google Sheets">
+      <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      <span id="lblBtnSubmit">Submit &amp; Upload</span>
+    </button>
+    <button id="btnSaveSubmit" type="button" hidden></button>
   </div>
 </div>
 
@@ -1938,25 +2209,23 @@ dialog.dlg-scanner {
           <canvas id="outputCanvas" style="max-width: 100%; max-height: 100%; display: block; box-shadow: 0 8px 24px rgba(0,0,0,0.5); border-radius: 4px;"></canvas>
         </div>
         <div class="result-badge-bar">
-          <span class="badge-success">✓ Auto-Cropped & Perspective Flattened</span>
+          <span class="badge-success" id="lblLiveCroppedBadge">✓ Auto-Cropped & Perspective Flattened</span>
         </div>
       </div>
     </div>
 
     <!-- Filter Modes (Visible when viewing preview) -->
     <div class="scanner-filters" id="liveFilterBar" hidden>
-      <span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-right:4px;">Filter:</span>
-      <button type="button" class="filter-chip active" data-lmode="color" id="lModeColor">🎨 Color</button>
-      <button type="button" class="filter-chip" data-lmode="magic" id="lModeMagic">✨ Magic Color</button>
-      <button type="button" class="filter-chip" data-lmode="gray" id="lModeGray">⚪ Grayscale</button>
-      <button type="button" class="filter-chip" data-lmode="bw" id="lModeBw">🔲 B&W</button>
+      <span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-right:4px;" id="lblLiveFilterLabel">Filter:</span>
+      <button type="button" class="filter-chip" data-lmode="color" id="lModeColor">📷 Normal</button>
+      <button type="button" class="filter-chip active" data-lmode="magic" id="lModeMagic">✨ Scanned</button>
     </div>
 
     <!-- Actions Footer -->
     <div class="scanner-footer" id="liveActionsLive">
       <button type="button" class="btn small" id="btnLiveFallbackUpload" style="min-width:100px;">
         <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        <span>Upload File</span>
+        <span id="lblLiveUploadFile">Upload File</span>
       </button>
       <button type="button" class="btn primary" id="scanBtn" style="flex:1.5;min-height:48px;font-size:15px;font-weight:800;gap:8px;">
         <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
@@ -1967,14 +2236,14 @@ dialog.dlg-scanner {
     <div class="scanner-footer" id="liveActionsPreview" hidden>
       <button type="button" class="btn small" id="btnLiveRetake" style="min-width:90px;">
         <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-        <span>Retake</span>
+        <span id="lblLiveRetake">Retake</span>
       </button>
       <button type="button" class="btn small" id="btnLiveManualAdjust" style="font-weight:600;">
-        <span>📐 Adjust Edges</span>
+        <span id="lblLiveManual">📐 Adjust Edges</span>
       </button>
       <button type="button" class="btn small primary" id="btnLiveAccept" style="flex:1;min-height:46px;font-weight:800;">
         <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>Attach Receipt</span>
+        <span id="lblLiveAccept">Attach Receipt</span>
       </button>
     </div>
   </div>
@@ -2022,24 +2291,18 @@ dialog.dlg-scanner {
     <div id="scannerHost">
       <div id="scannerSpinner" style="color:#fff;display:flex;flex-direction:column;align-items:center;gap:10px;">
         <span style="font-size:24px;">⏳</span>
-        <span style="font-size:13px;font-weight:600;">Detecting document edges…</span>
+        <span style="font-size:13px;font-weight:600;" id="lblDetectingEdges">Detecting document edges…</span>
       </div>
     </div>
 
     <!-- Filter Mode Selection -->
     <div class="scanner-filters">
       <span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-right:4px;" id="lblScannerFilter">Mode:</span>
-      <button type="button" class="filter-chip active" data-mode="color" id="fModeColor">
-        <span>🎨</span> <span id="lblFilterColor">Color</span>
+      <button type="button" class="filter-chip" data-mode="color" id="fModeColor">
+        <span>📷</span> <span id="lblFilterColor">Normal</span>
       </button>
-      <button type="button" class="filter-chip" data-mode="magic" id="fModeMagic">
-        <span>✨</span> <span id="lblFilterMagic">Magic Color</span>
-      </button>
-      <button type="button" class="filter-chip" data-mode="gray" id="fModeGray">
-        <span>⚪</span> <span id="lblFilterGray">Grayscale</span>
-      </button>
-      <button type="button" class="filter-chip" data-mode="bw" id="fModeBw">
-        <span>🔲</span> <span id="lblFilterBw">B&W</span>
+      <button type="button" class="filter-chip active" data-mode="magic" id="fModeMagic">
+        <span>✨</span> <span id="lblFilterMagic">Scanned</span>
       </button>
     </div>
 
@@ -2066,10 +2329,8 @@ dialog.dlg-scanner {
     <div id="viewCanvasWrap"></div>
     <!-- Filter Switcher in Viewer -->
     <div class="scanner-filters" style="margin-bottom:12px;padding:6px 0;background:transparent;border:0;">
-      <button type="button" class="filter-chip active" data-vmode="color" id="vModeColor">🎨 Color</button>
-      <button type="button" class="filter-chip" data-vmode="magic" id="vModeMagic">✨ Magic</button>
-      <button type="button" class="filter-chip" data-vmode="gray" id="vModeGray">⚪ Gray</button>
-      <button type="button" class="filter-chip" data-vmode="bw" id="vModeBw">🔲 B&W</button>
+      <button type="button" class="filter-chip" data-vmode="color" id="vModeColor">📷 Normal</button>
+      <button type="button" class="filter-chip active" data-vmode="magic" id="vModeMagic">✨ Scanned</button>
     </div>
     <div class="seg">
       <button class="btn small" id="vReCrop" type="button" style="font-weight:700;">📐 Adjust Edges</button>
@@ -2087,23 +2348,23 @@ dialog.dlg-scanner {
 <dialog id="dSet">
   <div class="dlg">
     <div class="dlg-header">
-      <h3>App Settings</h3>
+      <h3 id="lblSetTitle">App Settings</h3>
       <button class="close-btn" id="btnSetClose" type="button" aria-label="Close">✕</button>
     </div>
     <div class="form-group">
-      <label for="sName">Your Name</label>
+      <label for="sName" id="lblSName">Your Name</label>
       <input id="sName" placeholder="e.g. John Doe">
     </div>
     <div class="form-group">
-      <label for="sUrl">Google Apps Script Web App URL</label>
+      <label for="sUrl" id="lblSUrl">Google Apps Script Web App URL</label>
       <input id="sUrl" placeholder="https://script.google.com/macros/s/…/exec" inputmode="url" autocomplete="off">
     </div>
     <div class="form-group">
-      <label for="sKey">Access Key</label>
+      <label for="sKey" id="lblSKey">Access Key</label>
       <input id="sKey" type="password" autocomplete="off" placeholder="Paste your manager or user key">
     </div>
-    <label style="display:flex;gap:10px;align-items:center;font-weight:600;font-size:13.5px;margin:12px 0;">
-      <input type="checkbox" id="sWarn" style="width:auto"> Ask before spending more than the balance
+    <label style="display:flex;gap:10px;align-items:center;font-weight:600;font-size:13.5px;margin:12px 0;" id="lblSWarn">
+      <input type="checkbox" id="sWarn" style="width:auto"> <span id="lblSWarnText">Ask before spending more than the balance</span>
     </label>
     <p class="hint" id="connState" style="padding:8px 12px;background:var(--surface-sub);border-radius:10px;border:1px solid var(--line);"></p>
     <div class="seg">
@@ -2135,23 +2396,23 @@ dialog.dlg-scanner {
 <dialog id="dIosInstall">
   <div class="dlg">
     <div class="dlg-header">
-      <h3>Install on iPhone / iPad</h3>
+      <h3 id="lblIosTitle">Install on iPhone / iPad</h3>
       <button class="close-btn" id="btnIosClose" type="button" aria-label="Close">✕</button>
     </div>
     <div style="padding:10px 0;">
-      <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Add Petty Cash to your iOS Home Screen for full-screen view and offline use:</p>
+      <p id="lblIosDesc" style="font-size:14px;color:var(--muted);margin-bottom:16px;">Add Petty Cash to your iOS Home Screen for full-screen view and offline use:</p>
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;background:var(--surface-sub);padding:12px;border-radius:12px;border:1px solid var(--line);">
         <div style="background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">1</div>
         <div>
-          <strong style="font-size:14px;display:block;margin-bottom:2px;">Tap the Share button</strong>
-          <span style="font-size:12.5px;color:var(--muted);">In Safari's toolbar at the bottom of the screen, tap the Share icon (square with arrow pointing up ⎋).</span>
+          <strong id="lblIosStep1Title" style="font-size:14px;display:block;margin-bottom:2px;">Tap the Share button</strong>
+          <span id="lblIosStep1Desc" style="font-size:12.5px;color:var(--muted);">In Safari's toolbar at the bottom of the screen, tap the Share icon (square with arrow pointing up ⎋).</span>
         </div>
       </div>
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:18px;background:var(--surface-sub);padding:12px;border-radius:12px;border:1px solid var(--line);">
         <div style="background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">2</div>
         <div>
-          <strong style="font-size:14px;display:block;margin-bottom:2px;">Tap "Add to Home Screen"</strong>
-          <span style="font-size:12.5px;color:var(--muted);">Scroll down the share options and tap <strong>Add to Home Screen</strong>, then tap <strong>Add</strong> in the top-right corner.</span>
+          <strong id="lblIosStep2Title" style="font-size:14px;display:block;margin-bottom:2px;">Tap "Add to Home Screen"</strong>
+          <span id="lblIosStep2Desc" style="font-size:12.5px;color:var(--muted);">Scroll down the share options and tap <strong>Add to Home Screen</strong>, then tap <strong>Add</strong> in the top-right corner.</span>
         </div>
       </div>
       <button class="btn primary" id="btnIosDone" type="button" style="width:100%;">Done</button>
@@ -2310,6 +2571,12 @@ const I18N = {
     connected: "Connected",
     connecting: "Connecting…",
     offline: "Offline",
+    sheetError: "Sheet Error",
+    syncingStatus: "Syncing…",
+    managerRole: "Manager",
+    expenseUserRole: "Expense User",
+    sync: "Sync",
+    updated: "Updated ",
     selectCompany: "Select Company",
     company: "Company",
     companies: "Companies",
@@ -2324,10 +2591,14 @@ const I18N = {
     descPlaceholder: "What was this expense for?",
     note: "Note (optional)",
     receiptPhotos: "Receipt Photos",
+    noPhotosYet: "No photos yet",
+    noPhotosHint: "📸 Take clear photos of your paper receipt.<br>One photo per page.",
     takePhoto: "Auto-Scan Document",
     gallery: "Gallery",
     saveDraft: "Save Draft",
     submitUpload: "Submit & Upload",
+    readyToSubmit: "Ready to submit",
+    noCompanySelected: "No company selected",
     submitExpenseAction: "Save / Submit Expense",
     choiceTitle: "Save or Submit Expense",
     choiceSub: "Choose how you want to handle this expense:",
@@ -2338,6 +2609,8 @@ const I18N = {
     filterExpenses: "🔍 Filter Expenses",
     fromDate: "From Date",
     toDate: "To Date",
+    from: "From",
+    to: "To",
     reset: "Reset",
     syncAllWaiting: "Sync All Waiting",
     noExpenses: "Drafts and submitted expenses will appear here.",
@@ -2365,7 +2638,17 @@ const I18N = {
     testConn: "Test Connection",
     saveClose: "Save Settings",
     manageCompanies: "Manage Companies",
+    manageCompaniesHint: "Companies and their brand colors are stored in the Companies tab of your Google Sheet:",
     addCompany: "Add",
+    newCompPlaceholder: "New company name",
+    yourName: "Your Name",
+    namePlaceholder: "e.g. John Doe",
+    gasUrl: "Google Apps Script Web App URL",
+    accessKey: "Access Key",
+    keyPlaceholder: "Paste your manager or user key",
+    warnOverBalance: "Ask before spending more than the balance",
+    copySetupLink: "Copy Setup Link for Expense User",
+    rotateUserKey: "Rotate Expense User's Key",
     period: "Period",
     thisMonth: "This month",
     lastMonth: "Last month",
@@ -2373,6 +2656,7 @@ const I18N = {
     customDates: "Custom dates",
     downloadCsv: "Download CSV",
     printPdf: "Print / PDF",
+    print: "Print",
     spendingByCompany: "Spending by Company",
     scannerTitle: "Scan Document",
     scannerSub: "Adjust corners to fit receipt edges. Drag magnifier for precision.",
@@ -2380,15 +2664,48 @@ const I18N = {
     selectAll: "Full Photo",
     rotate: "Rotate",
     filterLabel: "Mode:",
-    modeColor: "Color",
-    modeMagic: "Magic Color",
+    modeColor: "Normal",
+    modeMagic: "Scanned",
     modeGray: "Grayscale",
     modeBw: "B&W",
     applyAndSave: "Apply & Save",
     cancelScan: "Cancel",
+    cancel: "Cancel",
     adjustCrop: "📐 Adjust Edges",
     pageOf: "Page",
-    scanErr: "Could not process this receipt photo."
+    scanErr: "Could not process this receipt photo.",
+    liveScanTitle: "Auto-Scan Document",
+    liveScanSub: "Point camera at receipt. Tap Capture & Auto-Crop to flatten.",
+    reticleHint: "Align receipt within frame",
+    liveStatusReady: "Live Camera Ready",
+    uploadFile: "Upload File",
+    captureCrop: "Capture & Auto-Crop",
+    retake: "Retake",
+    attachReceipt: "Attach Receipt",
+    autoCroppedBadge: "✓ Auto-Cropped & Perspective Flattened",
+    detectingEdges: "Detecting document edges…",
+    receiptPage: "Receipt Page",
+    deletePage: "Delete Page",
+    done: "Done",
+    pwaTitle: "Install Petty Cash App",
+    pwaSub: "Install on your home screen for instant offline receipts & quick access.",
+    pwaInstall: "Install",
+    pwaIosTitle: "Install on iPhone / iPad",
+    pwaIosDesc: "Add Petty Cash to your iOS Home Screen for full-screen view and offline use:",
+    pwaIosStep1Title: "Tap the Share button",
+    pwaIosStep1Desc: "In Safari's toolbar at the bottom of the screen, tap the Share icon (square with arrow pointing up ⎋).",
+    pwaIosStep2Title: "Tap \"Add to Home Screen\"",
+    pwaIosStep2Desc: "Scroll down the share options and tap Add to Home Screen, then tap Add in the top-right corner.",
+    editingDraftBanner: "✏️ Editing saved draft",
+    discardNew: "Discard & New",
+    recordCashMovement: "Record Cash Movement",
+    recordCashHint: "Recorded directly into Received or Paid sheet using manager key.",
+    transType: "Transaction Type",
+    optPaid: "Paid cash to user (User + / Company -)",
+    optRecv: "Received cash from company (Company +)",
+    optBack: "Took cash back from user (User - / Company +)",
+    noteDesc: "Note / Description",
+    notePlaceholder: "e.g. Top up petty cash"
   },
   ku: {
     appTitle: "خەرجییەکان",
@@ -2409,6 +2726,12 @@ const I18N = {
     connected: "پەیوەستە",
     connecting: "لە پەیوەندیدایە…",
     offline: "هێڵ نییە (ئۆفلاین)",
+    sheetError: "هەڵەی گووگڵ شیت",
+    syncingStatus: "هاوکات دەکرێت…",
+    managerRole: "بەڕێوەبەر",
+    expenseUserRole: "بەکارهێنەری خەرجی",
+    sync: "نوێکردنەوە",
+    updated: "نوێکرایەوە ",
     selectCompany: "کۆمپانیا هەڵبژێرە",
     company: "کۆمپانیا",
     companies: "کۆمپانیاکان",
@@ -2423,10 +2746,14 @@ const I18N = {
     descPlaceholder: "ئەم خەرجییە بۆ چی کراوە؟",
     note: "تێبینی (ئارەزوومەندانە)",
     receiptPhotos: "وێنەکانی پسوڵە",
+    noPhotosYet: "هێشتا وێنە نییە",
+    noPhotosHint: "📸 وێنەیەکی روونی پسوڵەکەت بگرە.<br>بۆ هەر پەڕەیەک یەک وێنە.",
     takePhoto: "سکانی خۆکاری پسوڵە",
     gallery: "گەلەری",
     saveDraft: "پاشەکەوتی ڕەشنووس",
     submitUpload: "تۆمارکردن و ناردن",
+    readyToSubmit: "ئامادەیە بۆ ناردن",
+    noCompanySelected: "کۆمپانیا هەڵنەبژێردراوە",
     submitExpenseAction: "پاشەکەوت / ناردنی خەرجی",
     choiceTitle: "پاشەکەوت یان ناردنی خەرجی",
     choiceSub: "شێوازی تۆمارکردنی ئەم خەرجییە دیاریبکە:",
@@ -2437,6 +2764,8 @@ const I18N = {
     filterExpenses: "🔍 فلتەرکردنی خەرجییەکان",
     fromDate: "لە بەرواری",
     toDate: "تا بەرواری",
+    from: "لە",
+    to: "تا",
     reset: "پاککردنەوە",
     syncAllWaiting: "هاوکاتکردنی هەموو چاوەڕوانەکان",
     noExpenses: "خەرجییە تۆمارکراوەکان لێرە دەردەکەون.",
@@ -2464,7 +2793,17 @@ const I18N = {
     testConn: "پشکنینی پەیوەندی",
     saveClose: "پاشەکەوتکردن",
     manageCompanies: "بەڕێوەبردنی کۆمپانیاکان",
+    manageCompaniesHint: "کۆمپانیاکان و ڕەنگەکانیان لە تابی کۆمپانیاکان (Companies) لە گووگڵ شیت پاشەکەوت دەکرێن:",
     addCompany: "زیادکردن",
+    newCompPlaceholder: "ناوی کۆمپانیای نوێ",
+    yourName: "ناوت",
+    namePlaceholder: "نموونە: ئارام ئەحمەد",
+    gasUrl: "ناونیشانی وێب ئەپی گووگڵ سکریپت (URL)",
+    accessKey: "کلیلی چوونەژوورەوە",
+    keyPlaceholder: "کلیلی بەڕێوەبەر یان بەکارهێنەر لێرە دابنێ",
+    warnOverBalance: "پرسین پێش خەرجکردنی زیاتر لە باڵانس",
+    copySetupLink: "کۆپیکردنی بەستەری ڕێکخستن بۆ بەکارهێنەر",
+    rotateUserKey: "گۆڕینی کلیلی بەکارهێنەری خەرجی",
     period: "ماوە",
     thisMonth: "ئەم مانگە",
     lastMonth: "مانگی پێشوو",
@@ -2472,6 +2811,7 @@ const I18N = {
     customDates: "بەرواری دیاریکراو",
     downloadCsv: "داگرتنی CSV",
     printPdf: "چاپکردن / PDF",
+    print: "چاپکردن",
     spendingByCompany: "خەرجی بەپێی کۆمپانیا",
     scannerTitle: "پشکنینی بەڵگەنامە",
     scannerSub: "گۆشەکان ڕابکێشە بۆ سەر لێوارەکانی پسوڵە. گەورەکەر بۆ وردبینی بەکاربهێنە.",
@@ -2479,15 +2819,48 @@ const I18N = {
     selectAll: "هەموو وێنەکە",
     rotate: "سوڕاندن",
     filterLabel: "شێواز:",
-    modeColor: "ڕەنگاوڕەنگ",
-    modeMagic: "ڕەنگی ڕووناک",
+    modeColor: "ئاسایی",
+    modeMagic: "سکانکراو",
     modeGray: "ڕەساسی",
     modeBw: "ڕەش و سپی",
     applyAndSave: "جێبەجێکردن و پاشەکەوتکردن",
     cancelScan: "پەشیمانبوونەوە",
+    cancel: "پەشیمانبوونەوە",
     adjustCrop: "📐 دەستکاریکردنی سنوور",
     pageOf: "پەڕەی",
-    scanErr: "نەتوانرا وێنەی ئەم پسوڵەیە پشکنین بکرێت."
+    scanErr: "نەتوانرا وێنەی ئەم پسوڵەیە پشکنین بکرێت.",
+    liveScanTitle: "سکانی خۆکاری بەڵگەنامە",
+    liveScanSub: "کامێراکەت ڕابگرە بەرامەر پسوڵەکە. دوگمەی چرکاندن دابگرە بۆ بڕین و تەختکردن.",
+    reticleHint: "پسوڵەکە بخەرە ناو چوارچێوەکەوە",
+    liveStatusReady: "کامێرای ڕاستەوخۆ ئامادەیە",
+    uploadFile: "بارکردنی پەڕگە",
+    captureCrop: "چرکاندن و بڕینی خۆکار",
+    retake: "دووبارە چرکاندنەوە",
+    attachReceipt: "لکاندنی پسوڵە",
+    autoCroppedBadge: "✓ خۆکارانە بڕدرا و گۆشەکەی ڕێکخرایەوە",
+    detectingEdges: "دەستنیشانکردنی سنووری پسوڵە…",
+    receiptPage: "پەڕەی پسوڵە",
+    deletePage: "سڕینەوەی پەڕە",
+    done: "تەواو",
+    pwaTitle: "دابەزاندنی ئەپی خەرجییەکان",
+    pwaSub: "ئەپەکە دابەزێنە سەر شاشەی مۆبایلەکەت بۆ بەکارهێنانی خێرا و ئۆفلاین.",
+    pwaInstall: "دابەزاندن",
+    pwaIosTitle: "دابەزاندن لەسەر ئایفۆن / ئایپاد",
+    pwaIosDesc: "ئەپی خەرجییەکان زیاد بکە بۆ سەر شاشەی سەرەکی بۆ بینینی تەواوی شاشە و بەکارهێنانی بێ ئینتەرنێت:",
+    pwaIosStep1Title: "پەنجە بنێ لە دوگمەی Share",
+    pwaIosStep1Desc: "لە شریتی خوارەوەی وێبگەڕی Safari، پەنجە بنێ لە نیشانەی هاوبەشکردن (چوارگۆشە بە تیرێکی بەرەو سەرەوە ⎋).",
+    pwaIosStep2Title: "پەنجە بنێ لە 'Add to Home Screen'",
+    pwaIosStep2Desc: "بڕۆ بەرەو خوارەوە لە لیستەکەدا و پەنجە بنێ لە Add to Home Screen، پاشان پەنجە بنێ لە Add لە بەشی سەرەوەی دەستە ڕاست.",
+    editingDraftBanner: "✏️ دەستکاریکردنی ڕەشنووس",
+    discardNew: "پاشگەزبوونەوە و نوێ",
+    recordCashMovement: "تۆمارکردنی جوڵەی نەختینە",
+    recordCashHint: "راستەوخۆ لە شیتی وەرگیراو یان دراو تۆمار دەکرێت بە کلیلی بەڕێوەبەر.",
+    transType: "جۆری مامەڵە",
+    optPaid: "پێدانی پارە بە بەکارهێنەر (بەکارهێنەر + / کۆمپانیا -)",
+    optRecv: "راکێشانی پارە لە کۆمپانیا (کۆمپانیا +)",
+    optBack: "وەرگرتنەوەی پارە لە بەکارهێنەر (بەکارهێنەر - / کۆمپانیا +)",
+    noteDesc: "تێبینی / وەسف",
+    notePlaceholder: "نموونە: پڕکردنەوەی نەختینەی سەرەتایی"
   }
 };
 
@@ -2503,6 +2876,12 @@ function applyLang() {
   if (titleEl) titleEl.textContent = t("appTitle");
   const langTxtEl = $("#langTxt");
   if (langTxtEl) langTxtEl.innerHTML = isKu ? '<b>KU</b>' : '<b>EN</b>';
+  if ($("#lblBtnRefresh")) $("#lblBtnRefresh").textContent = t("sync");
+  
+  // PWA Banner
+  if ($("#lblPwaTitle")) $("#lblPwaTitle").textContent = t("pwaTitle");
+  if ($("#lblPwaSub")) $("#lblPwaSub").textContent = t("pwaSub");
+  if ($("#btnPwaInstall")) $("#btnPwaInstall").textContent = t("pwaInstall");
   
   // Tabs
   if ($("#lblTabNew")) $("#lblTabNew").textContent = t("tabNew");
@@ -2512,33 +2891,30 @@ function applyLang() {
   if ($("#lblTabCash")) $("#lblTabCash").textContent = t("tabCash");
   
   // Form Labels
+  if ($("#lblEditBanner")) $("#lblEditBanner").textContent = t("editingDraftBanner");
+  if ($("#btnNewForm")) $("#btnNewForm").textContent = t("discardNew");
   if ($("#catLbl")) $("#catLbl").textContent = t("selectCompany");
-  const lblDate = $("label[for='fDate']");
-  if (lblDate) lblDate.textContent = t("expDate");
+  if ($("#lblReceiptTitle")) $("#lblReceiptTitle").textContent = t("receiptPhotos");
+  if ($("#lblFDate")) $("#lblFDate").textContent = t("expDate");
   if ($("#btnDateToday")) $("#btnDateToday").textContent = t("today");
   if ($("#btnDateYest")) $("#btnDateYest").textContent = t("yesterday");
-  const lblVoucher = $("label[for='fVoucher']");
-  if (lblVoucher) lblVoucher.textContent = t("voucher");
+  if ($("#lblFVoucher")) $("#lblFVoucher").textContent = t("voucher");
   if ($("#fVoucher")) $("#fVoucher").placeholder = t("voucherPlaceholder");
-  const lblAmt = $("label[for='fAmount']");
-  if (lblAmt && lblAmt.firstChild) lblAmt.firstChild.textContent = t("amount") + " ";
-  const lblDesc = $("label[for='fDesc']");
-  if (lblDesc) lblDesc.textContent = t("description");
+  if ($("#lblFAmount")) $("#lblFAmount").innerHTML = esc(t("amount")) + ' <span class="cur" id="fAmountCur">(' + esc(cur()) + ')</span>';
+  if ($("#lblFDesc")) $("#lblFDesc").textContent = t("description");
   if ($("#fDesc")) $("#fDesc").placeholder = t("descPlaceholder");
-  const lblNote = $("label[for='fNote']");
-  if (lblNote && lblNote.firstChild) lblNote.firstChild.textContent = t("note") + " ";
+  if ($("#lblNote") && $("#lblNote").firstChild) $("#lblNote").firstChild.textContent = t("note") + " ";
   const btnCam = $("#btnCam");
   if (btnCam) btnCam.innerHTML = '<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> <span id="lblBtnCam">' + esc(t("takePhoto")) + '</span>';
-  if ($("#btnGal")) $("#btnGal").innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> ' + t("gallery");
-  if ($("#btnDraft")) $("#btnDraft").textContent = t("saveDraft");
-  if ($("#btnSubmit")) $("#btnSubmit").textContent = t("submitUpload");
-  if ($("#lblSubmitAction")) $("#lblSubmitAction").textContent = t("submitExpenseAction");
-  if ($("#lblChoiceTitle")) $("#lblChoiceTitle").textContent = t("choiceTitle");
-  if ($("#lblChoiceSub")) $("#lblChoiceSub").textContent = t("choiceSub");
-  if ($("#lblChoiceDraftTitle")) $("#lblChoiceDraftTitle").textContent = t("choiceDraftTitle");
-  if ($("#lblChoiceDraftDesc")) $("#lblChoiceDraftDesc").textContent = t("choiceDraftDesc");
-  if ($("#lblChoiceUploadTitle")) $("#lblChoiceUploadTitle").textContent = t("choiceUploadTitle");
-  if ($("#lblChoiceUploadDesc")) $("#lblChoiceUploadDesc").textContent = t("choiceUploadDesc");
+  if ($("#btnGal")) $("#btnGal").innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> <span id="lblBtnGal">' + esc(t("gallery")) + '</span>';
+  if ($("#pagesEmpty")) $("#pagesEmpty").innerHTML = t("noPhotosHint");
+  
+  if ($("#lblBtnDraft")) $("#lblBtnDraft").textContent = t("saveDraft");
+  if ($("#lblBtnSubmit")) $("#lblBtnSubmit").textContent = t("submitUpload");
+  if ($("#lblBtnDraftInline")) $("#lblBtnDraftInline").textContent = t("saveDraft");
+  if ($("#lblBtnSubmitInline")) $("#lblBtnSubmitInline").textContent = t("submitUpload");
+  if ($("#lblFormSummary")) $("#lblFormSummary").textContent = t("readyToSubmit");
+  updateFormSummary();
   
   // Expenses tab
   if ($("#lblFilterTitle")) $("#lblFilterTitle").textContent = t("filterExpenses");
@@ -2549,35 +2925,104 @@ function applyLang() {
   if ($("#btnUploadAll")) $("#btnUploadAll").textContent = t("syncAllWaiting");
   if ($("#expEmpty")) $("#expEmpty").textContent = t("noExpenses");
   
-  // Cash tab
-  if ($("#lblCashTitle")) $("#lblCashTitle").textContent = t("cashMovement");
-  if ($("#btnGive")) $("#btnGive").textContent = t("saveMovement");
+  // Choice popup
+  if ($("#lblChoiceTitle")) $("#lblChoiceTitle").textContent = t("choiceTitle");
+  if ($("#lblChoiceSub")) $("#lblChoiceSub").textContent = t("choiceSub");
+  if ($("#lblChoiceDraftTitle")) $("#lblChoiceDraftTitle").textContent = t("choiceDraftTitle");
+  if ($("#lblChoiceDraftDesc")) $("#lblChoiceDraftDesc").textContent = t("choiceDraftDesc");
+  if ($("#lblChoiceUploadTitle")) $("#lblChoiceUploadTitle").textContent = t("choiceUploadTitle");
+  if ($("#lblChoiceUploadDesc")) $("#lblChoiceUploadDesc").textContent = t("choiceUploadDesc");
+  if ($("#btnCancelChoice")) $("#btnCancelChoice").textContent = t("cancel");
   
-  // Settings
-  if ($("#lblSetTitle")) $("#lblSetTitle").textContent = t("settings");
-  if ($("#btnTest")) $("#btnTest").textContent = t("testConn");
-  if ($("#btnSetSave")) $("#btnSetSave").textContent = t("saveClose");
-  if ($("#lblMgrCompanies")) $("#lblMgrCompanies").textContent = t("manageCompanies");
-  if ($("#btnAddCatBtn")) $("#btnAddCatBtn").textContent = "➕ " + t("addCompany");
+  // Ledger tab
+  if ($("#btnLedgerCsv")) $("#btnLedgerCsv").textContent = t("downloadCsv");
+  if ($("#btnLedgerPrint")) $("#btnLedgerPrint").textContent = t("printPdf");
   
-  // Reports
+  // Reports tab
   if ($("#lblRPeriod")) $("#lblRPeriod").textContent = t("period");
   if ($("#lblRCat")) $("#lblRCat").textContent = t("company");
+  if ($("#lblRFrom")) $("#lblRFrom").textContent = t("from");
+  if ($("#lblRTo")) $("#lblRTo").textContent = t("to");
+  if ($("#btnRepPrint")) $("#btnRepPrint").textContent = t("print");
+  const optThis = $("#rPeriod option[value='this']");
+  if (optThis) optThis.textContent = t("thisMonth");
+  const optLast = $("#rPeriod option[value='last']");
+  if (optLast) optLast.textContent = t("lastMonth");
+  const optAll = $("#rPeriod option[value='all']");
+  if (optAll) optAll.textContent = t("allTime");
+  const optCustom = $("#rPeriod option[value='custom']");
+  if (optCustom) optCustom.textContent = t("customDates");
+
+  // Cash tab
+  if ($("#lblCashHead")) $("#lblCashHead").textContent = t("recordCashMovement");
+  if ($("#lblCashHint")) $("#lblCashHint").textContent = t("recordCashHint");
+  if ($("#lblCType")) $("#lblCType").textContent = t("transType");
+  if ($("#optPaid")) $("#optPaid").textContent = t("optPaid");
+  if ($("#optRecv")) $("#optRecv").textContent = t("optRecv");
+  if ($("#optBack")) $("#optBack").textContent = t("optBack");
+  if ($("#lblCDate")) $("#lblCDate").textContent = t("expDate");
+  if ($("#lblCAmt")) $("#lblCAmt").innerHTML = esc(t("amount")) + ' <span class="cur" id="cCur">(' + esc(cur()) + ')</span>';
+  if ($("#lblCNote")) $("#lblCNote").textContent = t("noteDesc");
+  if ($("#cNote")) $("#cNote").placeholder = t("notePlaceholder");
+  if ($("#btnGive")) $("#btnGive").textContent = t("saveMovement");
+  
+  // Settings modal
+  if ($("#lblSetTitle")) $("#lblSetTitle").textContent = t("settings");
+  if ($("#lblSName")) $("#lblSName").textContent = t("yourName");
+  if ($("#sName")) $("#sName").placeholder = t("namePlaceholder");
+  if ($("#lblSUrl")) $("#lblSUrl").textContent = t("gasUrl");
+  if ($("#lblSKey")) $("#lblSKey").textContent = t("accessKey");
+  if ($("#sKey")) $("#sKey").placeholder = t("keyPlaceholder");
+  if ($("#lblSWarnText")) $("#lblSWarnText").textContent = t("warnOverBalance");
+  if ($("#btnTest")) $("#btnTest").textContent = t("testConn");
+  if ($("#btnLink")) $("#btnLink").textContent = t("copySetupLink");
+  if ($("#btnRotate")) $("#btnRotate").textContent = t("rotateUserKey");
+  if ($("#lblMgrCompanies")) $("#lblMgrCompanies").textContent = t("manageCompanies");
+  if ($("#lblMgrCompaniesHint")) $("#lblMgrCompaniesHint").textContent = t("manageCompaniesHint");
+  if ($("#newCatInput")) $("#newCatInput").placeholder = t("newCompPlaceholder");
+  if ($("#btnAddCatBtn")) $("#btnAddCatBtn").textContent = "➕ " + t("addCompany");
+  if ($("#btnSetSave")) $("#btnSetSave").textContent = t("saveClose");
+
+  // iOS Install Modal
+  if ($("#lblIosTitle")) $("#lblIosTitle").textContent = t("pwaIosTitle");
+  if ($("#lblIosDesc")) $("#lblIosDesc").textContent = t("pwaIosDesc");
+  if ($("#lblIosStep1Title")) $("#lblIosStep1Title").textContent = t("pwaIosStep1Title");
+  if ($("#lblIosStep1Desc")) $("#lblIosStep1Desc").textContent = t("pwaIosStep1Desc");
+  if ($("#lblIosStep2Title")) $("#lblIosStep2Title").textContent = t("pwaIosStep2Title");
+  if ($("#lblIosStep2Desc")) $("#lblIosStep2Desc").textContent = t("pwaIosStep2Desc");
+  if ($("#btnIosDone")) $("#btnIosDone").textContent = t("done");
 
   // Document Scanner & Viewer
+  if ($("#lblLiveScanTitle span")) $("#lblLiveScanTitle span").textContent = t("liveScanTitle");
+  if ($("#lblLiveScanSub")) $("#lblLiveScanSub").textContent = t("liveScanSub");
+  if ($("#lblReticleHint")) $("#lblReticleHint").textContent = t("reticleHint");
+  if ($("#lblLiveStatus")) $("#lblLiveStatus").textContent = window.cvReady ? (isKu ? "کامێرای ڕاستەوخۆ (سیستەمی پێشکەوتوو ئامادەیە)" : "Live Camera (OpenCV Ready)") : t("liveStatusReady");
+  if ($("#lblLiveCroppedBadge")) $("#lblLiveCroppedBadge").textContent = t("autoCroppedBadge");
+  if ($("#lblLiveFilterLabel")) $("#lblLiveFilterLabel").textContent = t("filterLabel");
+  if ($("#lblLiveUploadFile")) $("#lblLiveUploadFile").textContent = t("uploadFile");
+  if ($("#lblScanBtnText")) $("#lblScanBtnText").textContent = t("captureCrop");
+  if ($("#lblLiveRetake")) $("#lblLiveRetake").textContent = t("retake");
+  if ($("#lblLiveManual")) $("#lblLiveManual").textContent = t("adjustCrop");
+  if ($("#lblLiveAccept")) $("#lblLiveAccept").textContent = t("attachReceipt");
+
   if ($("#lblScannerTitle span")) $("#lblScannerTitle span").textContent = t("scannerTitle");
   if ($("#lblScannerSub")) $("#lblScannerSub").textContent = t("scannerSub");
   if ($("#lblAutoDetect")) $("#lblAutoDetect").textContent = t("autoDetect");
   if ($("#lblSelectAll")) $("#lblSelectAll").textContent = t("selectAll");
   if ($("#lblRotate")) $("#lblRotate").textContent = t("rotate");
+  if ($("#lblDetectingEdges")) $("#lblDetectingEdges").textContent = t("detectingEdges");
   if ($("#lblScannerFilter")) $("#lblScannerFilter").textContent = t("filterLabel");
   if ($("#lblFilterColor")) $("#lblFilterColor").textContent = t("modeColor");
   if ($("#lblFilterMagic")) $("#lblFilterMagic").textContent = t("modeMagic");
-  if ($("#lblFilterGray")) $("#lblFilterGray").textContent = t("modeGray");
-  if ($("#lblFilterBw")) $("#lblFilterBw").textContent = t("modeBw");
+  if ($("#lModeColor")) $("#lModeColor").textContent = "📷 " + t("modeColor");
+  if ($("#lModeMagic")) $("#lModeMagic").textContent = "✨ " + t("modeMagic");
+  if ($("#vModeColor")) $("#vModeColor").textContent = "📷 " + t("modeColor");
+  if ($("#vModeMagic")) $("#vModeMagic").textContent = "✨ " + t("modeMagic");
   if ($("#lblCancelScan")) $("#lblCancelScan").textContent = t("cancelScan");
   if ($("#lblCropAndSave")) $("#lblCropAndSave").textContent = t("applyAndSave");
   if ($("#vReCrop")) $("#vReCrop").textContent = t("adjustCrop");
+  if ($("#vDel")) $("#vDel").textContent = t("deletePage");
+  if ($("#vDone")) $("#vDone").textContent = t("done");
 }
 
 const MAX_SIDE = 1600, JPEG_Q = 0.72;
@@ -3001,11 +3446,12 @@ function applyMagicColor(c) {
   const img = x.getImageData(0, 0, W, H), d = img.data;
   const b = gx.getImageData(0, 0, W, H).data;
   for (let i = 0; i < d.length; i += 4) {
-    const bgLum = Math.max(40, 0.299 * b[i] + 0.587 * b[i + 1] + 0.114 * b[i + 2]);
-    const factor = Math.min(2.35, 248 / bgLum);
-    let r = (d[i] * factor - 15) * 1.08;
-    let g = (d[i + 1] * factor - 15) * 1.08;
-    let bVal = (d[i + 2] * factor - 15) * 1.08;
+    const bgLum = Math.max(45, 0.299 * b[i] + 0.587 * b[i + 1] + 0.114 * b[i + 2]);
+    // Scanned filter: crisp paper contrast, dialed back slightly to prevent over-bright blowout
+    const factor = Math.min(1.88, 226 / bgLum);
+    let r = (d[i] * factor - 10) * 1.03;
+    let g = (d[i + 1] * factor - 10) * 1.03;
+    let bVal = (d[i + 2] * factor - 10) * 1.03;
     d[i] = r < 0 ? 0 : r > 255 ? 255 : r;
     d[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
     d[i + 2] = bVal < 0 ? 0 : bVal > 255 ? 255 : bVal;
@@ -3096,6 +3542,10 @@ function drawPages() {
   });
   const elEmpty = $("#pagesEmpty");
   if (elEmpty) elEmpty.hidden = pages.length > 0;
+  if (pages.length > 0) {
+    const recSection = $("#receiptSection") || $("#pagesEmpty") || $(".cap");
+    if (recSection) recSection.classList.remove("section-error-soft");
+  }
   const elPgCount = $("#pgCount");
   if (elPgCount) elPgCount.textContent = pages.length ? pages.length + (pages.length === 1 ? " page" : " pages") : "No photos yet";
   const elSubmit = $("#btnSubmit");
@@ -3383,6 +3833,7 @@ $("#vRotL").onclick = () => { pages[viewIdx].rot = (pages[viewIdx].rot + 270) % 
 $("#vRotR").onclick = () => { pages[viewIdx].rot = (pages[viewIdx].rot + 90) % 360; openView(viewIdx); drawPages(); };
 $("#vDel").onclick = () => { pages.splice(viewIdx, 1); $("#dView").close(); drawPages(); };
 $("#vClose").onclick = () => $("#dView").close();
+if ($("#vDone")) $("#vDone").onclick = () => $("#dView").close();
 /* ---------- Live Front-end Document Scanner (jscanify & OpenCV.js) ---------- */
 let liveStream = null;
 let currentFacingMode = "environment";
@@ -4148,12 +4599,30 @@ function renderCats() {
     b.innerHTML = `<span>${esc(c)}</span>`;
     b.onclick = () => {
       cat = (cat === c ? "" : c);
+      box.classList.remove("section-error-soft");
       updateCompanyTheme();
       renderCats();
+      updateFormSummary();
     };
     box.appendChild(b);
   });
   updateCompanyTheme();
+}
+
+function clearFormValidationErrors() {
+  document.querySelectorAll(".field-error-soft, .section-error-soft").forEach(el => {
+    el.classList.remove("field-error-soft", "section-error-soft");
+  });
+}
+
+function updateFormSummary() {
+  const compEl = $("#formSummaryComp");
+  const amtEl = $("#formSummaryAmt");
+  if (!compEl || !amtEl) return;
+  const f = form();
+  const amt = parseFloat(f.amount) || 0;
+  compEl.textContent = f.category || (lang === "ku" ? "کۆمپانیا هەڵنەبژێردراوە" : "No company selected");
+  amtEl.textContent = (amt > 0 ? fmt(amt) : "0") + " " + cur();
 }
 
 function resetForm() {
@@ -4166,11 +4635,115 @@ function resetForm() {
   if ($("#fNote")) $("#fNote").value = "";
   $("#fDate").value = today();
   $("#editBanner").hidden = true;
+  clearFormValidationErrors();
   updateCompanyTheme();
   renderCats();
   drawPages();
+  updateFormSummary();
 }
 $("#btnNewForm").onclick = resetForm;
+
+function validateExpenseForm(forSubmission) {
+  clearFormValidationErrors();
+  const f = form();
+  const missing = [];
+  let firstEl = null;
+
+  // 1. Company
+  if (!f.category) {
+    const catBox = $("#cats");
+    if (catBox) {
+      catBox.classList.add("section-error-soft");
+      if (!firstEl) firstEl = catBox;
+    }
+    missing.push(lang === "ku" ? "کۆمپانیا" : "Company");
+  }
+
+  // 2. Receipt photo (required when submitting final expense)
+  if (forSubmission && !pages.length) {
+    const recSection = $("#receiptSection") || $("#pagesEmpty") || $(".cap");
+    if (recSection) {
+      recSection.classList.add("section-error-soft");
+      if (!firstEl) firstEl = recSection;
+    }
+    missing.push(lang === "ku" ? "وێنەی پسوڵە" : "Receipt Photo");
+  }
+
+  // 3. Date
+  if (!f.date) {
+    const el = $("#fDate");
+    if (el) {
+      el.classList.add("field-error-soft");
+      if (!firstEl) firstEl = el;
+    }
+    missing.push(lang === "ku" ? "بەرواری خەرجی" : "Expense Date");
+  }
+
+  // 4. Voucher Number
+  if (!f.voucher || !f.voucher.trim()) {
+    const el = $("#fVoucher");
+    if (el) {
+      el.classList.add("field-error-soft");
+      if (!firstEl) firstEl = el;
+    }
+    missing.push(lang === "ku" ? "ژمارەی پسوڵە" : "Voucher Number");
+  }
+
+  // 5. Amount
+  const amt = parseFloat(f.amount);
+  if (!(amt > 0)) {
+    const el = $("#fAmount");
+    if (el) {
+      el.classList.add("field-error-soft");
+      if (!firstEl) firstEl = el;
+    }
+    missing.push(lang === "ku" ? "بڕی پارە" : "Amount");
+  }
+
+  // 6. Description
+  if (!f.description || !f.description.trim()) {
+    const el = $("#fDesc");
+    if (el) {
+      el.classList.add("field-error-soft");
+      if (!firstEl) firstEl = el;
+    }
+    missing.push(lang === "ku" ? "وەسفی خەرجی" : "Description");
+  }
+
+  if (missing.length > 0) {
+    navigator.vibrate?.([40, 60, 40]);
+    if (firstEl) {
+      firstEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (typeof firstEl.focus === "function" && firstEl.tagName !== "DIV") {
+        try { firstEl.focus(); } catch (e) {}
+      }
+    }
+    const msg = lang === "ku"
+      ? `⚠️ تکایە ئەم خانە دیاریکراوانە پڕبکەرەوە: ${missing.join("، ")}`
+      : `⚠️ Please fill in highlighted fields: ${missing.join(", ")}`;
+    toast(msg, 4000);
+    return false;
+  }
+
+  return true;
+}
+
+function setActionButtonsLoading(isSubmitting, labelText) {
+  const btnSub = $("#btnSubmit");
+  const btnSubIn = $("#btnSubmitInline");
+  const lblSub = $("#lblBtnSubmit");
+  const lblSubIn = $("#lblBtnSubmitInline");
+  const btnD = $("#btnDraft");
+  const btnDIn = $("#btnDraftInline");
+
+  if (btnSub) btnSub.disabled = isSubmitting;
+  if (btnSubIn) btnSubIn.disabled = isSubmitting;
+  if (btnD) btnD.disabled = isSubmitting;
+  if (btnDIn) btnDIn.disabled = isSubmitting;
+
+  if (lblSub) lblSub.textContent = labelText;
+  if (lblSubIn) lblSubIn.textContent = labelText;
+}
 
 async function serPages() {
   const out = [];
@@ -4182,7 +4755,7 @@ async function serPages() {
         blob,
         corners: p.corners || null,
         rot: p.rot || 0,
-        mode: p.mode || "color"
+        mode: p.mode || "magic"
       });
     } catch (e) {
       console.warn("Error serializing page:", e);
@@ -4194,20 +4767,23 @@ async function reloadLocal() { local = await dbAll(); }
 async function afterChange() { await reloadLocal(); renderAll(); }
 
 $("#btnDraft").onclick = async () => {
-  const btn = $("#btnDraft");
-  const oldText = btn.textContent;
   const f = form();
   if (!f.category && !f.voucher && !f.amount && !f.description && !f.note && !pages.length) {
     navigator.vibrate?.([40, 50]);
-    $("#fAmount").focus();
+    const el = $("#fAmount");
+    if (el) { el.classList.add("field-error-soft"); el.focus(); }
     return toast(lang === "ku" ? "⚠️ تکایە بڕی پارە، کۆمپانیا یان وێنەی پسوڵە دابنێ پێش پاشەکەوتکردن." : "⚠️ Please enter an amount, select a company, or attach a photo before saving draft.", 3500);
   }
+  const btn = $("#btnDraft");
+  const btnIn = $("#btnDraftInline");
+  const lbl = $("#lblBtnDraft");
+  const lblIn = $("#lblBtnDraftInline");
   try {
-    btn.disabled = true;
-    btn.style.transition = "all 0.2s ease";
-    btn.style.backgroundColor = "var(--ok)";
-    btn.style.color = "#ffffff";
-    btn.textContent = lang === "ku" ? "✓ پاشەکەوت دەکرێت…" : "✓ Saving Draft…";
+    if (btn) btn.disabled = true;
+    if (btnIn) btnIn.disabled = true;
+    const tSaving = lang === "ku" ? "✓ پاشەکەوت دەکرێت…" : "✓ Saving Draft…";
+    if (lbl) lbl.textContent = tSaving;
+    if (lblIn) lblIn.textContent = tSaving;
 
     const old = editId ? local.find(i => i.id === editId) : null, t = iso();
     const it = Object.assign({}, old || {}, f, {
@@ -4225,7 +4801,9 @@ $("#btnDraft").onclick = async () => {
     await afterChange();
 
     navigator.vibrate?.([40, 80, 40]);
-    btn.textContent = lang === "ku" ? "✓ ڕەشنووس پاشەکەوتکرا!" : "✓ Draft Saved!";
+    const tSaved = lang === "ku" ? "✓ ڕەشنووس پاشەکەوتکرا!" : "✓ Draft Saved!";
+    if (lbl) lbl.textContent = tSaved;
+    if (lblIn) lblIn.textContent = tSaved;
 
     // Prominent notification banner inside the form
     const banner = $("#editBanner");
@@ -4254,19 +4832,21 @@ $("#btnDraft").onclick = async () => {
     toast(lang === "ku" ? "✅ ڕەشنووس پاشەکەوتکرا! دەتوانیت لە بەشی خەرجییەکان بینیت." : "✅ Draft saved! You can find and edit it anytime in the Expenses tab.", 4000);
 
     setTimeout(() => {
-      btn.disabled = false;
-      btn.style.backgroundColor = "";
-      btn.style.color = "";
-      btn.textContent = t("saveDraft") || "Save Draft";
+      if (btn) btn.disabled = false;
+      if (btnIn) btnIn.disabled = false;
+      const defT = t("saveDraft") || "Save Draft";
+      if (lbl) lbl.textContent = defT;
+      if (lblIn) lblIn.textContent = defT;
     }, 2200);
 
   } catch (err) {
     console.error("Save draft error:", err);
     toast(lang === "ku" ? "هەڵەیەک ڕوویدا لە پاشەکەوتکردنی ڕەشنووس." : "Could not save draft: " + err.message, 4500);
-    btn.disabled = false;
-    btn.style.backgroundColor = "";
-    btn.style.color = "";
-    btn.textContent = oldText;
+    if (btn) btn.disabled = false;
+    if (btnIn) btnIn.disabled = false;
+    const defT = t("saveDraft") || "Save Draft";
+    if (lbl) lbl.textContent = defT;
+    if (lblIn) lblIn.textContent = defT;
   }
 };
 
@@ -4287,7 +4867,7 @@ async function editDraft(it) {
         raw,
         corners: pd.corners,
         warped,
-        mode: pd.mode || "color",
+        mode: pd.mode || "magic",
         rot: pd.rot || 0
       });
     } catch (e) {
@@ -4297,18 +4877,14 @@ async function editDraft(it) {
   $("#editBanner").hidden = false;
   renderCats();
   drawPages();
+  updateFormSummary();
   showTab("new");
 }
 
 $("#btnSubmit").onclick = async () => {
-  const f = form();
-  if (!f.category) return toast("Please select a category.");
-  if (!f.date) return toast("Please select the expense date.");
-  if (!f.voucher) return toast("Please enter the voucher number.");
-  if (!(parseFloat(f.amount) > 0)) return toast("Please enter a valid amount greater than zero.");
-  if (!f.description) return toast("Please provide a short description.");
-  if (!pages.length) return toast("Add a receipt photo to submit. You can save a draft for now.", 3600);
+  if (!validateExpenseForm(true)) return;
 
+  const f = form();
   const amt = parseFloat(f.amount);
   const sameBook = [
     ...local.filter(i => i.status !== "draft" && i.id !== editId && i.category === f.category).map(i => i.voucher),
@@ -4323,9 +4899,7 @@ $("#btnSubmit").onclick = async () => {
     return;
   }
 
-  const btn = $("#btnSubmit");
-  btn.disabled = true;
-  btn.textContent = "Processing PDF…";
+  setActionButtonsLoading(true, lang === "ku" ? "ئامادەکردنی PDF…" : "Processing PDF…");
 
   try {
     const blobs = [];
@@ -4358,48 +4932,31 @@ $("#btnSubmit").onclick = async () => {
   } catch (e) {
     toast("Could not submit: " + e.message, 5000);
   } finally {
-    btn.disabled = false;
-    btn.textContent = "Submit & Upload";
+    setActionButtonsLoading(false, t("submitUpload") || "Submit & Upload");
   }
 };
 
-/* Choice Dialog Handlers (Save Draft vs Submit & Upload) */
+/* Wire in-flow form action buttons and input listeners */
+const btnSubIn = $("#btnSubmitInline");
+if (btnSubIn) btnSubIn.onclick = () => $("#btnSubmit").click();
+const btnDraftIn = $("#btnDraftInline");
+if (btnDraftIn) btnDraftIn.onclick = () => $("#btnDraft").click();
+
+["#fAmount", "#fVoucher", "#fDate", "#fDesc", "#fNote"].forEach(sel => {
+  const el = $(sel);
+  if (!el) return;
+  el.addEventListener("input", () => {
+    el.classList.remove("field-error-soft");
+    updateFormSummary();
+  });
+  el.addEventListener("change", () => {
+    el.classList.remove("field-error-soft");
+    updateFormSummary();
+  });
+});
+
 const btnSaveSubmit = $("#btnSaveSubmit");
-if (btnSaveSubmit) {
-  btnSaveSubmit.onclick = () => {
-    const f = form();
-    if (!f.category && !f.voucher && !f.amount && !f.description && !pages.length) {
-      navigator.vibrate?.([40, 50]);
-      $("#fAmount").focus();
-      return toast(lang === "ku" ? "⚠️ تکایە بڕی پارە، کۆمپانیا یان وێنەی پسوڵە دابنێ پێش تۆمارکردن." : "⚠️ Please enter an amount, select a company, or attach a photo first.", 3500);
-    }
-    const dlg = $("#dSubmitChoice");
-    if (dlg) dlg.showModal();
-  };
-}
-
-const btnCloseChoice = $("#btnCloseChoice");
-if (btnCloseChoice) btnCloseChoice.onclick = () => $("#dSubmitChoice").close();
-const btnCancelChoice = $("#btnCancelChoice");
-if (btnCancelChoice) btnCancelChoice.onclick = () => $("#dSubmitChoice").close();
-
-const btnChoiceDraft = $("#btnChoiceDraft");
-if (btnChoiceDraft) {
-  btnChoiceDraft.onclick = () => {
-    const dlg = $("#dSubmitChoice");
-    if (dlg) dlg.close();
-    $("#btnDraft").click();
-  };
-}
-
-const btnChoiceUpload = $("#btnChoiceUpload");
-if (btnChoiceUpload) {
-  btnChoiceUpload.onclick = () => {
-    const dlg = $("#dSubmitChoice");
-    if (dlg) dlg.close();
-    $("#btnSubmit").click();
-  };
-}
+if (btnSaveSubmit) btnSaveSubmit.onclick = () => $("#btnSubmit").click();
 
 /* ---------- Sync: Drive, Sheet, Email ---------- */
 const b64 = blob => new Promise((res, rej) => {
@@ -4672,40 +5229,41 @@ function renderBalance() {
 
 async function deleteExpenseDirectly(id) {
   const exp = data.expenses.find(e => e.id === id);
-  const desc = exp ? `${exp.category} #${exp.voucher} (${fmt(exp.amount)} ${cur()})` : "this record";
-  if (!confirm(`Are you sure you want to permanently delete ${desc} from Google Sheet?`)) return;
+  const desc = exp ? `${exp.category} #${exp.voucher} (${fmt(exp.amount)} ${cur()})` : (lang === "ku" ? "ئەم خەرجییە" : "this record");
+  if (!confirm(lang === "ku" ? `ئایا دڵنیایت لە سڕینەوەی یەکجاری ${desc} لە گووگڵ شیت؟` : `Are you sure you want to permanently delete ${desc} from Google Sheet?`)) return;
   try {
     await api("decideDelete", { id, approve: true });
-    toast("Expense record deleted from Google Sheet");
+    toast(lang === "ku" ? "خەرجییەکە لە گووگڵ شیت سڕایەوە" : "Expense record deleted from Google Sheet");
     await refresh();
     renderAll();
   } catch (e) {
-    toast("Delete failed: " + e.message, 5000);
+    toast((lang === "ku" ? "سڕینەوە سەرکەوتوو نەبوو: " : "Delete failed: ") + e.message, 5000);
   }
 }
 
 async function deleteCashDirectly(id) {
   const c = [...data.received, ...data.paid].find(x => x.id === id);
-  const desc = c ? `${c.amount >= 0 ? "+" : ""}${fmt(c.amount)} ${cur()} (${c.note || c.date})` : "this cash movement";
-  if (!confirm(`Are you sure you want to delete cash movement ${desc} from Google Sheet?`)) return;
+  const desc = c ? `${c.amount >= 0 ? "+" : ""}${fmt(c.amount)} ${cur()} (${c.note || c.date})` : (lang === "ku" ? "ئەم جوڵەیەی نەختینە" : "this cash movement");
+  if (!confirm(lang === "ku" ? `ئایا دڵنیایت لە سڕینەوەی جوڵەی نەختینەی ${desc} لە گووگڵ شیت؟` : `Are you sure you want to delete cash movement ${desc} from Google Sheet?`)) return;
   try {
     await api("deleteCash", { id });
-    toast("Cash movement deleted from Google Sheet");
+    toast(lang === "ku" ? "جوڵەی نەختینە لە گووگڵ شیت سڕایەوە" : "Cash movement deleted from Google Sheet");
     await refresh();
     renderAll();
   } catch (e) {
-    toast("Delete failed: " + e.message, 5000);
+    toast((lang === "ku" ? "سڕینەوە سەرکەوتوو نەبوو: " : "Delete failed: ") + e.message, 5000);
   }
 }
 
 function statusChip(it) {
+  const isKu = (lang === "ku");
   const srv = it.status === "done" ? data.expenses.find(e => e.id === it.id) : null;
-  if (srv && srv.status === "Deletion requested") return '<span class="chip wait">Deletion Requested</span>';
-  if (srv && srv.status === "Deleted") return '<span class="chip bad">Deleted</span>';
-  return it.status === "draft" ? '<span class="chip wait">Draft</span>'
-    : it.status === "done" ? '<span class="chip ok">Synced</span>'
-    : it.status === "failed" ? '<span class="chip bad">Sync Failed</span>'
-    : '<span class="chip wait">Waiting to Sync</span>';
+  if (srv && srv.status === "Deletion requested") return '<span class="chip wait">' + (isKu ? "داواکاری سڕینەوە" : "Deletion Requested") + '</span>';
+  if (srv && srv.status === "Deleted") return '<span class="chip bad">' + (isKu ? "سڕاوەتەوە" : "Deleted") + '</span>';
+  return it.status === "draft" ? '<span class="chip wait">' + (isKu ? "ڕەشنووس" : "Draft") + '</span>'
+    : it.status === "done" ? '<span class="chip ok">' + (isKu ? "هاوکاتکراوە" : "Synced") + '</span>'
+    : it.status === "failed" ? '<span class="chip bad">' + (isKu ? "سەرکەوتوو نەبوو" : "Sync Failed") + '</span>'
+    : '<span class="chip wait">' + (isKu ? "چاوەڕوانی ناردن" : "Waiting to Sync") + '</span>';
 }
 
 function renderExpenses() {
@@ -4794,15 +5352,15 @@ function renderExpenses() {
   const addLocal = it => {
     const div = document.createElement("div");
     div.className = "item";
-    div.innerHTML = (it.thumb ? '<img alt="Receipt" src="' + it.thumb + '">' : '<div class="ph">No Photo</div>') +
+    div.innerHTML = (it.thumb ? '<img alt="' + (lang === "ku" ? "پسوڵە" : "Receipt") + '" src="' + it.thumb + '">' : '<div class="ph">' + (lang === "ku" ? "بێ وێنە" : "No Photo") + '</div>') +
       '<div class="t">' +
         '<div class="item-head">' +
-          '<b>' + (it.amount ? fmt(it.amount) + " " + esc(cur()) : "No Amount") + '</b>' +
+          '<b>' + (it.amount ? fmt(it.amount) + " " + esc(cur()) : (lang === "ku" ? "بێ بڕی پارە" : "No Amount")) + '</b>' +
           statusChip(it) +
         '</div>' +
-        '<p class="desc" dir="auto">' + esc(it.description || "No description") + '</p>' +
+        '<p class="desc" dir="auto">' + esc(it.description || (lang === "ku" ? "بێ وەسف" : "No description")) + '</p>' +
         '<p>' + companyChipHtml(it.category) +
-          (it.voucher ? '#' + esc(it.voucher) : '') + ' · ' + esc(it.date || '') + ' · ' + (it.pageCount || 0) + ' pg</p>' +
+          (it.voucher ? '#' + esc(it.voucher) : '') + ' · ' + esc(it.date || '') + ' · ' + (it.pageCount || 0) + ' ' + (lang === "ku" ? "پەڕە" : "pg") + '</p>' +
         (it.error ? '<div class="err" style="color:var(--bad);font-size:12.5px;margin-top:4px;">⚠️ ' + esc(it.error) + '</div>' : '') +
         '<div class="acts"></div>' +
       '</div>';
@@ -4849,12 +5407,12 @@ function renderExpenses() {
             '<b>' + fmt(e.amount) + ' ' + esc(cur()) + '</b>' +
             statusTag +
           '</div>' +
-          '<p class="desc" dir="auto">' + esc(e.description || "No description") + '</p>' +
+          '<p class="desc" dir="auto">' + esc(e.description || (lang === "ku" ? "بێ وەسف" : "No description")) + '</p>' +
           '<p>' +
             companyChipHtml(e.category) +
-            '#' + esc(e.voucher) + ' · ' + esc(e.date) + (e.by ? ' · By ' + esc(e.by) : '') +
+            '#' + esc(e.voucher) + ' · ' + esc(e.date) + (e.by ? (lang === "ku" ? ' · لەلایەن ' : ' · By ') + esc(e.by) : '') +
           '</p>' +
-          (e.reason ? '<p style="color:var(--bad);font-size:12px;margin:2px 0;">Reason: ' + esc(e.reason) + '</p>' : '') +
+          (e.reason ? '<p style="color:var(--bad);font-size:12px;margin:2px 0;">' + (lang === "ku" ? "هۆکار: " : "Reason: ") + esc(e.reason) + '</p>' : '') +
           '<div class="acts"></div>' +
         '</div>';
 
@@ -4913,13 +5471,13 @@ function renderExpenses() {
   }
 
   if (mgr && deletedExps.length > 0 && !isFiltered) {
-    sec("Deleted Records (Manager History)", deletedExps.length);
+    sec(lang === "ku" ? "خەرجییە سڕاوەکان (مێژووی بەڕێوەبەر)" : "Deleted Records (Manager History)", deletedExps.length);
     deletedExps.slice(0, 10).forEach(e => {
       const div = document.createElement("div");
       div.className = "item";
       div.style.opacity = "0.65";
       div.innerHTML =
-        '<div class="ph" style="color:var(--bad);">DEL</div>' +
+        '<div class="ph" style="color:var(--bad);">' + (lang === "ku" ? "سڕاوە" : "DEL") + '</div>' +
         '<div class="t">' +
           '<div class="item-head">' +
             '<strike>' + fmt(e.amount) + ' ' + esc(cur()) + '</strike>' +
@@ -4936,18 +5494,20 @@ function renderExpenses() {
 }
 
 function ledgerRowHtml(label, r, extraHtml) {
+  const pendingTxt = lang === "ku" ? " · چاوەڕوانی هاوکاتکردن" : " · waiting to sync";
+  const balPrefix = lang === "ku" ? "باڵانس " : "Bal ";
   return '<div class="lrow">' +
-    '<div class="l"><b>' + label + '</b><p>' + esc(r.date) + (r.pending ? " · waiting to sync" : "") +
+    '<div class="l"><b>' + label + '</b><p>' + esc(r.date) + (r.pending ? pendingTxt : "") +
     (r.note ? ' · <span dir="auto">' + esc(r.note) + '</span>' : '') + '</p>' + (extraHtml || "") + '</div>' +
     '<div class="r"><b class="' + (r.amount >= 0 ? "pos" : "neg") + '">' + (r.amount >= 0 ? "+" : "−") + fmt(Math.abs(r.amount)) + '</b>' +
-    '<small>Bal ' + fmt(r.balance) + ' ' + esc(cur()) + '</small></div>' +
+    '<small>' + balPrefix + fmt(r.balance) + ' ' + esc(cur()) + '</small></div>' +
   '</div>';
 }
 
 function renderLedger() {
   const out = $("#ledgerOut");
   if (!connected()) {
-    out.innerHTML = '<div class="empty">Connect in Settings to view ledger.</div>';
+    out.innerHTML = '<div class="empty">' + (lang === "ku" ? "لە ڕێکخستنەکان پەیوەست بە بۆ بینینی دەفتەری حیسابات." : "Connect in Settings to view ledger.") + '</div>';
     return;
   }
   const mgr = isManager(), rows = userRows();
@@ -4955,29 +5515,39 @@ function renderLedger() {
     if (r.kind === "cash") {
       let extra = "";
       if (mgr) extra = '<div class="acts" style="margin-top:6px;"><button class="btn icon-btn danger" data-del-cash="' + esc(r.id) + '" type="button" title="' + esc(t("delete")) + '" aria-label="' + esc(t("delete")) + '"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button></div>';
-      return ledgerRowHtml(mgr ? (r.amount >= 0 ? "Paid to User" : "Cash Taken Back") : (r.amount >= 0 ? "Cash Received" : "Cash Taken Back"), r, extra);
+      const label = mgr
+        ? (r.amount >= 0 ? (lang === "ku" ? "پێدراو بە بەکارهێنەر" : "Paid to User") : (lang === "ku" ? "وەرگیراوە لە بەکارهێنەر" : "Cash Taken Back"))
+        : (r.amount >= 0 ? (lang === "ku" ? "نەختینەی وەرگیراو" : "Cash Received") : (lang === "ku" ? "وەرگیراوە لە بەکارهێنەر" : "Cash Taken Back"));
+      return ledgerRowHtml(label, r, extra);
     }
     let x = "";
-    if (r.status === "Deletion requested") x = '<p class="neg" style="font-size:12px;font-weight:600;margin:2px 0;">Deletion requested</p>';
+    if (r.status === "Deletion requested") x = '<p class="neg" style="font-size:12px;font-weight:600;margin:2px 0;">' + (lang === "ku" ? "داواکاری سڕینەوە کراوە" : "Deletion requested") + '</p>';
     if (mgr) {
       x += '<div class="acts" style="margin-top:6px;">' +
         '<button class="btn icon-btn danger" data-del-direct="' + esc(r.id) + '" type="button" title="' + esc(t("delete")) + '" aria-label="' + esc(t("delete")) + '"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>' +
-        (r.webUrl ? '<a href="' + esc(r.webUrl) + '" target="_blank" rel="noopener" class="btn small" style="margin-left:6px;">' + esc(t("receiptPdf")) + '</a>' : '') +
+        (r.webUrl ? '<a href="' + esc(r.webUrl) + '" target="_blank" rel="noopener" class="btn small" style="margin-left:6px;margin-right:6px;">' + esc(t("receiptPdf")) + '</a>' : '') +
         '</div>';
     } else if (!r.pending && r.status === "Active") {
       x += '<div class="acts" style="margin-top:6px;"><button class="btn icon-btn danger" data-del="' + esc(r.id) + '" type="button" title="' + esc(t("requestDelete")) + '" aria-label="' + esc(t("requestDelete")) + '"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button></div>';
     }
     return ledgerRowHtml(companyChipHtml(r.category) + ' #' + esc(r.voucher), r, x);
-  }).join("") : '<div class="empty">No transactions recorded yet.</div>';
+  }).join("") : '<div class="empty">' + (lang === "ku" ? "هیچ مامەڵەیەک تۆمار نەکراوە." : "No transactions recorded yet.") + '</div>';
 
   if (mgr) {
     const cr = companyRows();
-    h = '<h3 style="font-size:13.5px;font-weight:750;color:var(--muted);text-transform:uppercase;margin:0 0 10px;">' + esc(t("userPettyCashLedger") || "User Petty Cash Ledger") + '</h3>' + h +
-      '<h3 style="font-size:13.5px;font-weight:750;color:var(--muted);text-transform:uppercase;margin:28px 0 10px;">' + esc(t("companyCashLedger") || "Company Cash Ledger") + '</h3>' +
+    const userLedgerTitle = lang === "ku" ? "دەفتەری حیسابی نەختینەی بەکارهێنەر" : "User Petty Cash Ledger";
+    const compLedgerTitle = lang === "ku" ? "دەفتەری حیسابی نەختینەی کۆمپانیا" : "Company Cash Ledger";
+    h = '<h3 style="font-size:13.5px;font-weight:750;color:var(--muted);text-transform:uppercase;margin:0 0 10px;">' + esc(userLedgerTitle) + '</h3>' + h +
+      '<h3 style="font-size:13.5px;font-weight:750;color:var(--muted);text-transform:uppercase;margin:28px 0 10px;">' + esc(compLedgerTitle) + '</h3>' +
       (cr.length ? cr.slice().reverse().map(r => {
         const extra = '<div class="acts" style="margin-top:6px;"><button class="btn icon-btn danger" data-del-cash="' + esc(r.id || '') + '" type="button" title="' + esc(t("delete")) + '" aria-label="' + esc(t("delete")) + '"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button></div>';
-        return ledgerRowHtml(r.kind === "recv" ? "Received from Company" : r.amount < 0 ? "Paid to User" : "Taken back from User", r, extra);
-      }).join("") : '<div class="empty">No company cash transactions.</div>');
+        const label = r.kind === "recv"
+          ? (lang === "ku" ? "وەرگیراو لە کۆمپانیا" : "Received from Company")
+          : (r.amount < 0
+              ? (lang === "ku" ? "پێدراو بە بەکارهێنەر" : "Paid to User")
+              : (lang === "ku" ? "وەرگیراوە لە بەکارهێنەر" : "Taken back from User"));
+        return ledgerRowHtml(label, r, extra);
+      }).join("") : '<div class="empty">' + (lang === "ku" ? "هیچ مامەڵەیەکی نەختینەی کۆمپانیا نییە." : "No company cash transactions.") + '</div>');
   }
   out.innerHTML = h;
 }
@@ -5015,7 +5585,7 @@ function reportData() {
 function renderReport() {
   const out = $("#reportOut");
   if (!connected()) {
-    out.innerHTML = '<div class="empty">Connect in Settings to view reports.</div>';
+    out.innerHTML = '<div class="empty">' + (lang === "ku" ? "لە ڕێکخستنەکان پەیوەست بە بۆ بینینی ڕاپۆرتەکان." : "Connect in Settings to view reports.") + '</div>';
     return;
   }
   const r = reportData();
@@ -5040,19 +5610,20 @@ function renderRecentCashMovements() {
     list.style.marginTop = "16px";
     $("#pCash").appendChild(list);
   }
+  const isKu = (lang === "ku");
   const allCash = [
-    ...data.received.map(r => ({ ...r, kind: "recv", label: "Received from Company" })),
-    ...data.paid.map(p => ({ ...p, kind: "paid", label: p.amount < 0 ? "Taken back from User" : "Paid to User" }))
+    ...data.received.map(r => ({ ...r, kind: "recv", label: isKu ? "وەرگیراو لە کۆمپانیا" : "Received from Company" })),
+    ...data.paid.map(p => ({ ...p, kind: "paid", label: p.amount < 0 ? (isKu ? "وەرگیراوە لە بەکارهێنەر" : "Taken back from User") : (isKu ? "پێدراو بە بەکارهێنەر" : "Paid to User") }))
   ].sort((a, b) => (b.date + (b.at || "")).localeCompare(a.date + (a.at || "")));
 
   if (!allCash.length) {
-    list.innerHTML = "<h4>Recent Cash Movements</h4><p class=\"hint\">No cash movements recorded yet.</p>";
+    list.innerHTML = "<h4>" + (isKu ? "جووڵە نەختینەییە نوێیەکان" : "Recent Cash Movements") + "</h4><p class=\"hint\">" + (isKu ? "هیچ جووڵەیەکی نەختینە تۆمار نەکراوە." : "No cash movements recorded yet.") + "</p>";
     return;
   }
 
   list.innerHTML = `
-    <h4>Recent Cash Movements (${allCash.length})</h4>
-    <p class="hint">Manager can delete any cash movement here if recorded by mistake.</p>
+    <h4>${isKu ? "جووڵە نەختینەییە نوێیەکان" : "Recent Cash Movements"} (${allCash.length})</h4>
+    <p class="hint">${isKu ? "بەڕێوەبەر دەتوانێت هەر جووڵەیەکی نەختینەی هەڵە بسڕێتەوە." : "Manager can delete any cash movement here if recorded by mistake."}</p>
     <div style="margin-top:10px;">
       ${allCash.slice(0, 15).map(m => `
         <div class="lrow" style="align-items:center;padding:10px 0;border-bottom:1px solid var(--line);">
@@ -5064,7 +5635,7 @@ function renderRecentCashMovements() {
             <b class="${m.kind === 'recv' || m.amount < 0 ? 'pos' : 'neg'}">
               ${m.kind === 'recv' ? '+' : m.amount >= 0 ? '−' : '+'}${fmt(Math.abs(m.amount))}
             </b>
-            <button class="btn small danger" data-del-cash="${esc(m.id)}" type="button" title="Delete cash movement">🗑️</button>
+            <button class="btn small danger" data-del-cash="${esc(m.id)}" type="button" title="${esc(isKu ? "سڕینەوەی جووڵەی نەختینە" : "Delete cash movement")}">🗑️</button>
           </div>
         </div>
       `).join("")}
@@ -5083,55 +5654,56 @@ function renderCash() {
   const pInHand = tot > 0 ? ((c.cashLeft / tot) * 100).toFixed(0) : 0;
   const pHeld = tot > 0 ? ((c.balance / tot) * 100).toFixed(0) : 0;
   const pSpent = tot > 0 ? ((c.spent / tot) * 100).toFixed(0) : 0;
+  const isKu = (lang === "ku");
 
   box.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <h4 style="margin:0;">Company Cash Reconciliation</h4>
-      <button type="button" class="btn small primary" id="btnGoNewExpense">➕ Record Expense</button>
+      <h4 style="margin:0;">${isKu ? "یەکلاییکردنەوەی نەختینەی کۆمپانیا" : "Company Cash Reconciliation"}</h4>
+      <button type="button" class="btn small primary" id="btnGoNewExpense">${isKu ? "➕ خەرجی نوێ" : "➕ Record Expense"}</button>
     </div>
     
     <div class="exec-hero">
-      <div class="lbl">Total Cash Drawn from Company</div>
+      <div class="lbl">${isKu ? "کۆی نەختینەی ڕاکێشراو لە کۆمپانیا" : "Total Cash Drawn from Company"}</div>
       <div class="val">${fmt(c.received)} <small style="font-size:16px;">${esc(cur())}</small></div>
-      <div class="sub">Total funds withdrawn from company account into petty cash system</div>
+      <div class="sub">${isKu ? "کۆی ئەو پارەیەی لە هەژماری کۆمپانیاوە بۆ نەختینەی دەست ڕاکێشراوە" : "Total funds withdrawn from company account into petty cash system"}</div>
     </div>
 
     <div class="exec-3cards">
       <div class="exec-stat-box in-hand">
-        <span class="title">🏢 In Hand</span>
+        <span class="title">${isKu ? "🏢 لە بەردەست" : "🏢 In Hand"}</span>
         <span class="amt">${fmt(c.cashLeft)}</span>
-        <span class="pct">${pInHand}% of drawn</span>
+        <span class="pct">${pInHand}% ${isKu ? "ی راکێشراو" : "of drawn"}</span>
       </div>
       <div class="exec-stat-box held">
-        <span class="title">👤 Held by User</span>
+        <span class="title">${isKu ? "👤 لای بەکارهێنەر" : "👤 Held by User"}</span>
         <span class="amt">${fmt(c.balance)}</span>
-        <span class="pct">${pHeld}% of drawn</span>
+        <span class="pct">${pHeld}% ${isKu ? "ی راکێشراو" : "of drawn"}</span>
       </div>
       <div class="exec-stat-box spent">
-        <span class="title">🧾 Spent</span>
+        <span class="title">${isKu ? "🧾 خەرجکراو" : "🧾 Spent"}</span>
         <span class="amt">${fmt(c.spent)}</span>
-        <span class="pct">${pSpent}% of drawn</span>
+        <span class="pct">${pSpent}% ${isKu ? "ی راکێشراو" : "of drawn"}</span>
       </div>
     </div>
 
     <div class="bal-breakdown-bar" style="margin-bottom:14px;">
-      <div class="seg in-hand" style="width:${pInHand}%" title="In Hand (${pInHand}%)"></div>
-      <div class="seg held" style="width:${pHeld}%" title="Held by User (${pHeld}%)"></div>
-      <div class="seg spent" style="width:${pSpent}%" title="Spent by User (${pSpent}%)"></div>
+      <div class="seg in-hand" style="width:${pInHand}%" title="${isKu ? "لە بەردەست" : "In Hand"} (${pInHand}%)"></div>
+      <div class="seg held" style="width:${pHeld}%" title="${isKu ? "لای بەکارهێنەر" : "Held by User"} (${pHeld}%)"></div>
+      <div class="seg spent" style="width:${pSpent}%" title="${isKu ? "خەرجکراو" : "Spent by User"} (${pSpent}%)"></div>
     </div>
 
     <table style="margin-top:10px;">
-      <tr><td>1. Total Received from Company</td><td class="n"><b>+${fmt(c.received)}</b></td></tr>
-      <tr><td>2. Less Paid to Expense User (net)</td><td class="n">−${fmt(c.paid)}</td></tr>
-      <tr class="tot"><td><b>= Cash Left in Hand (Manager Safe/Drawer)</b></td><td class="n"><b>${fmt(c.cashLeft)}</b></td></tr>
-      <tr><td>3. Cash Held by User (Unspent Balance)</td><td class="n">${fmt(c.balance)}</td></tr>
-      <tr><td>4. Documented Expenses Spent by User</td><td class="n">${fmt(c.spent)}</td></tr>
+      <tr><td>${isKu ? "١. کۆی وەرگیراو لە کۆمپانیا" : "1. Total Received from Company"}</td><td class="n"><b>+${fmt(c.received)}</b></td></tr>
+      <tr><td>${isKu ? "٢. لێدەرکردنی پێدراو بە بەکارهێنەر (خاوێن)" : "2. Less Paid to Expense User (net)"}</td><td class="n">−${fmt(c.paid)}</td></tr>
+      <tr class="tot"><td><b>${isKu ? "= نەختینەی ماوە لە بەردەست (قاسەی بەڕێوەبەر)" : "= Cash Left in Hand (Manager Safe/Drawer)"}</b></td><td class="n"><b>${fmt(c.cashLeft)}</b></td></tr>
+      <tr><td>${isKu ? "٣. نەختینەی لای بەکارهێنەر (باڵانسی خەرجنەکراو)" : "3. Cash Held by User (Unspent Balance)"}</td><td class="n">${fmt(c.balance)}</td></tr>
+      <tr><td>${isKu ? "٤. خەرجییە بەڵگەدارەکانی بەکارهێنەر" : "4. Documented Expenses Spent by User"}</td><td class="n">${fmt(c.spent)}</td></tr>
       <tr class="tot" style="background:var(--accent-soft);color:var(--accent);">
-        <td><b>Total Accountable Funds (In Hand + User Held + Spent)</b></td>
+        <td><b>${isKu ? "کۆی گشتی دارایی حسێبکراو (لە بەردەست + لای بەکارهێنەر + خەرجکراو)" : "Total Accountable Funds (In Hand + User Held + Spent)"}</b></td>
         <td class="n"><b>${fmt(c.cashLeft + c.balance + c.spent)}</b></td>
       </tr>
     </table>
-    <p class="hint" style="margin-top:6px;">Currency: ${esc(c.currency)} · Synchronized in real time with Google Sheets.</p>
+    <p class="hint" style="margin-top:6px;">${isKu ? `دراو: ${esc(c.currency)} · لەگەڵ گووگڵ شیتس لە کاتی ڕاستەقینەدا هاوکات دەکرێت.` : `Currency: ${esc(c.currency)} · Synchronized in real time with Google Sheets.`}</p>
   `;
 
   const btnNewExp = $("#btnGoNewExpense");
@@ -5139,10 +5711,10 @@ function renderCash() {
 
   // Pending Deletion Requests
   const reqs = data.expenses.filter(e => e.status === "Deletion requested"), dr = $("#delReq");
-  dr.innerHTML = reqs.length ? '<div class="card" style="border-left:4px solid var(--warn);"><h4>⚠️ Pending Deletion Requests (' + reqs.length + ')</h4>' + reqs.map(e =>
+  dr.innerHTML = reqs.length ? '<div class="card" style="border-right:4px solid var(--warn);border-left:none;"><h4>⚠️ ' + (isKu ? `داواکارییە هەڵپەسێردراوەکانی سڕینەوە (${reqs.length})` : `Pending Deletion Requests (${reqs.length})`) + '</h4>' + reqs.map(e =>
     '<div class="lrow" style="flex-direction:column;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--line);"><div><b>' + esc(e.category) + " #" + esc(e.voucher) + " · " + fmt(e.amount) + ' ' + esc(cur()) + '</b><p class="hint" dir="auto" style="margin:2px 0">' + esc(e.date) + " · " + esc(e.description) +
-    '</p><p dir="auto" style="margin:2px 0;font-weight:600;color:var(--bad);">Reason: ' + esc(e.reason) + '</p>' + (e.webUrl ? '<p style="margin:2px 0"><a href="' + esc(e.webUrl) + '" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">View Drive Receipt ↗</a></p>' : "") + '</div><div class="acts" style="margin-top:6px;">' +
-    '<button class="btn small danger" data-dec="1" data-id="' + esc(e.id) + '" type="button">Approve Delete</button><button class="btn small" data-dec="0" data-id="' + esc(e.id) + '" type="button">Keep Entry</button></div></div>').join("") + "</div>" : "";
+    '</p><p dir="auto" style="margin:2px 0;font-weight:600;color:var(--bad);">' + (isKu ? "هۆکار: " : "Reason: ") + esc(e.reason) + '</p>' + (e.webUrl ? '<p style="margin:2px 0"><a href="' + esc(e.webUrl) + '" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">' + (isKu ? "بینینی پسوڵە لە درایڤ ↗" : "View Drive Receipt ↗") + '</a></p>' : "") + '</div><div class="acts" style="margin-top:6px;">' +
+    '<button class="btn small danger" data-dec="1" data-id="' + esc(e.id) + '" type="button">' + (isKu ? "پەسەندکردنی سڕینەوە" : "Approve Delete") + '</button><button class="btn small" data-dec="0" data-id="' + esc(e.id) + '" type="button">' + (isKu ? "هێشتنەوەی تۆمار" : "Keep Entry") + '</button></div></div>').join("") + "</div>" : "";
 
   renderRecentCashMovements();
 }
@@ -5152,13 +5724,16 @@ $("#btnGive").onclick = async () => {
   const fb = $("#cashFeedback");
   fb.style.display = "none";
   fb.className = "";
+  const isKu = (lang === "ku");
 
   if (!isManager()) {
     fb.style.display = "block";
     fb.style.background = "var(--warn-bg)";
     fb.style.color = "var(--warn)";
-    fb.innerHTML = "⚠️ <strong>Manager access required</strong>. Please open Settings (top right), enter your Manager Key, and tap 'Test Connection'.";
-    toast("Manager access required");
+    fb.innerHTML = isKu
+      ? "⚠️ <strong>دەسەڵاتی بەڕێوەبەر پێویستە</strong>. تکایە لە ڕێکخستنەکان کلیلەکەت بنووسە و 'پشکنینی پەیوەندی' دابگرە."
+      : "⚠️ <strong>Manager access required</strong>. Please open Settings (top right), enter your Manager Key, and tap 'Test Connection'.";
+    toast(isKu ? "دەسەڵاتی بەڕێوەبەر پێویستە" : "Manager access required");
     return;
   }
   const type = $("#cType").value;
@@ -5170,45 +5745,50 @@ $("#btnGive").onclick = async () => {
     fb.style.display = "block";
     fb.style.background = "var(--bad-bg)";
     fb.style.color = "var(--bad)";
-    fb.innerHTML = "⚠️ Please enter an amount greater than zero.";
-    toast("Please enter an amount.");
+    fb.innerHTML = isKu ? "⚠️ تکایە بڕێک لە سفر زیاتر بنووسە." : "⚠️ Please enter an amount greater than zero.";
+    toast(isKu ? "تکایە بڕی پارە بنووسە." : "Please enter an amount.");
     return;
   }
   if (!date) {
     fb.style.display = "block";
     fb.style.background = "var(--bad-bg)";
     fb.style.color = "var(--bad)";
-    fb.innerHTML = "⚠️ Please select a date.";
-    toast("Please select a date.");
+    fb.innerHTML = isKu ? "⚠️ تکایە بەروارێک دیاری بکە." : "⚠️ Please select a date.";
+    toast(isKu ? "تکایە بەروار دیاری بکە." : "Please select a date.");
     return;
   }
 
   const btn = $("#btnGive");
   btn.disabled = true;
-  btn.textContent = "⏳ Saving to Google Sheet...";
+  btn.textContent = isKu ? "⏳ لە پاشەکەوتکردندایە..." : "⏳ Saving to Google Sheet...";
   fb.style.display = "block";
   fb.style.background = "var(--surface-sub)";
   fb.style.color = "var(--muted)";
-  fb.innerHTML = "⏳ Sending cash movement to Google Sheet...";
+  fb.innerHTML = isKu ? "⏳ ناردنی جووڵەی نەختینە بۆ گووگڵ شیتس..." : "⏳ Sending cash movement to Google Sheet...";
 
   try {
-    await api("addCash", { id: newId(), type, date, amount: amt, note, by: settings().name || "Manager" });
+    await api("addCash", { id: newId(), type, date, amount: amt, note, by: settings().name || (isKu ? "بەڕێوەبەر" : "Manager") });
     $("#cAmt").value = "";
     $("#cNote").value = "";
     fb.style.background = "var(--ok-bg)";
     fb.style.color = "var(--ok)";
-    fb.innerHTML = `✅ <strong>Recorded successfully!</strong> ${type === 'recv' ? 'Received from company' : type === 'paid' ? 'Paid to user' : 'Taken back from user'}: ${fmt(amt)} ${esc(cur())}`;
-    toast("Cash movement saved to Google Sheet!");
+    const typeLabel = isKu
+      ? (type === 'recv' ? 'وەرگیراو لە کۆمپانیا' : type === 'paid' ? 'پێدراو بە بەکارهێنەر' : 'وەرگیراوە لە بەکارهێنەر')
+      : (type === 'recv' ? 'Received from company' : type === 'paid' ? 'Paid to user' : 'Taken back from user');
+    fb.innerHTML = isKu
+      ? `✅ <strong>بە سەرکەوتوویی تۆمارکرا!</strong> ${typeLabel}: ${fmt(amt)} ${esc(cur())}`
+      : `✅ <strong>Recorded successfully!</strong> ${typeLabel}: ${fmt(amt)} ${esc(cur())}`;
+    toast(isKu ? "جووڵەی نەختینە تۆمارکرا!" : "Cash movement saved to Google Sheet!");
     await refresh();
     renderAll();
   } catch (e) {
     fb.style.background = "var(--bad-bg)";
     fb.style.color = "var(--bad)";
-    fb.innerHTML = `❌ <strong>Failed to save:</strong> ${esc(e.message)}`;
+    fb.innerHTML = `❌ <strong>${isKu ? "سەرکەوتوو نەبوو لە پاشەکەوتکردن:" : "Failed to save:"}</strong> ${esc(e.message)}`;
     toast(e.message, 5000);
   } finally {
     btn.disabled = false;
-    btn.textContent = "Save Cash Movement";
+    btn.textContent = t("saveMovement") || (isKu ? "تۆمارکردنی جووڵەی نەختینە" : "Save Cash Movement");
   }
 };
 
@@ -5356,6 +5936,7 @@ function renderAll() {
   renderCats();
   fillCatSelect();
   renderCatChips();
+  updateFormSummary();
   renderBalance();
   renderExpenses();
   renderLedger();
@@ -5423,10 +6004,11 @@ for (const k in TABS) $("#" + TABS[k][1]).onclick = () => showTab(k);
 function renderConn() {
   const el = $("#connState");
   if (!el) return;
+  const isKu = (lang === "ku");
   el.textContent = !connected()
-    ? "Enter the script address and key, then tap Test connection."
-    : role ? "Connected as " + (role === "manager" ? "Manager (Full Access)" : "Expense User") + "."
-    : "Settings saved. Tap Test connection to verify.";
+    ? (isKu ? "ناونیشانی سکریپت و کلیل بنووسە، دواتر پشکنینی پەیوەندی دابگرە." : "Enter the script address and key, then tap Test connection.")
+    : role ? (isKu ? ("پەیوەستکراوە وەک " + (role === "manager" ? "بەڕێوەبەر (دەسەڵاتی تەواو)" : "بەکارهێنەری خەرجی") + ".") : ("Connected as " + (role === "manager" ? "Manager (Full Access)" : "Expense User") + "."))
+    : (isKu ? "ڕێکخستنەکان پاشەکەوت کران. پشکنینی پەیوەندی دابگرە بۆ دڵنیابوونەوە." : "Settings saved. Tap Test connection to verify.");
   $("#mgrTools").hidden = !isManager();
   $("#mgrTools2").hidden = !isManager();
   $("#mgrCats").hidden = !isManager();
@@ -5478,13 +6060,14 @@ $("#btnTest").onclick = async () => {
   const btn = $("#btnTest");
   const el = $("#connState");
   saveSettings(readSettings());
+  const isKu = (lang === "ku");
 
   btn.disabled = true;
-  btn.textContent = "⏳ Testing Connection...";
+  btn.textContent = isKu ? "⏳ پشکنینی پەیوەندی..." : "⏳ Testing Connection...";
   el.style.display = "block";
   el.style.background = "var(--surface-sub)";
   el.style.color = "var(--ink)";
-  el.innerHTML = '<span style="display:inline-block;animation:spin 0.8s linear infinite;margin-right:6px;">🔄</span> Connecting to Google Apps Script...';
+  el.innerHTML = '<span style="display:inline-block;animation:spin 0.8s linear infinite;margin-right:6px;">🔄</span> ' + (isKu ? "پەیوەستبوون بە گووگڵ ئەپس سکریپت..." : "Connecting to Google Apps Script...");
   updateConnectionStatus("syncing");
 
   try {
@@ -5493,18 +6076,22 @@ $("#btnTest").onclick = async () => {
     const isMgr = role === "manager";
     el.style.background = "var(--ok-bg)";
     el.style.color = "var(--ok)";
-    el.innerHTML = `✅ <strong>Connected successfully!</strong> Role: <strong>${isMgr ? "Manager (Full Access)" : "Expense User"}</strong> · Currency: <strong>${esc(cur())}</strong>`;
-    toast("Connected as " + (isMgr ? "Manager" : "Expense User"));
+    el.innerHTML = isKu
+      ? `✅ <strong>پەیوەستبوون سەرکەوتوو بوو!</strong> ڕۆڵ: <strong>${isMgr ? "بەڕێوەبەر (دەسەڵاتی تەواو)" : "بەکارهێنەری خەرجی"}</strong> · دراو: <strong>${esc(cur())}</strong>`
+      : `✅ <strong>Connected successfully!</strong> Role: <strong>${isMgr ? "Manager (Full Access)" : "Expense User"}</strong> · Currency: <strong>${esc(cur())}</strong>`;
+    toast(isKu ? ("پەیوەست بوو وەک " + (isMgr ? "بەڕێوەبەر" : "بەکارهێنەری خەرجی")) : ("Connected as " + (isMgr ? "Manager" : "Expense User")));
     updateConnectionStatus("ok");
   } catch (e) {
     el.style.background = "var(--bad-bg)";
     el.style.color = "var(--bad)";
-    el.innerHTML = `❌ <strong>Connection failed:</strong> ${esc(e.message)}<div style="font-size:12px;margin-top:6px;opacity:0.9;">Ensure your Apps Script is deployed as Web App (Execute as: Me, Who has access: Anyone) with "New version".</div>`;
-    toast("Connection failed: " + e.message, 5000);
+    el.innerHTML = isKu
+      ? `❌ <strong>پەیوەستبوون سەرکەوتوو نەبوو:</strong> ${esc(e.message)}<div style="font-size:12px;margin-top:6px;opacity:0.9;">دڵنیابە لەوەی سکریپت وەک Web App بڵاوکراوەتەوە (Execute as: Me, Who has access: Anyone) بە وەشانێکی نوێ.</div>`
+      : `❌ <strong>Connection failed:</strong> ${esc(e.message)}<div style="font-size:12px;margin-top:6px;opacity:0.9;">Ensure your Apps Script is deployed as Web App (Execute as: Me, Who has access: Anyone) with "New version".</div>`;
+    toast((isKu ? "پەیوەستبوون سەرکەوتوو نەبوو: " : "Connection failed: ") + e.message, 5000);
     updateConnectionStatus("error");
   } finally {
     btn.disabled = false;
-    btn.textContent = "Test Connection";
+    btn.textContent = t("testConn") || (isKu ? "پشکنینی پەیوەندی" : "Test Connection");
   }
 };
 
@@ -5512,25 +6099,28 @@ $("#btnSetSave").onclick = async () => {
   saveSettings(readSettings());
   $("#dSet").close();
   await start2();
-  toast("Settings saved");
+  toast(lang === "ku" ? "ڕێکخستنەکان پاشەکەوت کران" : "Settings saved");
 };
 
 $("#btnLink").onclick = async () => {
   try {
     const j = await api("keys"), l = setupLink(j.userKey);
-    try { await navigator.clipboard.writeText(l); toast("Setup link copied to clipboard.", 4000); }
-    catch (e) { prompt("Copy this setup link:", l); }
+    try { await navigator.clipboard.writeText(l); toast(lang === "ku" ? "بەستەری ڕێکخستن کۆپیکرا." : "Setup link copied to clipboard.", 4000); }
+    catch (e) { prompt(lang === "ku" ? "ئەم بەستەرە کۆپی بکە:" : "Copy this setup link:", l); }
   } catch (e) {
     toast(e.message, 5000);
   }
 };
 
 $("#btnRotate").onclick = async () => {
-  if (!confirm("This invalidates the current user key and signs out the expense user until they open the new setup link. Continue?")) return;
+  const confirmMsg = lang === "ku"
+    ? "ئەم کردارە کلیلی بەکارهێنەری ئێستا بەسەردەبات و بەکارهێنەری خەرجی دەردەکات تا ئەو کاتەی بەستەرە نوێیەکە دەکاتەوە. بەردەوام دەبیت؟"
+    : "This invalidates the current user key and signs out the expense user until they open the new setup link. Continue?";
+  if (!confirm(confirmMsg)) return;
   try {
     const j = await api("rotateUserKey"), l = setupLink(j.userKey);
-    try { await navigator.clipboard.writeText(l); toast("New key generated & setup link copied.", 5000); }
-    catch (e) { prompt("New setup link:", l); }
+    try { await navigator.clipboard.writeText(l); toast(lang === "ku" ? "کلیلی نوێ دروستکرا و بەستەرەکە کۆپیکرا." : "New key generated & setup link copied.", 5000); }
+    catch (e) { prompt(lang === "ku" ? "بەستەری نوێی ڕێکخستن:" : "New setup link:", l); }
   } catch (e) {
     toast(e.message, 5000);
   }
@@ -5544,40 +6134,43 @@ function updateConnectionStatus(status) {
   const txt = $("#netTxt");
   const pill = $("#net");
   if (!dot || !txt || !pill) return;
+  const isKu = (lang === "ku");
 
   dot.classList.remove("on", "off", "bad");
 
   if (!isConn) {
     dot.classList.add("off");
-    txt.textContent = "Not Connected";
-    pill.title = "Not connected to Google Sheet. Tap to configure in Settings.";
+    txt.textContent = isKu ? "پەیوەست نییە" : "Not Connected";
+    pill.title = isKu ? "پەیوەست نییە بە گووگڵ شیتس. پەنجە بنێ بۆ ڕێکخستن." : "Not connected to Google Sheet. Tap to configure in Settings.";
     return;
   }
 
   if (!isNetOn) {
     dot.classList.add("off");
-    txt.textContent = "Offline";
-    pill.title = "No internet connection. Using cached data.";
+    txt.textContent = isKu ? "هێڵ نییە" : "Offline";
+    pill.title = isKu ? "هێڵی ئینتەرنێت نییە. زانیارییە پاشەکەوتکراوەکان بەکاردەهێنرێن." : "No internet connection. Using cached data.";
     return;
   }
 
   if (status === "error") {
     dot.classList.add("bad");
-    txt.textContent = "Sheet Error";
-    pill.title = "Failed to reach Google Sheet. Tap to check Settings.";
+    txt.textContent = isKu ? "هەڵەی شیت" : "Sheet Error";
+    pill.title = isKu ? "پەیوەندی بە گووگڵ شیت سەرکەوتوو نەبوو. ڕێکخستنەکان بپشکنە." : "Failed to reach Google Sheet. Tap to check Settings.";
     return;
   }
 
   if (status === "syncing") {
     dot.classList.add("on");
-    txt.textContent = "Syncing…";
-    pill.title = "Syncing with Google Sheet…";
+    txt.textContent = isKu ? "هاوکات دەکرێت…" : "Syncing…";
+    pill.title = isKu ? "لەگەڵ گووگڵ شیت هاوکات دەکرێت…" : "Syncing with Google Sheet…";
     return;
   }
 
   dot.classList.add("on");
-  txt.textContent = isManager() ? "Manager" : "Connected";
-  pill.title = `Connected to Google Sheet (${isManager() ? "Manager" : "Expense User"}). Tap to open Settings.`;
+  txt.textContent = isManager() ? (isKu ? "بەڕێوەبەر" : "Manager") : (isKu ? "پەیوەستە" : "Connected");
+  pill.title = isKu
+    ? `پەیوەستە بە گووگڵ شیت (${isManager() ? "بەڕێوەبەر" : "بەکارهێنەری خەرجی"}). پەنجە بنێ بۆ کردنەوەی ڕێکخستنەکان.`
+    : `Connected to Google Sheet (${isManager() ? "Manager" : "Expense User"}). Tap to open Settings.`;
 }
 
 window.addEventListener("online", () => {
