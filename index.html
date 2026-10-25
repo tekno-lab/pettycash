@@ -1174,6 +1174,40 @@ dialog.dlg-scanner {
   background: #10b981;
   box-shadow: 0 0 8px #10b981;
 }
+
+/* Live Document Detector Overlay (Purple Borders) */
+.live-overlay-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
+.camera-reticle.doc-locked .reticle-corner {
+  border-color: #c084fc;
+  opacity: 0.35;
+}
+.camera-reticle.doc-locked .reticle-laser {
+  display: none;
+}
+.camera-reticle.doc-locked .reticle-hint {
+  background: rgba(88, 28, 135, 0.9);
+  border: 1px solid #a855f7;
+  color: #f5f3ff;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.65);
+}
+.live-status-pill.doc-locked {
+  background: rgba(88, 28, 135, 0.9);
+  border-color: #a855f7;
+  color: #f5f3ff;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.7);
+}
+.live-status-pill.doc-locked .status-dot {
+  background: #c084fc;
+  box-shadow: 0 0 10px #c084fc;
+}
 .capture-result-wrap {
   width: 100%;
   height: 100%;
@@ -1272,20 +1306,33 @@ dialog.dlg-scanner {
   color:var(--accent);
 }
 
-/* Expenses Filters */
+.app-version{
+  font-size:10.5px;
+  font-weight:600;
+  color:var(--muted);
+  line-height:1;
+  margin-top:2px;
+  letter-spacing:0.3px;
+  opacity:0.85;
+}
+
+/* Expenses Filters (Collapsible) */
 .exp-filters{
   background:var(--surface);
   border:1.5px solid var(--line);
   border-radius:16px;
-  padding:12px 14px;
+  padding:10px 14px;
   margin-bottom:14px;
   box-shadow:var(--card-shadow);
+  transition:all 0.2s ease;
 }
 .exp-filters-head{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:8px;
+  cursor:pointer;
+  user-select:none;
+  padding:2px 0;
 }
 .exp-filters-title{
   font-size:12px;
@@ -1293,6 +1340,31 @@ dialog.dlg-scanner {
   color:var(--muted);
   text-transform:uppercase;
   letter-spacing:0.5px;
+}
+.filter-active-badge{
+  background:var(--accent);
+  color:#ffffff;
+  font-size:11px;
+  font-weight:750;
+  padding:1px 7px;
+  border-radius:99px;
+  line-height:1.4;
+}
+.filter-toggle-icon{
+  transition:transform 0.2s ease;
+  font-size:11px;
+  color:var(--muted);
+  display:inline-block;
+}
+.exp-filters-body{
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid var(--line);
+  animation:filtersSlideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes filtersSlideDown{
+  from{opacity:0;transform:translateY(-6px)}
+  to{opacity:1;transform:translateY(0)}
 }
 .exp-filters-grid{
   display:grid;
@@ -1309,7 +1381,7 @@ dialog.dlg-scanner {
   font-size:12px;
   font-weight:600;
   color:var(--accent);
-  margin-top:6px;
+  margin-top:8px;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -1336,8 +1408,113 @@ dialog.dlg-scanner {
   border-right:5px solid var(--accent);
 }
 
+/* Global Sync & Pending Bar (Directly below Header) */
+.global-sync-bar {
+  background: var(--surface);
+  border-bottom: 1.5px solid var(--line);
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 650;
+  position: sticky;
+  top: 56px;
+  z-index: 90;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.22s ease;
+  animation: syncBarSlideIn 0.2s ease-out;
+}
+@keyframes syncBarSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.global-sync-bar.syncing {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+}
+.global-sync-bar.pending {
+  background: var(--warn-bg);
+  border-bottom-color: var(--warn);
+  color: var(--warn);
+}
+.global-sync-bar.success {
+  background: var(--ok-bg);
+  border-bottom-color: var(--ok);
+  color: var(--ok);
+}
+.global-sync-bar.error {
+  background: var(--danger-bg);
+  border-bottom-color: var(--danger);
+  color: var(--danger);
+}
+.global-sync-content {
+  width: min(100%, 720px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.global-sync-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.global-sync-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12.5px;
+}
+.global-sync-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.global-sync-bar:not(.syncing) .global-sync-spinner {
+  display: none;
+}
+.global-sync-bar.syncing .global-sync-icon {
+  display: none;
+}
+.btn-sync-action {
+  background: currentColor;
+  color: #fff;
+  border: none;
+  font-size: 11.5px;
+  font-weight: 750;
+  padding: 4px 11px;
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+.btn-sync-action:hover {
+  opacity: 0.9;
+}
+.btn-sync-action:active {
+  transform: scale(0.96);
+}
+.global-sync-bar.pending .btn-sync-action {
+  background: var(--warn);
+  color: #fff;
+}
+.global-sync-bar.error .btn-sync-action {
+  background: var(--danger);
+  color: #fff;
+}
+[dir="rtl"] .global-sync-content, [dir="rtl"] .global-sync-left {
+  flex-direction: row-reverse;
+}
+
 @media print{
-  header, nav, .bar, .bal, .noprint, .toast{display:none!important}
+  header, nav, .bar, .bal, .noprint, .toast, .global-sync-bar{display:none!important}
   body{background:#fff;color:#000;padding:0}
   main{max-width:none;padding:0}
   .card{border:0;padding:0;box-shadow:none}
@@ -1352,15 +1529,15 @@ dialog.dlg-scanner {
     <div class="brand-icon" aria-hidden="true">
       <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
     </div>
-    <h1 id="appTitle">Petty Cash</h1>
+    <div style="display:flex;flex-direction:column;justify-content:center;line-height:1.15;">
+      <h1 id="appTitle">Petty Cash</h1>
+      <span class="app-version" id="appVersion">v2.1.0</span>
+    </div>
   </div>
   <button class="btn-lang" id="btnLang" aria-label="Language Toggle" title="Switch English / کوردی" type="button">
     <span id="langTxt">KU</span>
   </button>
-  <button class="btn-icon" id="btnInstallHeader" aria-label="Install App" title="Install Petty Cash App on your device" style="display:inline-flex;background:var(--accent-soft);border-color:var(--accent);color:var(--accent);" type="button">
-    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-  </button>
-  <span class="net-pill" id="net" title="Click to configure connection" style="cursor:pointer;">
+  <span class="net-pill" id="net" title="Connection status. Tap to view" style="cursor:pointer;">
     <span class="dot"></span>
     <span id="netTxt">Not Connected</span>
   </span>
@@ -1368,6 +1545,20 @@ dialog.dlg-scanner {
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
   </button>
 </header>
+
+<!-- Centralized Global Sync & Pending Bar (Directly below header) -->
+<div id="globalSyncBar" class="global-sync-bar" hidden>
+  <div class="global-sync-content">
+    <div class="global-sync-left">
+      <span class="global-sync-spinner" id="globalSyncSpinner"></span>
+      <span class="global-sync-icon" id="globalSyncIcon">🔄</span>
+      <span class="global-sync-text" id="globalSyncText">Syncing...</span>
+    </div>
+    <div class="global-sync-right">
+      <button type="button" class="btn-sync-action" id="btnGlobalSyncNow" hidden>Sync Now</button>
+    </div>
+  </div>
+</div>
 
 <main>
   <!-- PWA Install Banner -->
@@ -1436,10 +1627,35 @@ dialog.dlg-scanner {
     </div>
 
     <div class="cat-section">
-      <span class="cat-label" id="catLbl">Select Category</span>
+      <span class="cat-label" id="catLbl">Select Company</span>
       <div class="cats" id="cats" role="radiogroup" aria-labelledby="catLbl"></div>
     </div>
 
+    <!-- Receipt Photos directly below Select Company -->
+    <div class="section-title">
+      <span>Receipt Photos</span>
+      <small id="pgCount">No photos yet</small>
+    </div>
+    
+    <div class="cap">
+      <button class="btn primary" id="btnCam" type="button">
+        <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span id="lblBtnCam">Auto-Scan Document</span>
+      </button>
+      <button class="btn" id="btnGal" type="button">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span>Gallery</span>
+      </button>
+    </div>
+    <input id="inCam" type="file" accept="image/*" capture="environment" hidden>
+    <input id="inGal" type="file" accept="image/*" multiple hidden>
+    
+    <div id="pages" class="pages"></div>
+    <div id="pagesEmpty" class="empty">
+      📸 Take clear photos of your paper receipt.<br>One photo per page.
+    </div>
+
+    <!-- Data Entry Section -->
     <div class="row">
       <div class="form-group">
         <label for="fDate">Expense Date</label>
@@ -1464,66 +1680,44 @@ dialog.dlg-scanner {
       <label for="fDesc">Expense Description</label>
       <textarea id="fDesc" dir="auto" placeholder="What was this expense for?"></textarea>
     </div>
-
-    <div class="form-group">
-      <label for="fNote">Note <span class="cur">(optional)</span></label>
-      <input id="fNote" dir="auto" autocomplete="off" placeholder="Additional details">
-    </div>
-
-    <div class="section-title">
-      <span>Receipt Photos</span>
-      <small id="pgCount">No photos yet</small>
-    </div>
-    
-    <div class="cap">
-      <button class="btn primary" id="btnCam" type="button">
-        <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        <span id="lblBtnCam">Auto-Scan Document</span>
-      </button>
-      <button class="btn" id="btnGal" type="button">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        Gallery
-      </button>
-    </div>
-    <input id="inCam" type="file" accept="image/*" capture="environment" hidden>
-    <input id="inGal" type="file" accept="image/*" multiple hidden>
-    
-    <div id="pages" class="pages"></div>
-    <div id="pagesEmpty" class="empty">
-      📸 Take clear photos of your paper receipt.<br>One photo per page.
-    </div>
   </section>
 
   <!-- TAB: EXPENSES LIST -->
   <section id="pExp" class="panel" hidden>
-    <!-- Filter Section by Company and Date Range -->
+    <!-- Filter Section by Company and Date Range (Collapsible) -->
     <div class="exp-filters noprint" id="expFilters">
-      <div class="exp-filters-head">
-        <span class="exp-filters-title" id="lblFilterTitle">🔍 Filter Expenses</span>
-        <button type="button" class="btn small" id="btnResetExpFilters" style="min-height:28px;padding:3px 10px;font-size:12px;" hidden>Reset</button>
-      </div>
-      <div class="exp-filters-grid">
-        <div class="form-group" style="margin-bottom:0;">
-          <label for="filterExpCompany" id="lblFilterComp" style="font-size:12px;margin-bottom:4px;font-weight:700;">Company</label>
-          <select id="filterExpCompany" style="padding:8px 10px;font-size:13.5px;">
-            <option value="">All Companies</option>
-          </select>
+      <div class="exp-filters-head" id="expFiltersToggle" style="cursor:pointer;user-select:none;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="exp-filters-title" id="lblFilterTitle">🔍 Filter Expenses</span>
+          <span class="filter-active-badge" id="filterActiveBadge" hidden>0</span>
         </div>
-        <div class="form-group" style="margin-bottom:0;">
-          <label for="filterExpFrom" id="lblFilterFrom" style="font-size:12px;margin-bottom:4px;font-weight:700;">From Date</label>
-          <input type="date" id="filterExpFrom" style="padding:7px 8px;font-size:13px;">
-        </div>
-        <div class="form-group" style="margin-bottom:0;">
-          <label for="filterExpTo" id="lblFilterTo" style="font-size:12px;margin-bottom:4px;font-weight:700;">To Date</label>
-          <input type="date" id="filterExpTo" style="padding:7px 8px;font-size:13px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button type="button" class="btn small" id="btnResetExpFilters" style="min-height:28px;padding:3px 10px;font-size:12px;" hidden>Reset</button>
+          <span class="filter-toggle-icon" id="filterToggleIcon">▼</span>
         </div>
       </div>
-      <div class="exp-filters-stats" id="expFilterStats" hidden></div>
+      <div class="exp-filters-body" id="expFiltersBody" hidden>
+        <div class="exp-filters-grid">
+          <div class="form-group" style="margin-bottom:0;">
+            <label for="filterExpCompany" id="lblFilterComp" style="font-size:12px;margin-bottom:4px;font-weight:700;">Company</label>
+            <select id="filterExpCompany" style="padding:8px 10px;font-size:13.5px;">
+              <option value="">All Companies</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label for="filterExpFrom" id="lblFilterFrom" style="font-size:12px;margin-bottom:4px;font-weight:700;">From Date</label>
+            <input type="date" id="filterExpFrom" style="padding:7px 8px;font-size:13px;">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label for="filterExpTo" id="lblFilterTo" style="font-size:12px;margin-bottom:4px;font-weight:700;">To Date</label>
+            <input type="date" id="filterExpTo" style="padding:7px 8px;font-size:13px;">
+          </div>
+        </div>
+        <div class="exp-filters-stats" id="expFilterStats" hidden></div>
+      </div>
     </div>
 
-    <div id="expTools" class="noprint" style="margin-bottom:14px;display:flex;justify-content:flex-end;" hidden>
-      <button class="btn small primary" id="btnUploadAll" type="button">Sync All Waiting</button>
-    </div>
+    <button id="btnUploadAll" hidden></button>
     <div id="expList"></div>
     <div id="expEmpty" class="empty">Drafts and submitted expenses will appear here.</div>
   </section>
@@ -1605,11 +1799,56 @@ dialog.dlg-scanner {
 <!-- Sticky Bottom Save Dock (For New Tab) -->
 <div class="bar" id="saveBar">
   <div class="in">
-    <button class="btn" id="btnDraft" type="button">Save Draft</button>
-    <button class="btn primary" id="btnSubmit" type="button">Submit & Upload</button>
-    <p class="why" id="whySubmit" hidden>Attach at least one receipt photo to submit.</p>
+    <button class="btn primary" id="btnSaveSubmit" type="button" style="width:100%;min-height:50px;font-size:16px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:10px;">
+      <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      <span id="lblSubmitAction">Submit Expense</span>
+    </button>
+    <button id="btnDraft" type="button" hidden></button>
+    <button id="btnSubmit" type="button" hidden></button>
   </div>
 </div>
+
+<!-- Choice Popup Dialog: Save Draft vs Submit & Upload -->
+<dialog id="dSubmitChoice" class="dlg-choice">
+  <div class="choice-modal-wrap">
+    <div class="choice-modal-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:22px;">💾</span>
+        <div>
+          <h3 id="lblChoiceTitle" style="margin:0;font-size:17px;font-weight:800;">Save or Submit Expense</h3>
+          <p id="lblChoiceSub" style="margin:2px 0 0;font-size:12.5px;color:var(--muted);">Choose how you want to handle this expense:</p>
+        </div>
+      </div>
+      <button type="button" class="close-btn" id="btnCloseChoice" aria-label="Close">✕</button>
+    </div>
+
+    <div class="choice-options-list">
+      <!-- Option 1: Save Draft -->
+      <button type="button" class="choice-card-btn" id="btnChoiceDraft">
+        <div class="choice-card-icon draft-icon">📝</div>
+        <div class="choice-card-body">
+          <strong id="lblChoiceDraftTitle">Save as Draft</strong>
+          <span id="lblChoiceDraftDesc">Keep on this device. You can edit and upload it later.</span>
+        </div>
+        <svg viewBox="0 0 24 24" class="choice-arrow"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      <!-- Option 2: Submit & Upload -->
+      <button type="button" class="choice-card-btn primary-choice" id="btnChoiceUpload">
+        <div class="choice-card-icon upload-icon">🚀</div>
+        <div class="choice-card-body">
+          <strong id="lblChoiceUploadTitle">Submit &amp; Upload</strong>
+          <span id="lblChoiceUploadDesc">Compile receipt PDF and sync directly to Google Sheets.</span>
+        </div>
+        <svg viewBox="0 0 24 24" class="choice-arrow"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+
+    <div class="choice-modal-footer">
+      <button type="button" class="btn small" id="btnCancelChoice">Cancel</button>
+    </div>
+  </div>
+</dialog>
 
 <!-- Bottom Navigation Bar -->
 <nav class="mobile-nav" role="tablist">
@@ -1670,9 +1909,10 @@ dialog.dlg-scanner {
       <!-- Live Video Feed -->
       <div class="camera-stream-wrap" id="cameraWrap">
         <video id="camera" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; display: block;"></video>
+        <canvas id="liveOverlayCanvas" class="live-overlay-canvas"></canvas>
         
         <!-- Document Framing Reticle -->
-        <div class="camera-reticle">
+        <div class="camera-reticle" id="cameraReticle">
           <div class="reticle-corner tl"></div>
           <div class="reticle-corner tr"></div>
           <div class="reticle-corner br"></div>
@@ -2088,6 +2328,13 @@ const I18N = {
     gallery: "Gallery",
     saveDraft: "Save Draft",
     submitUpload: "Submit & Upload",
+    submitExpenseAction: "Save / Submit Expense",
+    choiceTitle: "Save or Submit Expense",
+    choiceSub: "Choose how you want to handle this expense:",
+    choiceDraftTitle: "Save as Draft",
+    choiceDraftDesc: "Keep locally on this device. You can edit and upload it later.",
+    choiceUploadTitle: "Submit & Upload to Sheet",
+    choiceUploadDesc: "Compile receipt PDF and sync directly to Google Sheets.",
     filterExpenses: "🔍 Filter Expenses",
     fromDate: "From Date",
     toDate: "To Date",
@@ -2180,6 +2427,13 @@ const I18N = {
     gallery: "گەلەری",
     saveDraft: "پاشەکەوتی ڕەشنووس",
     submitUpload: "تۆمارکردن و ناردن",
+    submitExpenseAction: "پاشەکەوت / ناردنی خەرجی",
+    choiceTitle: "پاشەکەوت یان ناردنی خەرجی",
+    choiceSub: "شێوازی تۆمارکردنی ئەم خەرجییە دیاریبکە:",
+    choiceDraftTitle: "پاشەکەوت وەک ڕەشنووس",
+    choiceDraftDesc: "لەناو ئامێرەکەتدا دەمێنێتەوە بۆ ئەوەی دواتر دەستکاری بکەیت.",
+    choiceUploadTitle: "تۆمارکردن و ناردن بۆ شیت",
+    choiceUploadDesc: "دروستکردنی PDF و ناردنی راستەوخۆ بۆ گووگڵ شیت.",
     filterExpenses: "🔍 فلتەرکردنی خەرجییەکان",
     fromDate: "لە بەرواری",
     toDate: "تا بەرواری",
@@ -2278,6 +2532,13 @@ function applyLang() {
   if ($("#btnGal")) $("#btnGal").innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> ' + t("gallery");
   if ($("#btnDraft")) $("#btnDraft").textContent = t("saveDraft");
   if ($("#btnSubmit")) $("#btnSubmit").textContent = t("submitUpload");
+  if ($("#lblSubmitAction")) $("#lblSubmitAction").textContent = t("submitExpenseAction");
+  if ($("#lblChoiceTitle")) $("#lblChoiceTitle").textContent = t("choiceTitle");
+  if ($("#lblChoiceSub")) $("#lblChoiceSub").textContent = t("choiceSub");
+  if ($("#lblChoiceDraftTitle")) $("#lblChoiceDraftTitle").textContent = t("choiceDraftTitle");
+  if ($("#lblChoiceDraftDesc")) $("#lblChoiceDraftDesc").textContent = t("choiceDraftDesc");
+  if ($("#lblChoiceUploadTitle")) $("#lblChoiceUploadTitle").textContent = t("choiceUploadTitle");
+  if ($("#lblChoiceUploadDesc")) $("#lblChoiceUploadDesc").textContent = t("choiceUploadDesc");
   
   // Expenses tab
   if ($("#lblFilterTitle")) $("#lblFilterTitle").textContent = t("filterExpenses");
@@ -2521,10 +2782,13 @@ function detectDocumentCornersSmart(canvas) {
     );
 
     let foundPt = null;
-    for (let dist = Math.min(maxDist, 14); dist < maxDist; dist += 2) {
+    // Scan inward from outer perimeter toward center so outermost paper edges are detected first, ignoring inner tables
+    const startDist = Math.max(10, Math.round(maxDist - 4));
+    const endDist = Math.max(16, Math.round(maxDist * 0.25));
+    for (let dist = startDist; dist >= endDist; dist -= 2) {
       const px = Math.round(cx + cos * dist);
       const py = Math.round(cy + sin * dist);
-      if (px < 1 || px >= sw - 1 || py < 1 || py >= sh - 1) break;
+      if (px < 1 || px >= sw - 1 || py < 1 || py >= sh - 1) continue;
       if (grad[py * sw + px] >= threshold) {
         foundPt = { x: px / scale, y: py / scale };
         break;
@@ -2614,23 +2878,33 @@ function detectDocumentCornersSmart(canvas) {
 }
 
 async function detectDocCorners(canvas) {
-  // Pass 1: Scanic detector if loaded
-  const sc = window.scanic || globalThis.scanic;
-  if (sc && typeof sc.scanDocument === "function") {
+  // Pass 1: Enhanced OpenCV / jscanify outer-envelope detector (ignores inner tables)
+  const scanner = getJScanner();
+  if (scanner && typeof cv !== "undefined" && cv.imread) {
     try {
-      const res = await sc.scanDocument(canvas, {
-        mode: "detect",
-        maxProcessingDimension: 900
-      });
-      if (res && res.success && res.corners && res.corners.topLeft && res.corners.topRight) {
-        return res.corners;
+      const img = cv.imread(canvas);
+      const contour = scanner.findPaperContour(img);
+      if (contour) {
+        const pts = scanner.getCornerPoints(contour, img);
+        contour.delete();
+        img.delete();
+        if (pts && pts.topLeftCorner && pts.topRightCorner && pts.bottomRightCorner && pts.bottomLeftCorner) {
+          return {
+            topLeft: pts.topLeftCorner,
+            topRight: pts.topRightCorner,
+            bottomRight: pts.bottomRightCorner,
+            bottomLeft: pts.bottomLeftCorner
+          };
+        }
+      } else {
+        img.delete();
       }
     } catch (e) {
-      console.warn("Scanic edge detector notice:", e);
+      console.warn("OpenCV corner detection notice:", e);
     }
   }
 
-  // Pass 2: Smart boundary ray line-fitting detector
+  // Pass 2: Inward boundary ray line-fitting detector
   try {
     const smartCorners = detectDocumentCornersSmart(canvas);
     if (smartCorners) return smartCorners;
@@ -2638,7 +2912,7 @@ async function detectDocCorners(canvas) {
     console.warn("Smart edge detector notice:", e);
   }
 
-  // Pass 3: Inset 6% border fallback framing the receipt
+  // Pass 3: Inset 5% border fallback framing the receipt
   return getDefaultInsetCorners(canvas);
 }
 
@@ -2820,11 +3094,17 @@ function drawPages() {
     b.onclick = () => openView(i);
     box.appendChild(b);
   });
-  $("#pagesEmpty").hidden = pages.length > 0;
-  $("#pgCount").textContent = pages.length ? pages.length + (pages.length === 1 ? " page" : " pages") : "No photos yet";
-  $("#btnSubmit").classList.toggle("dim", !pages.length);
-  $("#btnSubmit").setAttribute("aria-disabled", String(!pages.length));
-  $("#whySubmit").hidden = pages.length > 0;
+  const elEmpty = $("#pagesEmpty");
+  if (elEmpty) elEmpty.hidden = pages.length > 0;
+  const elPgCount = $("#pgCount");
+  if (elPgCount) elPgCount.textContent = pages.length ? pages.length + (pages.length === 1 ? " page" : " pages") : "No photos yet";
+  const elSubmit = $("#btnSubmit");
+  if (elSubmit) {
+    elSubmit.classList.toggle("dim", !pages.length);
+    elSubmit.setAttribute("aria-disabled", String(!pages.length));
+  }
+  const elWhy = $("#whySubmit");
+  if (elWhy) elWhy.hidden = pages.length > 0;
 }
 
 function rotateCanvas90(c) {
@@ -3142,6 +3422,269 @@ async function startLiveCameraScanner() {
   await openCameraStream(currentFacingMode);
 }
 
+let liveDetectionRaf = null;
+let liveTargetCorners = null; // in video pixel coordinates
+let liveSmoothCorners = null; // in viewport canvas coordinates
+let liveHasDoc = false;
+let liveDocConfidence = 0;
+let liveProcCanvas = null;
+
+function startLiveDetectionLoop() {
+  stopLiveDetectionLoop();
+  const video = $("#camera");
+  const overlay = $("#liveOverlayCanvas");
+  if (!video || !overlay) return;
+
+  if (!liveProcCanvas) {
+    liveProcCanvas = document.createElement("canvas");
+    liveProcCanvas.width = 360;
+    liveProcCanvas.height = 480;
+  }
+  const procCtx = liveProcCanvas.getContext("2d", { willReadFrequently: true });
+  const octx = overlay.getContext("2d");
+
+  let lastDetectTime = 0;
+  let animSweep = 0;
+
+  function detectionTick(now) {
+    if (!liveStream || video.paused || video.ended || video.readyState < 2) {
+      liveDetectionRaf = requestAnimationFrame(detectionTick);
+      return;
+    }
+
+    const vw = video.videoWidth || 1280;
+    const vh = video.videoHeight || 720;
+    const wrap = $("#cameraWrap");
+    if (!wrap) return;
+    const rect = wrap.getBoundingClientRect();
+    const CW = rect.width, CH = rect.height;
+
+    // Keep overlay resolution crisp
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (overlay.width !== Math.round(CW * dpr) || overlay.height !== Math.round(CH * dpr)) {
+      overlay.width = Math.round(CW * dpr);
+      overlay.height = Math.round(CH * dpr);
+    }
+    octx.save();
+    octx.scale(dpr, dpr);
+    octx.clearRect(0, 0, CW, CH);
+
+    // Compute object-fit: cover mapping from video coords to viewport canvas coords
+    const scale = Math.max(CW / vw, CH / vh);
+    const renderW = vw * scale;
+    const renderH = vh * scale;
+    const offsetX = (CW - renderW) / 2;
+    const offsetY = (CH - renderH) / 2;
+
+    const toView = pt => ({
+      x: pt.x * scale + offsetX,
+      y: pt.y * scale + offsetY
+    });
+
+    // 1. Process frame every ~85ms
+    if (now - lastDetectTime > 85) {
+      lastDetectTime = now;
+      try {
+        const pw = 360;
+        const ph = Math.round(360 * (vh / vw));
+        if (liveProcCanvas.width !== pw || liveProcCanvas.height !== ph) {
+          liveProcCanvas.width = pw;
+          liveProcCanvas.height = ph;
+        }
+        procCtx.drawImage(video, 0, 0, pw, ph);
+
+        let detected = null;
+        const scanner = getJScanner();
+        if (scanner && typeof cv !== "undefined" && cv.imread) {
+          const img = cv.imread(liveProcCanvas);
+          const contour = scanner.findPaperContour(img);
+          if (contour) {
+            const pts = scanner.getCornerPoints(contour, img);
+            contour.delete();
+            img.delete();
+            if (pts && pts.topLeftCorner) {
+              const sx = vw / pw, sy = vh / ph;
+              detected = {
+                topLeft: { x: pts.topLeftCorner.x * sx, y: pts.topLeftCorner.y * sy },
+                topRight: { x: pts.topRightCorner.x * sx, y: pts.topRightCorner.y * sy },
+                bottomRight: { x: pts.bottomRightCorner.x * sx, y: pts.bottomRightCorner.y * sy },
+                bottomLeft: { x: pts.bottomLeftCorner.x * sx, y: pts.bottomLeftCorner.y * sy }
+              };
+            }
+          } else {
+            img.delete();
+          }
+        } else {
+          const sc = detectDocumentCornersSmart(liveProcCanvas);
+          if (sc) {
+            const sx = vw / pw, sy = vh / ph;
+            detected = {
+              topLeft: { x: sc.topLeft.x * sx, y: sc.topLeft.y * sy },
+              topRight: { x: sc.topRight.x * sx, y: sc.topRight.y * sy },
+              bottomRight: { x: sc.bottomRight.x * sx, y: sc.bottomRight.y * sy },
+              bottomLeft: { x: sc.bottomLeft.x * sx, y: sc.bottomLeft.y * sy }
+            };
+          }
+        }
+
+        if (detected) {
+          liveTargetCorners = detected;
+          liveHasDoc = true;
+          liveDocConfidence = Math.min(1, liveDocConfidence + 0.3);
+        } else {
+          liveDocConfidence = Math.max(0, liveDocConfidence - 0.12);
+          if (liveDocConfidence < 0.2) {
+            liveHasDoc = false;
+          }
+        }
+      } catch (err) {
+        // gracefully continue
+      }
+    }
+
+    // 2. Interpolate & Render Smooth Purple Live Overlay
+    if (liveTargetCorners && liveHasDoc && liveDocConfidence > 0.1) {
+      const targetV = {
+        tl: toView(liveTargetCorners.topLeft),
+        tr: toView(liveTargetCorners.topRight),
+        br: toView(liveTargetCorners.bottomRight),
+        bl: toView(liveTargetCorners.bottomLeft)
+      };
+
+      if (!liveSmoothCorners) {
+        liveSmoothCorners = {
+          tl: { ...targetV.tl },
+          tr: { ...targetV.tr },
+          br: { ...targetV.br },
+          bl: { ...targetV.bl }
+        };
+      } else {
+        const k = 0.35;
+        liveSmoothCorners.tl.x += (targetV.tl.x - liveSmoothCorners.tl.x) * k;
+        liveSmoothCorners.tl.y += (targetV.tl.y - liveSmoothCorners.tl.y) * k;
+        liveSmoothCorners.tr.x += (targetV.tr.x - liveSmoothCorners.tr.x) * k;
+        liveSmoothCorners.tr.y += (targetV.tr.y - liveSmoothCorners.tr.y) * k;
+        liveSmoothCorners.br.x += (targetV.br.x - liveSmoothCorners.br.x) * k;
+        liveSmoothCorners.br.y += (targetV.br.y - liveSmoothCorners.br.y) * k;
+        liveSmoothCorners.bl.x += (targetV.bl.x - liveSmoothCorners.bl.x) * k;
+        liveSmoothCorners.bl.y += (targetV.bl.y - liveSmoothCorners.bl.y) * k;
+      }
+
+      const reticle = $("#cameraReticle");
+      const hint = $("#lblReticleHint");
+      const statusPill = $("#liveStatusPill");
+      const statusTxt = $("#lblLiveStatus");
+
+      if (reticle) reticle.classList.add("doc-locked");
+      if (statusPill) statusPill.classList.add("doc-locked");
+      if (statusTxt) statusTxt.textContent = lang === "ku" ? "🟣 پسوڵە دەستنیشانکرا" : "🟣 Document Locked";
+      if (hint) hint.textContent = lang === "ku" ? "✓ لێوارەکانی پسوڵە دیاریکرا · وێنە بگرە" : "✓ Document Locked · Tap to Capture";
+
+      const { tl, tr, br, bl } = liveSmoothCorners;
+
+      // Draw Purple translucent fill
+      octx.beginPath();
+      octx.moveTo(tl.x, tl.y);
+      octx.lineTo(tr.x, tr.y);
+      octx.lineTo(br.x, br.y);
+      octx.lineTo(bl.x, bl.y);
+      octx.closePath();
+      octx.fillStyle = `rgba(168, 85, 247, ${0.18 * liveDocConfidence})`;
+      octx.fill();
+
+      // Glowing purple borders
+      octx.shadowColor = "#9333ea";
+      octx.shadowBlur = 14;
+      octx.lineWidth = 3.5;
+      octx.strokeStyle = "#a855f7"; // Vibrant purple
+      octx.lineJoin = "round";
+      octx.stroke();
+
+      // Subtle animated laser sweep across the document
+      animSweep = (animSweep + 0.018) % 1;
+      const lx1 = tl.x + (bl.x - tl.x) * animSweep;
+      const ly1 = tl.y + (bl.y - tl.y) * animSweep;
+      const lx2 = tr.x + (br.x - tr.x) * animSweep;
+      const ly2 = tr.y + (br.y - tr.y) * animSweep;
+      const sweepGrad = octx.createLinearGradient(lx1, ly1, lx2, ly2);
+      sweepGrad.addColorStop(0, "transparent");
+      sweepGrad.addColorStop(0.5, "rgba(216, 180, 254, 0.7)");
+      sweepGrad.addColorStop(1, "transparent");
+      octx.lineWidth = 2;
+      octx.strokeStyle = sweepGrad;
+      octx.shadowColor = "#c084fc";
+      octx.shadowBlur = 8;
+      octx.beginPath();
+      octx.moveTo(lx1, ly1);
+      octx.lineTo(lx2, ly2);
+      octx.stroke();
+
+      // Glowing Purple Corner Nodes
+      const drawCorner = (pt) => {
+        // Outer pulsing ring
+        octx.shadowColor = "#9333ea";
+        octx.shadowBlur = 12;
+        octx.beginPath();
+        octx.arc(pt.x, pt.y, 8, 0, Math.PI * 2);
+        octx.strokeStyle = "#c084fc";
+        octx.lineWidth = 2.5;
+        octx.fillStyle = "rgba(147, 51, 234, 0.45)";
+        octx.fill();
+        octx.stroke();
+
+        // Inner white dot
+        octx.shadowBlur = 0;
+        octx.beginPath();
+        octx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
+        octx.fillStyle = "#ffffff";
+        octx.fill();
+      };
+
+      drawCorner(tl);
+      drawCorner(tr);
+      drawCorner(br);
+      drawCorner(bl);
+
+    } else {
+      liveSmoothCorners = null;
+      const reticle = $("#cameraReticle");
+      const hint = $("#lblReticleHint");
+      const statusPill = $("#liveStatusPill");
+      const statusTxt = $("#lblLiveStatus");
+
+      if (reticle) reticle.classList.remove("doc-locked");
+      if (statusPill) statusPill.classList.remove("doc-locked");
+      if (statusTxt) statusTxt.textContent = (typeof cv !== "undefined" && cv.Mat) ? "Live Scanner Ready" : "Live Camera Ready";
+      if (hint) hint.textContent = lang === "ku" ? "پسوڵەکە بهێنە ناو چوارچێوەکەوە" : "Align receipt within frame";
+    }
+
+    octx.restore();
+    liveDetectionRaf = requestAnimationFrame(detectionTick);
+  }
+
+  liveDetectionRaf = requestAnimationFrame(detectionTick);
+}
+
+function stopLiveDetectionLoop() {
+  if (liveDetectionRaf) {
+    cancelAnimationFrame(liveDetectionRaf);
+    liveDetectionRaf = null;
+  }
+  liveTargetCorners = null;
+  liveSmoothCorners = null;
+  liveHasDoc = false;
+  liveDocConfidence = 0;
+  const overlay = $("#liveOverlayCanvas");
+  if (overlay) {
+    const octx = overlay.getContext("2d");
+    octx.clearRect(0, 0, overlay.width, overlay.height);
+  }
+  const reticle = $("#cameraReticle");
+  if (reticle) reticle.classList.remove("doc-locked");
+  const statusPill = $("#liveStatusPill");
+  if (statusPill) statusPill.classList.remove("doc-locked");
+}
+
 async function openCameraStream(facing) {
   stopCameraStream();
   const video = $("#camera");
@@ -3158,6 +3701,7 @@ async function openCameraStream(facing) {
     if (video) {
       video.srcObject = liveStream;
       await video.play().catch(() => {});
+      startLiveDetectionLoop();
     }
   } catch (err) {
     console.warn("High-res stream constraint error, falling back to standard video:", err);
@@ -3166,6 +3710,7 @@ async function openCameraStream(facing) {
       if (video) {
         video.srcObject = liveStream;
         await video.play().catch(() => {});
+        startLiveDetectionLoop();
       }
     } catch (err2) {
       console.error("Camera access failed entirely:", err2);
@@ -3177,6 +3722,7 @@ async function openCameraStream(facing) {
 }
 
 function stopCameraStream() {
+  stopLiveDetectionLoop();
   if (liveStream) {
     liveStream.getTracks().forEach(t => t.stop());
     liveStream = null;
@@ -3186,6 +3732,7 @@ function stopCameraStream() {
 }
 
 function closeLiveScanner() {
+  stopLiveDetectionLoop();
   stopCameraStream();
   const dlg = $("#dLiveScanner");
   if (dlg && dlg.open) dlg.close();
@@ -3230,31 +3777,45 @@ $("#scanBtn").onclick = async () => {
   let deskewedCanvas = null;
   let corners = null;
 
-  // 1. Process frame client-side using jscanify (OpenCV.js WebAssembly)
-  const scanner = getJScanner();
-  if (scanner) {
+  // If live detector already locked onto the document, use those precise corners!
+  if (liveHasDoc && liveTargetCorners) {
+    corners = liveTargetCorners;
     try {
-      deskewedCanvas = scanner.extractPaper(video, 800, 1100);
-      if (deskewedCanvas) {
-        try {
-          const img = cv.imread(frameCanvas);
-          const contour = scanner.findPaperContour(img);
-          if (contour) {
-            const pts = scanner.getCornerPoints(contour);
-            if (pts && pts.topLeftCorner) {
-              corners = {
-                topLeft: pts.topLeftCorner,
-                topRight: pts.topRightCorner,
-                bottomRight: pts.bottomRightCorner,
-                bottomLeft: pts.bottomLeftCorner
-              };
+      deskewedCanvas = await extractWarpedDocument(frameCanvas, corners);
+    } catch (e) {
+      console.warn("Live corners deskew fallback:", e);
+    }
+  }
+
+  stopLiveDetectionLoop();
+
+  // 1. Process frame client-side using jscanify (OpenCV.js WebAssembly) if not already warped
+  if (!deskewedCanvas) {
+    const scanner = getJScanner();
+    if (scanner) {
+      try {
+        deskewedCanvas = scanner.extractPaper(video, 800, 1100);
+        if (deskewedCanvas) {
+          try {
+            const img = cv.imread(frameCanvas);
+            const contour = scanner.findPaperContour(img);
+            if (contour) {
+              const pts = scanner.getCornerPoints(contour, img);
+              if (pts && pts.topLeftCorner) {
+                corners = {
+                  topLeft: pts.topLeftCorner,
+                  topRight: pts.topRightCorner,
+                  bottomRight: pts.bottomRightCorner,
+                  bottomLeft: pts.bottomLeftCorner
+                };
+              }
             }
-          }
-          img.delete();
-        } catch (e) {}
+            img.delete();
+          } catch (e) {}
+        }
+      } catch (err) {
+        console.warn("jscanify extractPaper warning:", err);
       }
-    } catch (err) {
-      console.warn("jscanify extractPaper warning:", err);
     }
   }
 
@@ -3319,6 +3880,7 @@ $("#btnLiveRetake").onclick = () => {
   $("#liveActionsPreview").hidden = true;
   const video = $("#camera");
   if (video) video.play().catch(() => {});
+  startLiveDetectionLoop();
 };
 
 $("#btnLiveManualAdjust").onclick = async () => {
@@ -3556,7 +4118,7 @@ const form = () => ({
   voucher: $("#fVoucher").value.trim(),
   amount: $("#fAmount").value.trim(),
   description: $("#fDesc").value.trim(),
-  note: $("#fNote").value.trim()
+  note: ($("#fNote") ? $("#fNote").value.trim() : "")
 });
 
 function renderCats() {
@@ -3601,7 +4163,7 @@ function resetForm() {
   $("#fVoucher").value = "";
   $("#fAmount").value = "";
   $("#fDesc").value = "";
-  $("#fNote").value = "";
+  if ($("#fNote")) $("#fNote").value = "";
   $("#fDate").value = today();
   $("#editBanner").hidden = true;
   updateCompanyTheme();
@@ -3716,7 +4278,7 @@ async function editDraft(it) {
   $("#fVoucher").value = it.voucher || "";
   $("#fAmount").value = it.amount || "";
   $("#fDesc").value = it.description || "";
-  $("#fNote").value = it.note || "";
+  if ($("#fNote")) $("#fNote").value = it.note || "";
   for (const pd of it.pageData || []) {
     try {
       const raw = await loadRawImage(pd.blob);
@@ -3801,6 +4363,44 @@ $("#btnSubmit").onclick = async () => {
   }
 };
 
+/* Choice Dialog Handlers (Save Draft vs Submit & Upload) */
+const btnSaveSubmit = $("#btnSaveSubmit");
+if (btnSaveSubmit) {
+  btnSaveSubmit.onclick = () => {
+    const f = form();
+    if (!f.category && !f.voucher && !f.amount && !f.description && !pages.length) {
+      navigator.vibrate?.([40, 50]);
+      $("#fAmount").focus();
+      return toast(lang === "ku" ? "⚠️ تکایە بڕی پارە، کۆمپانیا یان وێنەی پسوڵە دابنێ پێش تۆمارکردن." : "⚠️ Please enter an amount, select a company, or attach a photo first.", 3500);
+    }
+    const dlg = $("#dSubmitChoice");
+    if (dlg) dlg.showModal();
+  };
+}
+
+const btnCloseChoice = $("#btnCloseChoice");
+if (btnCloseChoice) btnCloseChoice.onclick = () => $("#dSubmitChoice").close();
+const btnCancelChoice = $("#btnCancelChoice");
+if (btnCancelChoice) btnCancelChoice.onclick = () => $("#dSubmitChoice").close();
+
+const btnChoiceDraft = $("#btnChoiceDraft");
+if (btnChoiceDraft) {
+  btnChoiceDraft.onclick = () => {
+    const dlg = $("#dSubmitChoice");
+    if (dlg) dlg.close();
+    $("#btnDraft").click();
+  };
+}
+
+const btnChoiceUpload = $("#btnChoiceUpload");
+if (btnChoiceUpload) {
+  btnChoiceUpload.onclick = () => {
+    const dlg = $("#dSubmitChoice");
+    if (dlg) dlg.close();
+    $("#btnSubmit").click();
+  };
+}
+
 /* ---------- Sync: Drive, Sheet, Email ---------- */
 const b64 = blob => new Promise((res, rej) => {
   const r = new FileReader();
@@ -3836,9 +4436,105 @@ async function uploadItem(it) {
   return j;
 }
 
+let syncBarHideTimeout = null;
+
+function updateGlobalSyncBar(explicitSuccess) {
+  const bar = $("#globalSyncBar");
+  if (!bar) return;
+  const icon = $("#globalSyncIcon");
+  const txt = $("#globalSyncText");
+  const btn = $("#btnGlobalSyncNow");
+
+  bar.classList.remove("syncing", "pending", "success", "error");
+  if (btn) btn.hidden = true;
+
+  const queued = (local || []).filter(i => i.status !== "draft" && i.status !== "done");
+  const failed = queued.filter(i => i.status === "failed");
+  const pendingCount = queued.length;
+
+  if (uploading) {
+    clearTimeout(syncBarHideTimeout);
+    bar.hidden = false;
+    bar.classList.add("syncing");
+    if (txt) {
+      txt.textContent = lang === "ku"
+        ? (pendingCount > 1 ? `هاوکاتکردنی خەرجییەکان لەگەڵ گووگڵ شیت… (${pendingCount})` : "هاوکاتکردنی خەرجی لەگەڵ گووگڵ شیت…")
+        : (pendingCount > 1 ? `Syncing ${pendingCount} expenses to Google Sheets…` : "Syncing expense to Google Sheets…");
+    }
+    return;
+  }
+
+  if (explicitSuccess || (pendingCount === 0 && bar.dataset.wasSyncing === "1")) {
+    bar.dataset.wasSyncing = "0";
+    clearTimeout(syncBarHideTimeout);
+    bar.hidden = false;
+    bar.classList.add("success");
+    if (icon) icon.textContent = "✓";
+    if (txt) {
+      txt.textContent = lang === "ku"
+        ? "✓ هەموو خەرجییەکان هاوکاتکران لەگەڵ گووگڵ شیت"
+        : "✓ All expenses synced with Google Sheets";
+    }
+    syncBarHideTimeout = setTimeout(() => {
+      bar.hidden = true;
+      bar.classList.remove("success");
+    }, 2800);
+    return;
+  }
+
+  if (pendingCount > 0) {
+    bar.dataset.wasSyncing = "1";
+    clearTimeout(syncBarHideTimeout);
+    bar.hidden = false;
+
+    if (failed.length > 0) {
+      bar.classList.add("error");
+      if (icon) icon.textContent = "⚠️";
+      if (txt) {
+        txt.textContent = lang === "ku"
+          ? (failed.length > 1 ? `ناردنی ${failed.length} خەرجی سەرکەوتوو نەبوو` : "ناردنی خەرجی سەرکەوتوو نەبوو")
+          : (failed.length > 1 ? `${failed.length} expense uploads failed` : "Expense upload failed");
+      }
+      if (btn) {
+        btn.hidden = false;
+        btn.textContent = lang === "ku" ? "دووبارە هەوڵبدەرەوە" : "Retry";
+        btn.onclick = () => uploadPending();
+      }
+    } else if (!navigator.onLine) {
+      bar.classList.add("pending");
+      if (icon) icon.textContent = "📶";
+      if (txt) {
+        txt.textContent = lang === "ku"
+          ? (pendingCount > 1 ? `ئۆفلاین · ${pendingCount} خەرجی پاشەکەوتکراوە، دواتر دەنێردرێت` : "ئۆفلاین · خەرجییەکە لەسەر مۆبایل پارێزراوە، دواتر دەنێردرێت")
+          : (pendingCount > 1 ? `Offline · ${pendingCount} expenses saved locally, pending sync` : "Offline · 1 expense saved locally, pending sync");
+      }
+      if (btn) btn.hidden = true;
+    } else {
+      bar.classList.add("pending");
+      if (icon) icon.textContent = "⏳";
+      if (txt) {
+        txt.textContent = lang === "ku"
+          ? (pendingCount > 1 ? `${pendingCount} خەرجی چاوەڕوانی ناردنە` : "١ خەرجی چاوەڕوانی ناردنە")
+          : (pendingCount > 1 ? `${pendingCount} expenses pending upload` : "1 expense pending upload");
+      }
+      if (btn) {
+        btn.hidden = false;
+        btn.textContent = lang === "ku" ? "هاوکاتکردن ئێستا" : "Sync Now";
+        btn.onclick = () => uploadPending();
+      }
+    }
+    return;
+  }
+
+  // Idle state with no queued expenses
+  bar.dataset.wasSyncing = "0";
+  bar.hidden = true;
+}
+
 async function uploadPending(only) {
   if (uploading) return;
   uploading = true;
+  updateGlobalSyncBar();
   try {
     await reloadLocal();
     const items = local.filter(i => (i.status === "queued" || i.status === "failed") && (!only || i.id === only))
@@ -3859,6 +4555,7 @@ async function uploadPending(only) {
   } finally {
     uploading = false;
     await afterChange();
+    updateGlobalSyncBar(true);
   }
 }
 
@@ -4027,13 +4724,24 @@ function renderExpenses() {
     badge.hidden = true;
   }
 
-  $("#expTools").hidden = waiting === 0;
+  const expTools = $("#expTools");
+  if (expTools) expTools.hidden = waiting === 0;
 
   // Read Filter values
   const fComp = ($("#filterExpCompany") ? $("#filterExpCompany").value : "").trim().toLowerCase();
   const fFrom = $("#filterExpFrom") ? $("#filterExpFrom").value : "";
   const fTo = $("#filterExpTo") ? $("#filterExpTo").value : "";
   const isFiltered = !!(fComp || fFrom || fTo);
+
+  let activeFilterCount = 0;
+  if (fComp) activeFilterCount++;
+  if (fFrom) activeFilterCount++;
+  if (fTo) activeFilterCount++;
+  const activeBadge = $("#filterActiveBadge");
+  if (activeBadge) {
+    activeBadge.textContent = activeFilterCount;
+    activeBadge.hidden = activeFilterCount === 0;
+  }
 
   const resetBtn = $("#btnResetExpFilters");
   if (resetBtn) resetBtn.hidden = !isFiltered;
@@ -4542,10 +5250,23 @@ function fillCatSelect() {
   }
 }
 
+const expToggle = $("#expFiltersToggle");
+const expBody = $("#expFiltersBody");
+const expIcon = $("#filterToggleIcon");
+if (expToggle && expBody) {
+  expToggle.onclick = (e) => {
+    if (e.target && (e.target.id === "btnResetExpFilters" || e.target.closest("#btnResetExpFilters"))) return;
+    const isClosed = expBody.hidden;
+    expBody.hidden = !isClosed;
+    if (expIcon) expIcon.textContent = isClosed ? "▲" : "▼";
+  };
+}
+
 if ($("#filterExpCompany")) $("#filterExpCompany").onchange = () => renderExpenses();
 if ($("#filterExpFrom")) $("#filterExpFrom").onchange = () => renderExpenses();
 if ($("#filterExpTo")) $("#filterExpTo").onchange = () => renderExpenses();
-if ($("#btnResetExpFilters")) $("#btnResetExpFilters").onclick = () => {
+if ($("#btnResetExpFilters")) $("#btnResetExpFilters").onclick = (e) => {
+  e.stopPropagation();
   if ($("#filterExpCompany")) $("#filterExpCompany").value = "";
   if ($("#filterExpFrom")) $("#filterExpFrom").value = "";
   if ($("#filterExpTo")) $("#filterExpTo").value = "";
@@ -4643,6 +5364,7 @@ function renderAll() {
   applyRole();
   renderConn();
   updateConnectionStatus();
+  updateGlobalSyncBar();
   updatePwaUi();
 }
 
@@ -4656,7 +5378,9 @@ if (btnLang) {
   };
 }
 
-$("#btnUploadAll").onclick = () => uploadPending();
+if ($("#btnUploadAll")) $("#btnUploadAll").onclick = () => uploadPending();
+const btnGlobalSync = $("#btnGlobalSyncNow");
+if (btnGlobalSync) btnGlobalSync.onclick = () => uploadPending();
 $("#btnRefresh").onclick = () => syncNow(true);
 
 /* ---------- Navigation & Tabs ---------- */
@@ -4727,7 +5451,28 @@ const readSettings = () => ({
 
 $("#btnSettings").onclick = () => { fillSettings(); $("#dSet").showModal(); };
 $("#btnSetClose").onclick = () => $("#dSet").close();
-$("#net").onclick = () => { fillSettings(); $("#dSet").showModal(); };
+
+let netTimer = null;
+const netEl = $("#net");
+if (netEl) {
+  netEl.onclick = () => {
+    const isShown = netEl.classList.contains("show-text");
+    if (!isShown) {
+      netEl.classList.add("show-text");
+      const txt = $("#netTxt") ? $("#netTxt").textContent : "";
+      toast(lang === "ku" ? `دۆخی پەیوەندی: ${txt}` : `Connection: ${txt}`, 2500);
+      clearTimeout(netTimer);
+      netTimer = setTimeout(() => {
+        netEl.classList.remove("show-text");
+      }, 3500);
+    } else {
+      netEl.classList.remove("show-text");
+      clearTimeout(netTimer);
+      fillSettings();
+      $("#dSet").showModal();
+    }
+  };
+}
 
 $("#btnTest").onclick = async () => {
   const btn = $("#btnTest");
@@ -4837,9 +5582,13 @@ function updateConnectionStatus(status) {
 
 window.addEventListener("online", () => {
   updateConnectionStatus();
+  updateGlobalSyncBar();
   if (connected()) { uploadPending(); syncNow(); }
 });
-window.addEventListener("offline", () => updateConnectionStatus());
+window.addEventListener("offline", () => {
+  updateConnectionStatus();
+  updateGlobalSyncBar();
+});
 
 /* ---------- PWA Installation ---------- */
 let deferredInstallPrompt = null;
@@ -4897,7 +5646,7 @@ async function triggerInstall() {
   alert("To install Petty Cash on your home screen:\n1. Tap your browser menu (⋮ or Share).\n2. Tap 'Install app' or 'Add to Home screen'.");
 }
 
-$("#btnInstallHeader").onclick = triggerInstall;
+if ($("#btnInstallHeader")) $("#btnInstallHeader").onclick = triggerInstall;
 $("#btnPwaInstall").onclick = triggerInstall;
 $("#btnPwaDismiss").onclick = () => {
   sessionStorage.setItem("pc:pwa_dismissed", "1");
