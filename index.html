@@ -306,7 +306,7 @@ main{
   max-width:540px;
   width:100%;
   margin:0 auto;
-  padding:14px 16px calc(130px + env(safe-area-inset-bottom, 0px));
+  padding:14px 16px calc(84px + env(safe-area-inset-bottom, 0px));
 }
 .panel[hidden]{display:none}
 
@@ -1773,7 +1773,7 @@ dialog.dlg-scanner {
     </div>
     <div style="display:flex;flex-direction:column;justify-content:center;line-height:1.15;">
       <h1 id="appTitle">Petty Cash</h1>
-      <span class="app-version" id="appVersion">v2.2.1</span>
+      <span class="app-version" id="appVersion">v2.2.2</span>
     </div>
   </div>
   <button class="btn-lang" id="btnLang" aria-label="Language Toggle" title="Switch English / کوردی" type="button">
@@ -1938,13 +1938,13 @@ dialog.dlg-scanner {
         </div>
       </div>
       <div class="form-action-buttons">
-        <button class="btn-action-draft" id="btnDraftInline" type="button">
+        <button class="btn-action-draft" id="btnDraft" type="button" title="Save locally as draft">
           <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          <span id="lblBtnDraftInline">Save Draft</span>
+          <span id="lblBtnDraft">Save Draft</span>
         </button>
-        <button class="btn-action-submit" id="btnSubmitInline" type="button">
+        <button class="btn-action-submit" id="btnSubmit" type="button" title="Compile receipt PDF and sync to Google Sheets">
           <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          <span id="lblBtnSubmitInline">Submit &amp; Upload</span>
+          <span id="lblBtnSubmit">Submit &amp; Upload</span>
         </button>
       </div>
     </div>
@@ -2064,20 +2064,6 @@ dialog.dlg-scanner {
   </section>
 </main>
 
-<!-- Sticky Bottom Save Dock (For New Tab) -->
-<div class="bar" id="saveBar">
-  <div class="in">
-    <button class="btn-action-draft" id="btnDraft" type="button" title="Save locally as draft">
-      <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-      <span id="lblBtnDraft">Save Draft</span>
-    </button>
-    <button class="btn-action-submit" id="btnSubmit" type="button" title="Compile receipt PDF and sync to Google Sheets">
-      <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      <span id="lblBtnSubmit">Submit &amp; Upload</span>
-    </button>
-    <button id="btnSaveSubmit" type="button" hidden></button>
-  </div>
-</div>
 
 <!-- Choice Popup Dialog: Save Draft vs Submit & Upload -->
 <dialog id="dSubmitChoice" class="dlg-choice">
@@ -2491,7 +2477,6 @@ function getCompanyPalette(name) {
 function updateCompanyTheme() {
   const pal = getCompanyPalette(cat);
   const panel = $("#pNew");
-  const saveBar = $("#saveBar");
   const nav = $("nav.mobile-nav");
   const header = $("header");
   const main = $("main");
@@ -2511,10 +2496,6 @@ function updateCompanyTheme() {
       panel.style.border = "none";
       panel.style.boxShadow = "none";
     }
-    if (saveBar) {
-      saveBar.style.backgroundColor = bg;
-      saveBar.style.borderTop = "none";
-    }
     if (nav) {
       nav.style.backgroundColor = bg;
       nav.style.borderTop = "none";
@@ -2532,10 +2513,6 @@ function updateCompanyTheme() {
       panel.style.backgroundColor = "";
       panel.style.border = "";
       panel.style.boxShadow = "";
-    }
-    if (saveBar) {
-      saveBar.style.backgroundColor = "";
-      saveBar.style.borderTop = "";
     }
     if (nav) {
       nav.style.backgroundColor = "";
@@ -5979,7 +5956,6 @@ function showTab(t) {
     $("#" + TABS[k][0]).hidden = k !== t;
     $("#" + TABS[k][1]).setAttribute("aria-selected", String(k === t));
   }
-  $("#saveBar").hidden = t !== "new";
   window.scrollTo({ top: 0, behavior: "smooth" });
   if (t === "new") {
     updateCompanyTheme();
@@ -5993,8 +5969,6 @@ function showTab(t) {
     if (header) { header.style.backgroundColor = ""; header.style.borderBottom = ""; }
     const nav = $("nav.mobile-nav");
     if (nav) { nav.style.backgroundColor = ""; nav.style.borderTop = ""; }
-    const saveBar = $("#saveBar");
-    if (saveBar) { saveBar.style.backgroundColor = ""; saveBar.style.borderTop = ""; }
   }
   if (t === "ledger" || t === "report" || t === "cash") syncNow();
 }
