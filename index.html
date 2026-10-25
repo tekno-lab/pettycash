@@ -1109,144 +1109,148 @@ dialog.dlg-choice {
   justify-content: flex-end;
 }
 
-/* Document Scanner (Microsoft Teams / Office Lens Style) */
-dialog.dlg-scanner {
-  width: min(96vw, 760px);
-  max-height: 94vh;
-  border-radius: 20px;
-  overflow: hidden;
-  background: var(--surface);
-  color: var(--ink);
-  padding: 0;
-  box-shadow: 0 20px 45px rgba(0,0,0,0.4);
+/* Document Scanner (Full-Width Immersive Experience) */
+dialog.dlg-scanner,
+dialog.dlg-live-scanner {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100% !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+  z-index: 99999 !important;
 }
+
 .scanner-container {
+  position: relative;
   display: flex;
   flex-direction: column;
+  width: 100%;
   height: 100%;
-  max-height: 94vh;
+  height: 100dvh;
+  background: #000000;
+  overflow: hidden;
 }
-.scanner-header {
-  padding: 13px 18px 10px;
+
+/* Floating Top Navigation Bar */
+.scanner-top-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 14px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 100%);
+  pointer-events: none;
 }
-.scanner-title-group h3 {
-  margin: 0;
-  font-size: 16.5px;
-  font-weight: 750;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.scanner-top-nav > * {
+  pointer-events: auto;
 }
-.scanner-title-group p {
-  margin: 2px 0 0;
-  font-size: 12px;
-  color: var(--muted);
-}
-.scanner-toolbar {
-  padding: 8px 14px;
-  background: var(--surface-sub);
-  border-bottom: 1px solid var(--line);
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.scanner-toolbar .btn {
-  font-size: 12px;
-  padding: 5px 11px;
-  min-height: 30px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-#scannerHost {
-  position: relative;
-  flex: 1;
-  min-height: 340px;
-  max-height: 56vh;
-  background: #0f172a;
+
+.scanner-nav-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(20, 25, 35, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  user-select: none;
-  touch-action: none;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: all 0.15s ease;
+  font-size: 16px;
+  font-weight: 700;
 }
-#scannerHost canvas {
-  display: block;
+.scanner-nav-btn:active {
+  transform: scale(0.92);
+  background: rgba(255, 255, 255, 0.25);
 }
-.scanner-filters {
-  padding: 10px 16px;
-  background: var(--surface);
-  border-top: 1px solid var(--line);
+.scanner-nav-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  fill: none;
+}
+
+.scanner-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 99px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.25s ease;
+}
+.scanner-status-badge.doc-locked {
+  background: rgba(88, 28, 135, 0.88);
+  border-color: #a855f7;
+  color: #f5f3ff;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.6);
+}
+
+.scanner-top-actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
 }
-.filter-chip {
-  padding: 5px 12px;
-  border-radius: 99px;
-  border: 1.5px solid var(--line);
-  background: var(--surface-sub);
-  color: var(--ink);
-  font-size: 12.5px;
-  font-weight: 650;
-  cursor: pointer;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  transition: all 0.15s ease;
-}
-.filter-chip:hover {
-  border-color: var(--accent);
-}
-.filter-chip.active {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 35%, transparent);
-}
-.scanner-footer {
-  padding: 12px 16px;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  background: var(--surface);
-  border-top: 1px solid var(--line);
-}
-/* Live Camera Document Scanner (OpenCV & jscanify) */
+
+/* Full-Width Document Viewport Stage */
 .live-view-stage {
   position: relative;
   width: 100%;
-  height: min(62vh, 480px);
-  background: #090d16;
+  flex: 1;
+  height: 100%;
+  background: #000000;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 .camera-stream-wrap {
-  position: relative;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+.camera-stream-wrap video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .camera-reticle {
   position: absolute;
-  top: 7%;
-  left: 7%;
-  right: 7%;
-  bottom: 7%;
+  top: 8%;
+  left: 8%;
+  right: 8%;
+  bottom: 8%;
   pointer-events: none;
   box-sizing: border-box;
   display: flex;
@@ -1255,23 +1259,23 @@ dialog.dlg-scanner {
 }
 .reticle-corner {
   position: absolute;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-color: #38bdf8;
   border-style: solid;
 }
-.reticle-corner.tl { top: 0; left: 0; border-width: 3.5px 0 0 3.5px; border-top-left-radius: 8px; }
-.reticle-corner.tr { top: 0; right: 0; border-width: 3.5px 3.5px 0 0; border-top-right-radius: 8px; }
-.reticle-corner.br { bottom: 0; right: 0; border-width: 0 3.5px 3.5px 0; border-bottom-right-radius: 8px; }
-.reticle-corner.bl { bottom: 0; left: 0; border-width: 0 0 3.5px 3.5px; border-bottom-left-radius: 8px; }
+.reticle-corner.tl { top: 0; left: 0; border-width: 3.5px 0 0 3.5px; border-top-left-radius: 10px; }
+.reticle-corner.tr { top: 0; right: 0; border-width: 3.5px 3.5px 0 0; border-top-right-radius: 10px; }
+.reticle-corner.br { bottom: 0; right: 0; border-width: 0 3.5px 3.5px 0; border-bottom-right-radius: 10px; }
+.reticle-corner.bl { bottom: 0; left: 0; border-width: 0 0 3.5px 3.5px; border-bottom-left-radius: 10px; }
 .reticle-laser {
   position: absolute;
-  left: 5%;
-  right: 5%;
+  left: 4%;
+  right: 4%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #38bdf8, #10b981, transparent);
-  box-shadow: 0 0 10px #38bdf8;
-  animation: scanLaser 2.4s ease-in-out infinite alternate;
+  background: linear-gradient(90deg, transparent, #38bdf8, #a855f7, transparent);
+  box-shadow: 0 0 12px #38bdf8;
+  animation: scanLaser 2.2s ease-in-out infinite alternate;
 }
 @keyframes scanLaser {
   0% { top: 6%; opacity: 0.3; }
@@ -1283,53 +1287,12 @@ dialog.dlg-scanner {
   font-weight: 700;
   color: #ffffff;
   background: rgba(15, 23, 42, 0.75);
-  padding: 4px 12px;
+  padding: 5px 14px;
   border-radius: 99px;
-  margin-bottom: 8px;
-  backdrop-filter: blur(6px);
+  margin-bottom: 90px;
+  backdrop-filter: blur(8px);
   letter-spacing: 0.3px;
-}
-.btn-cam-overlay {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(15, 23, 42, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 5;
-  backdrop-filter: blur(8px);
-}
-.btn-cam-overlay:active { transform: scale(0.92); }
-.live-status-pill {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(15, 23, 42, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #fff;
-  font-size: 11.5px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 99px;
-  backdrop-filter: blur(8px);
-  z-index: 5;
-}
-.live-status-pill .status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 8px #10b981;
 }
 
 /* Live Document Detector Overlay (Purple Borders) */
@@ -1355,36 +1318,195 @@ dialog.dlg-scanner {
   color: #f5f3ff;
   box-shadow: 0 0 16px rgba(168, 85, 247, 0.65);
 }
-.live-status-pill.doc-locked {
-  background: rgba(88, 28, 135, 0.9);
-  border-color: #a855f7;
-  color: #f5f3ff;
-  box-shadow: 0 0 14px rgba(168, 85, 247, 0.7);
-}
-.live-status-pill.doc-locked .status-dot {
-  background: #c084fc;
-  box-shadow: 0 0 10px #c084fc;
-}
-.capture-result-wrap {
+
+.scanner-review-wrap {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px;
+  padding: calc(68px + env(safe-area-inset-top, 0px)) 16px calc(150px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
-.result-canvas-container {
-  flex: 1;
+
+.review-canvas-stage {
   width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
-.result-badge-bar {
-  margin-top: 6px;
+.review-canvas-stage canvas {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
+  border-radius: 6px;
+  display: block;
+}
+
+#scannerHost {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
+}
+#scannerHost canvas {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+/* Filter Mode Pills (Normal / Scanned) */
+.scanner-filter-bar {
+  position: absolute;
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  left: 0;
+  right: 0;
+  z-index: 25;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.scanner-filter-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.82);
+  padding: 4px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  pointer-events: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.scanner-mode-chip {
+  padding: 7px 16px;
+  border-radius: 99px;
+  border: none;
+  background: transparent;
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.18s ease;
+}
+.scanner-mode-chip.active {
+  background: var(--accent);
+  color: #ffffff;
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+/* Floating Bottom Controls */
+.scanner-bottom-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 16px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
+  pointer-events: none;
+}
+.scanner-bottom-bar > * {
+  pointer-events: auto;
+}
+
+/* Camera Mode Shutter Button */
+.scanner-shutter-btn {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 4px solid #ffffff;
+  background: transparent;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+.scanner-shutter-btn:active {
+  transform: scale(0.92);
+}
+.scanner-shutter-btn .shutter-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+.scanner-shutter-btn.doc-locked {
+  border-color: #c084fc;
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.7);
+}
+.scanner-shutter-btn.doc-locked .shutter-inner {
+  background: #a855f7;
+}
+
+.scanner-gallery-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(20, 25, 35, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 11.5px;
+  font-weight: 700;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.15s ease;
+}
+.scanner-gallery-btn:active {
+  transform: scale(0.94);
+}
+.scanner-gallery-btn svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+.scanner-auto-badge {
+  color: #38bdf8;
+  font-size: 12px;
+  font-weight: 750;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  padding: 8px 12px;
+  border-radius: 99px;
+  backdrop-filter: blur(10px);
+}
+
+/* Review Mode Bottom Bar */
+.review-bottom-bar {
+  gap: 12px;
+  padding: 16px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  background: rgba(10, 15, 25, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
 }
 .badge-success {
   font-size: 11.5px;
@@ -1773,7 +1895,7 @@ dialog.dlg-scanner {
     </div>
     <div style="display:flex;flex-direction:column;justify-content:center;line-height:1.15;">
       <h1 id="appTitle">Petty Cash</h1>
-      <span class="app-version" id="appVersion">v2.2.2</span>
+      <span class="app-version" id="appVersion">v2.2.3</span>
     </div>
   </div>
   <button class="btn-lang" id="btnLang" aria-label="Language Toggle" title="Switch English / کوردی" type="button">
@@ -2144,31 +2266,41 @@ dialog.dlg-scanner {
   </div>
 </nav>
 
-<!-- Front-end Live Document Scanner with jscanify & OpenCV.js -->
+<!-- Unified Full-Width Professional Document Scanner Modal -->
 <dialog id="dLiveScanner" class="dlg-scanner dlg-live-scanner">
   <div class="scanner-container">
-    <div class="scanner-header">
-      <div class="scanner-title-group">
-        <h3 id="lblLiveScanTitle">
-          <svg style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-            <circle cx="12" cy="13" r="4"/>
-          </svg>
-          <span>Auto-Scan Document</span>
-        </h3>
-        <p id="lblLiveScanSub">Point camera at receipt. Tap Capture & Auto-Crop to flatten.</p>
+    <!-- Top Floating Navigation Bar -->
+    <div class="scanner-top-nav">
+      <button class="scanner-nav-btn" id="btnLiveClose" type="button" aria-label="Close scanner" title="Close">✕</button>
+      
+      <!-- Center status badge -->
+      <div class="scanner-status-badge" id="scannerStatusBadge">
+        <span class="status-dot on" id="scannerStatusDot"></span>
+        <span id="lblLiveStatus">Live Camera Ready</span>
       </div>
-      <button class="close-btn" id="btnLiveClose" type="button" aria-label="Close">✕</button>
+
+      <!-- Right controls (Flip camera, Rotate, Adjust) -->
+      <div class="scanner-top-actions">
+        <button class="scanner-nav-btn" id="btnFlipCam" type="button" title="Flip Camera" aria-label="Flip Camera">
+          <svg viewBox="0 0 24 24"><path d="M20 16v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4m16-8V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v4m14 4H4m4-4l-4 4 4 4m8-8l4 4-4 4"/></svg>
+        </button>
+        <button class="scanner-nav-btn" id="btnScannerRotate" type="button" title="Rotate 90°" aria-label="Rotate" hidden>
+          <svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+        </button>
+        <button class="scanner-nav-btn" id="btnToggleAdjustCrop" type="button" title="Adjust Edges" aria-label="Adjust Edges" hidden>
+          <svg viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
+        </button>
+      </div>
     </div>
 
-    <!-- Live Camera Viewport Area -->
+    <!-- Full-Width Document Viewport Stage -->
     <div class="live-view-stage" id="liveViewStage">
-      <!-- Live Video Feed -->
+      <!-- 1. Live Camera Stream (Takes 100% full width and height) -->
       <div class="camera-stream-wrap" id="cameraWrap">
-        <video id="camera" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; display: block;"></video>
+        <video id="camera" autoplay playsinline muted></video>
         <canvas id="liveOverlayCanvas" class="live-overlay-canvas"></canvas>
         
-        <!-- Document Framing Reticle -->
+        <!-- Framing Corner Reticles -->
         <div class="camera-reticle" id="cameraReticle">
           <div class="reticle-corner tl"></div>
           <div class="reticle-corner tr"></div>
@@ -2177,57 +2309,61 @@ dialog.dlg-scanner {
           <div class="reticle-laser"></div>
           <div class="reticle-hint" id="lblReticleHint">Align receipt within frame</div>
         </div>
+      </div>
 
-        <!-- Camera Switch Overlay Button -->
-        <button type="button" class="btn-cam-overlay" id="btnFlipCam" title="Flip Camera">
-          <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;"><path d="M20 16v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4m16-8V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v4m14 4H4m4-4l-4 4 4 4m8-8l4 4-4 4"/></svg>
+      <!-- 2. Full-Width Scanned Review View (Shown after capture or image upload) -->
+      <div class="scanner-review-wrap" id="captureResultWrap" hidden>
+        <!-- Flattened preview canvas -->
+        <div class="review-canvas-stage" id="reviewCanvasStage">
+          <canvas id="outputCanvas"></canvas>
+        </div>
+        <!-- Interactive corner adjustment container -->
+        <div id="scannerHost" hidden></div>
+      </div>
+    </div>
+
+    <!-- Filter Mode Pills (Normal / Scanned, default Scanned) -->
+    <div class="scanner-filter-bar" id="liveFilterBar" hidden>
+      <div class="scanner-filter-group">
+        <button type="button" class="scanner-mode-chip" data-lmode="color" id="lModeColor">
+          <span>📷</span> <span id="lblFilterColor">Normal</span>
         </button>
-
-        <div class="live-status-pill" id="liveStatusPill">
-          <span class="status-dot on"></span>
-          <span id="lblLiveStatus">Live Camera Ready</span>
-        </div>
-      </div>
-
-      <!-- Deskewed Result Preview Container (shown after capture) -->
-      <div class="capture-result-wrap" id="captureResultWrap" hidden>
-        <div class="result-canvas-container">
-          <canvas id="outputCanvas" style="max-width: 100%; max-height: 100%; display: block; box-shadow: 0 8px 24px rgba(0,0,0,0.5); border-radius: 4px;"></canvas>
-        </div>
-        <div class="result-badge-bar">
-          <span class="badge-success" id="lblLiveCroppedBadge">✓ Auto-Cropped & Perspective Flattened</span>
-        </div>
+        <button type="button" class="scanner-mode-chip active" data-lmode="magic" id="lModeMagic">
+          <span>✨</span> <span id="lblFilterMagic">Scanned</span>
+        </button>
       </div>
     </div>
 
-    <!-- Filter Modes (Visible when viewing preview) -->
-    <div class="scanner-filters" id="liveFilterBar" hidden>
-      <span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-right:4px;" id="lblLiveFilterLabel">Filter:</span>
-      <button type="button" class="filter-chip" data-lmode="color" id="lModeColor">📷 Normal</button>
-      <button type="button" class="filter-chip active" data-lmode="magic" id="lModeMagic">✨ Scanned</button>
+    <!-- Camera Mode Bottom Floating Controls -->
+    <div class="scanner-bottom-bar" id="liveActionsLive">
+      <button type="button" class="scanner-gallery-btn" id="btnLiveFallbackUpload" title="Upload from device gallery">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span id="lblLiveUploadFile">Gallery</span>
+      </button>
+
+      <!-- Shutter Button -->
+      <button type="button" class="scanner-shutter-btn" id="scanBtn" aria-label="Take Photo" title="Capture and scan document">
+        <div class="shutter-inner"></div>
+      </button>
+
+      <!-- Auto mode indicator -->
+      <div class="scanner-auto-badge" id="lblScannerModeHint">
+        <span>⚡ Auto</span>
+      </div>
     </div>
 
-    <!-- Actions Footer -->
-    <div class="scanner-footer" id="liveActionsLive">
-      <button type="button" class="btn small" id="btnLiveFallbackUpload" style="min-width:100px;">
-        <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        <span id="lblLiveUploadFile">Upload File</span>
-      </button>
-      <button type="button" class="btn primary" id="scanBtn" style="flex:1.5;min-height:48px;font-size:15px;font-weight:800;gap:8px;">
-        <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
-        <span id="lblScanBtnText">Capture & Auto-Crop</span>
-      </button>
-    </div>
-
-    <div class="scanner-footer" id="liveActionsPreview" hidden>
-      <button type="button" class="btn small" id="btnLiveRetake" style="min-width:90px;">
+    <!-- Review Mode Bottom Action Bar -->
+    <div class="scanner-bottom-bar review-bottom-bar" id="liveActionsPreview" hidden>
+      <button type="button" class="btn small" id="btnLiveRetake">
         <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
         <span id="lblLiveRetake">Retake</span>
       </button>
-      <button type="button" class="btn small" id="btnLiveManualAdjust" style="font-weight:600;">
+
+      <button type="button" class="btn small" id="btnLiveManualAdjust">
         <span id="lblLiveManual">📐 Adjust Edges</span>
       </button>
-      <button type="button" class="btn small primary" id="btnLiveAccept" style="flex:1;min-height:46px;font-weight:800;">
+
+      <button type="button" class="btn primary" id="btnLiveAccept" style="flex:1.4;min-height:48px;font-weight:750;font-size:15px;">
         <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>
         <span id="lblLiveAccept">Attach Receipt</span>
       </button>
@@ -2235,74 +2371,14 @@ dialog.dlg-scanner {
   </div>
 </dialog>
 
-<!-- Microsoft Teams-style Document Scanner Modal -->
-<dialog id="dScanner" class="dlg-scanner">
-  <div class="scanner-container">
-    <div class="scanner-header">
-      <div class="scanner-title-group">
-        <h3 id="lblScannerTitle">
-          <svg style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-            <line x1="16" y1="13" x2="8" y2="13"/>
-            <line x1="16" y1="17" x2="8" y2="17"/>
-            <polyline points="10 9 9 9 8 9"/>
-          </svg>
-          <span>Scan Document</span>
-        </h3>
-        <p id="lblScannerSub">Adjust corners to fit receipt edges. Drag magnifier for precision.</p>
-      </div>
-      <button class="close-btn" id="btnScannerClose" type="button" aria-label="Cancel">✕</button>
-    </div>
-
-    <!-- Toolbar like Microsoft Teams scanner -->
-    <div class="scanner-toolbar">
-      <button type="button" class="btn small" id="btnScannerAuto" title="Automatically detect document edges">
-        <svg style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><path d="M11 8v6M8 11h6"/></svg>
-        <span id="lblAutoDetect">Auto Detect</span>
-      </button>
-      <button type="button" class="btn small" id="btnScannerFull" title="Reset corners to full photo">
-        <svg style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-        <span id="lblSelectAll">Full Photo</span>
-      </button>
-      <button type="button" class="btn small" id="btnScannerRotate" title="Rotate image 90° clockwise">
-        <svg style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-        <span id="lblRotate">Rotate</span>
-      </button>
-      <span style="flex:1;"></span>
-      <span id="scannerPageIndicator" style="font-size:12px;font-weight:700;color:var(--muted);">Page 1</span>
-    </div>
-
-    <!-- Interactive Corner Editor Host Area -->
-    <div id="scannerHost">
-      <div id="scannerSpinner" style="color:#fff;display:flex;flex-direction:column;align-items:center;gap:10px;">
-        <span style="font-size:24px;">⏳</span>
-        <span style="font-size:13px;font-weight:600;" id="lblDetectingEdges">Detecting document edges…</span>
-      </div>
-    </div>
-
-    <!-- Filter Mode Selection -->
-    <div class="scanner-filters">
-      <span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-right:4px;" id="lblScannerFilter">Mode:</span>
-      <button type="button" class="filter-chip" data-mode="color" id="fModeColor">
-        <span>📷</span> <span id="lblFilterColor">Normal</span>
-      </button>
-      <button type="button" class="filter-chip active" data-mode="magic" id="fModeMagic">
-        <span>✨</span> <span id="lblFilterMagic">Scanned</span>
-      </button>
-    </div>
-
-    <!-- Footer Action Bar -->
-    <div class="scanner-footer">
-      <button type="button" class="btn small" id="btnScannerCancel" style="min-width:90px;">
-        <span id="lblCancelScan">Cancel</span>
-      </button>
-      <button type="button" class="btn small primary" id="btnScannerApply" style="min-width:140px;font-weight:750;">
-        <svg style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.5;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-        <span id="lblCropAndSave">Apply & Save</span>
-      </button>
-    </div>
-  </div>
+<!-- Backward Compatibility Dialog Stub -->
+<dialog id="dScanner" class="dlg-scanner" style="display:none;" hidden>
+  <button id="btnScannerClose" type="button"></button>
+  <button id="btnScannerCancel" type="button"></button>
+  <button id="btnScannerAuto" type="button"></button>
+  <button id="btnScannerFull" type="button"></button>
+  <button id="btnScannerApply" type="button"></button>
+  <span id="scannerPageIndicator"></span>
 </dialog>
 
 <!-- Receipt Photo Fullscreen Viewer Dialog -->
@@ -3545,59 +3621,160 @@ function rotateCanvas90(c) {
   return rotated;
 }
 
-async function startDocumentScanner(opts) {
-  return new Promise(async (resolve) => {
-    scannerResolve = resolve;
-    currentScannerRaw = opts.raw;
-    currentScannerMode = opts.mode || "color";
+/* ---------- Unified Full-Width Professional Document Scanner ---------- */
+let scannerResolve = null;
+let scannerEditor = null;
+let liveStream = null;
+let currentFacingMode = "environment";
+let liveDetectionRaf = null;
+let liveTargetCorners = null; // in video pixel coordinates
+let liveSmoothCorners = null; // in viewport canvas coordinates
+let liveHasDoc = false;
+let liveDocConfidence = 0;
+let liveProcCanvas = null;
 
-    // Set filter buttons state
-    document.querySelectorAll(".scanner-filters .filter-chip").forEach(ch => {
-      ch.classList.toggle("active", ch.getAttribute("data-mode") === currentScannerMode);
-    });
+const scannerState = {
+  view: "camera", // "camera" | "preview" | "adjust"
+  raw: null,
+  corners: null,
+  warped: null,
+  filter: "magic", // DEFAULT IS SCANNED!
+  isAdjusting: false
+};
 
-    const ind = $("#scannerPageIndicator");
-    if (ind) {
-      ind.textContent = (opts.pageIndex && opts.totalPages) ? 
-        `${t("pageOf")} ${opts.pageIndex} / ${opts.totalPages}` : (t("pageOf") + " 1");
-    }
-
-    const dlg = $("#dScanner");
-    const host = $("#scannerHost");
-    host.innerHTML = `<div id="scannerSpinner" style="color:#fff;display:flex;flex-direction:column;align-items:center;gap:10px;">
-      <span style="font-size:26px;">🔍</span>
-      <span style="font-size:13px;font-weight:600;">${esc(t("scannerTitle"))}…</span>
-    </div>`;
-
-    if (!dlg.open) dlg.showModal();
-
-    let corners = opts.corners;
-    if (!corners) {
-      corners = await detectDocCorners(currentScannerRaw);
-    }
-    currentScannerCorners = corners;
-
-    host.innerHTML = "";
-
+function getJScanner() {
+  if (typeof jscanify !== "undefined" && typeof cv !== "undefined" && cv.Mat) {
     try {
-      if (scannerEditor) {
-        try { scannerEditor.destroy(); } catch (e) {}
-        scannerEditor = null;
-      }
+      return new jscanify();
+    } catch (e) {
+      console.warn("jscanify init notice:", e);
+    }
+  }
+  return null;
+}
+
+function closeUnifiedScanner(result) {
+  stopLiveDetectionLoop();
+  stopCameraStream();
+  if (scannerEditor) {
+    try { scannerEditor.destroy(); } catch (e) {}
+    scannerEditor = null;
+  }
+  scannerState.isAdjusting = false;
+  const dlg = $("#dLiveScanner");
+  if (dlg && dlg.open) dlg.close();
+  if (scannerResolve) {
+    const res = scannerResolve;
+    scannerResolve = null;
+    res(result || null);
+  }
+}
+
+async function renderReviewCanvas() {
+  const outCanvas = document.getElementById("outputCanvas");
+  if (!outCanvas || !scannerState.raw || !scannerState.corners) return;
+
+  try {
+    scannerState.warped = await extractWarpedDocument(scannerState.raw, scannerState.corners);
+  } catch (err) {
+    console.warn("extractWarpedDocument fallback:", err);
+    scannerState.warped = scannerState.raw;
+  }
+
+  outCanvas.width = scannerState.warped.width;
+  outCanvas.height = scannerState.warped.height;
+  const ctx = outCanvas.getContext("2d");
+  ctx.drawImage(scannerState.warped, 0, 0);
+
+  // Apply active filter (magic = Scanned, color = Normal)
+  if (scannerState.filter === "magic") {
+    applyMagicColor(outCanvas);
+  }
+
+  // Update filter buttons
+  document.querySelectorAll("#liveFilterBar .scanner-mode-chip").forEach(ch => {
+    ch.classList.toggle("active", ch.getAttribute("data-lmode") === scannerState.filter);
+  });
+}
+
+async function setScannerView(view) {
+  scannerState.view = view;
+  const cameraWrap = $("#cameraWrap");
+  const captureResultWrap = $("#captureResultWrap");
+  const reviewCanvasStage = $("#reviewCanvasStage");
+  const host = $("#scannerHost");
+  const liveFilterBar = $("#liveFilterBar");
+  const liveActionsLive = $("#liveActionsLive");
+  const liveActionsPreview = $("#liveActionsPreview");
+  const btnFlipCam = $("#btnFlipCam");
+  const btnRotate = $("#btnScannerRotate");
+  const btnAdjustCrop = $("#btnToggleAdjustCrop");
+  const statusBadge = $("#scannerStatusBadge");
+  const statusTxt = $("#lblLiveStatus");
+  const lblManual = $("#lblLiveManual");
+
+  if (view === "camera") {
+    scannerState.isAdjusting = false;
+    if (scannerEditor) {
+      try { scannerEditor.destroy(); } catch (e) {}
+      scannerEditor = null;
+    }
+    if (cameraWrap) cameraWrap.hidden = false;
+    if (captureResultWrap) captureResultWrap.hidden = true;
+    if (liveFilterBar) liveFilterBar.hidden = true;
+    if (liveActionsLive) liveActionsLive.hidden = false;
+    if (liveActionsPreview) liveActionsPreview.hidden = true;
+    if (btnFlipCam) btnFlipCam.hidden = false;
+    if (btnRotate) btnRotate.hidden = true;
+    if (btnAdjustCrop) btnAdjustCrop.hidden = true;
+    if (statusBadge) statusBadge.classList.remove("doc-locked");
+    if (statusTxt) statusTxt.textContent = (typeof cv !== "undefined" && cv.Mat) ? (lang === "ku" ? "کامێرای ڕاستەوخۆ (ئامادەیە)" : "Live Camera (AI Ready)") : (lang === "ku" ? "کامێرای ڕاستەوخۆ" : "Live Camera Ready");
+  } else if (view === "preview") {
+    scannerState.isAdjusting = false;
+    if (scannerEditor) {
+      try { scannerEditor.destroy(); } catch (e) {}
+      scannerEditor = null;
+    }
+    stopLiveDetectionLoop();
+    if (cameraWrap) cameraWrap.hidden = true;
+    if (captureResultWrap) captureResultWrap.hidden = false;
+    if (reviewCanvasStage) reviewCanvasStage.hidden = false;
+    if (host) host.hidden = true;
+    if (liveFilterBar) liveFilterBar.hidden = false;
+    if (liveActionsLive) liveActionsLive.hidden = true;
+    if (liveActionsPreview) liveActionsPreview.hidden = false;
+    if (btnFlipCam) btnFlipCam.hidden = true;
+    if (btnRotate) btnRotate.hidden = false;
+    if (btnAdjustCrop) btnAdjustCrop.hidden = false;
+    if (statusBadge) statusBadge.classList.remove("doc-locked");
+    if (statusTxt) statusTxt.textContent = lang === "ku" ? "✓ پسوڵە سکانکرا" : "✓ Receipt Scanned";
+    if (lblManual) lblManual.textContent = lang === "ku" ? "📐 دەستکاری لێوارەکان" : "📐 Adjust Edges";
+    await renderReviewCanvas();
+  } else if (view === "adjust") {
+    scannerState.isAdjusting = true;
+    stopLiveDetectionLoop();
+    if (cameraWrap) cameraWrap.hidden = true;
+    if (captureResultWrap) captureResultWrap.hidden = false;
+    if (reviewCanvasStage) reviewCanvasStage.hidden = true;
+    if (host) host.hidden = false;
+    if (liveFilterBar) liveFilterBar.hidden = true;
+    if (liveActionsLive) liveActionsLive.hidden = true;
+    if (liveActionsPreview) liveActionsPreview.hidden = false;
+    if (btnFlipCam) btnFlipCam.hidden = true;
+    if (btnRotate) btnRotate.hidden = false;
+    if (btnAdjustCrop) btnAdjustCrop.hidden = false;
+    if (statusBadge) statusBadge.classList.remove("doc-locked");
+    if (statusTxt) statusTxt.textContent = lang === "ku" ? "📐 ڕێکخستنی گۆشەکان" : "📐 Drag Corners";
+    if (lblManual) lblManual.textContent = lang === "ku" ? "✓ تەواوکردن" : "✓ Apply Edges";
+
+    if (host) {
+      host.innerHTML = "";
       if (window.scanic && typeof window.scanic.createCornerEditor === "function") {
         scannerEditor = window.scanic.createCornerEditor({
           container: host,
-          image: currentScannerRaw,
-          corners: currentScannerCorners,
-          magnifier: {
-            enabled: true,
-            zoom: 2.2,
-            size: 110,
-            margin: 16,
-            crosshairColor: "#ef4444",
-            borderColor: "#ffffff",
-            borderWidth: 3
-          },
+          image: scannerState.raw,
+          corners: scannerState.corners,
+          magnifier: { enabled: true, zoom: 2.2, size: 110, margin: 16, crosshairColor: "#ef4444", borderColor: "#fff", borderWidth: 3 },
           nudges: { enabled: false },
           toolbar: { enabled: false },
           theme: {
@@ -3610,95 +3787,503 @@ async function startDocumentScanner(opts) {
             handleColor: "#ffffff",
             handleRingColor: "#2563eb"
           },
-          onChange: (c) => { currentScannerCorners = c; }
+          onChange: (c) => { scannerState.corners = c; }
         });
       }
-    } catch (err) {
-      console.error("Corner editor init error:", err);
     }
+  }
+}
+
+async function toggleCornerAdjustment() {
+  if (scannerState.isAdjusting) {
+    if (scannerEditor && scannerEditor.getCorners) {
+      scannerState.corners = scannerEditor.getCorners();
+    }
+    await setScannerView("preview");
+  } else {
+    await setScannerView("adjust");
+  }
+}
+
+async function startDocumentScanner(opts) {
+  return new Promise(async (resolve) => {
+    scannerResolve = resolve;
+    scannerState.raw = opts.raw;
+    let corners = opts.corners;
+    if (!corners) corners = await detectDocCorners(opts.raw);
+    scannerState.corners = corners;
+    scannerState.filter = opts.mode || "magic"; // DEFAULT SCANNED!
+
+    stopCameraStream();
+    const dlg = $("#dLiveScanner");
+    if (dlg && !dlg.open) dlg.showModal();
+    await setScannerView("preview");
   });
 }
 
-function closeScanner(saved) {
-  if (scannerEditor) {
-    try { scannerEditor.destroy(); } catch (e) {}
-    scannerEditor = null;
+async function startLiveCameraScanner() {
+  const dlg = $("#dLiveScanner");
+  if (!dlg) return;
+
+  scannerResolve = null;
+  scannerState.filter = "magic"; // DEFAULT SCANNED!
+  if (!dlg.open) dlg.showModal();
+  await setScannerView("camera");
+  await openCameraStream(currentFacingMode);
+}
+
+function startLiveDetectionLoop() {
+  stopLiveDetectionLoop();
+  const video = $("#camera");
+  const overlay = $("#liveOverlayCanvas");
+  if (!video || !overlay) return;
+
+  if (!liveProcCanvas) {
+    liveProcCanvas = document.createElement("canvas");
+    liveProcCanvas.width = 360;
+    liveProcCanvas.height = 480;
   }
-  const dlg = $("#dScanner");
-  if (dlg && dlg.open) dlg.close();
-  if (scannerResolve) {
-    const res = scannerResolve;
-    scannerResolve = null;
-    res(saved);
+  const procCtx = liveProcCanvas.getContext("2d", { willReadFrequently: true });
+  const octx = overlay.getContext("2d");
+
+  let lastDetectTime = 0;
+  let animSweep = 0;
+
+  function detectionTick(now) {
+    if (!liveStream || video.paused || video.ended || video.readyState < 2) {
+      liveDetectionRaf = requestAnimationFrame(detectionTick);
+      return;
+    }
+
+    const vw = video.videoWidth || 1280;
+    const vh = video.videoHeight || 720;
+    const wrap = $("#cameraWrap");
+    if (!wrap) return;
+    const rect = wrap.getBoundingClientRect();
+    const CW = rect.width, CH = rect.height;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (overlay.width !== Math.round(CW * dpr) || overlay.height !== Math.round(CH * dpr)) {
+      overlay.width = Math.round(CW * dpr);
+      overlay.height = Math.round(CH * dpr);
+    }
+    octx.save();
+    octx.scale(dpr, dpr);
+    octx.clearRect(0, 0, CW, CH);
+
+    const scale = Math.max(CW / vw, CH / vh);
+    const renderW = vw * scale;
+    const renderH = vh * scale;
+    const offsetX = (CW - renderW) / 2;
+    const offsetY = (CH - renderH) / 2;
+
+    const toView = pt => ({
+      x: pt.x * scale + offsetX,
+      y: pt.y * scale + offsetY
+    });
+
+    if (now - lastDetectTime > 85) {
+      lastDetectTime = now;
+      try {
+        const pw = 360;
+        const ph = Math.round(360 * (vh / vw));
+        if (liveProcCanvas.width !== pw || liveProcCanvas.height !== ph) {
+          liveProcCanvas.width = pw;
+          liveProcCanvas.height = ph;
+        }
+        procCtx.drawImage(video, 0, 0, pw, ph);
+
+        let detected = null;
+        const scanner = getJScanner();
+        if (scanner && typeof cv !== "undefined" && cv.imread) {
+          const img = cv.imread(liveProcCanvas);
+          const contour = scanner.findPaperContour(img);
+          if (contour) {
+            const pts = scanner.getCornerPoints(contour, img);
+            contour.delete();
+            img.delete();
+            if (pts && pts.topLeftCorner) {
+              const sx = vw / pw, sy = vh / ph;
+              detected = {
+                topLeft: { x: pts.topLeftCorner.x * sx, y: pts.topLeftCorner.y * sy },
+                topRight: { x: pts.topRightCorner.x * sx, y: pts.topRightCorner.y * sy },
+                bottomRight: { x: pts.bottomRightCorner.x * sx, y: pts.bottomRightCorner.y * sy },
+                bottomLeft: { x: pts.bottomLeftCorner.x * sx, y: pts.bottomLeftCorner.y * sy }
+              };
+            }
+          } else {
+            img.delete();
+          }
+        } else {
+          const sc = detectDocumentCornersSmart(liveProcCanvas);
+          if (sc) {
+            const sx = vw / pw, sy = vh / ph;
+            detected = {
+              topLeft: { x: sc.topLeft.x * sx, y: sc.topLeft.y * sy },
+              topRight: { x: sc.topRight.x * sx, y: sc.topRight.y * sy },
+              bottomRight: { x: sc.bottomRight.x * sx, y: sc.bottomRight.y * sy },
+              bottomLeft: { x: sc.bottomLeft.x * sx, y: sc.bottomLeft.y * sy }
+            };
+          }
+        }
+
+        if (detected) {
+          liveTargetCorners = detected;
+          liveHasDoc = true;
+          liveDocConfidence = Math.min(1, liveDocConfidence + 0.3);
+        } else {
+          liveDocConfidence = Math.max(0, liveDocConfidence - 0.12);
+          if (liveDocConfidence < 0.2) {
+            liveHasDoc = false;
+          }
+        }
+      } catch (err) {}
+    }
+
+    if (liveTargetCorners && liveHasDoc && liveDocConfidence > 0.1) {
+      const targetV = {
+        tl: toView(liveTargetCorners.topLeft),
+        tr: toView(liveTargetCorners.topRight),
+        br: toView(liveTargetCorners.bottomRight),
+        bl: toView(liveTargetCorners.bottomLeft)
+      };
+
+      if (!liveSmoothCorners) {
+        liveSmoothCorners = {
+          tl: { ...targetV.tl },
+          tr: { ...targetV.tr },
+          br: { ...targetV.br },
+          bl: { ...targetV.bl }
+        };
+      } else {
+        const k = 0.35;
+        liveSmoothCorners.tl.x += (targetV.tl.x - liveSmoothCorners.tl.x) * k;
+        liveSmoothCorners.tl.y += (targetV.tl.y - liveSmoothCorners.tl.y) * k;
+        liveSmoothCorners.tr.x += (targetV.tr.x - liveSmoothCorners.tr.x) * k;
+        liveSmoothCorners.tr.y += (targetV.tr.y - liveSmoothCorners.tr.y) * k;
+        liveSmoothCorners.br.x += (targetV.br.x - liveSmoothCorners.br.x) * k;
+        liveSmoothCorners.br.y += (targetV.br.y - liveSmoothCorners.br.y) * k;
+        liveSmoothCorners.bl.x += (targetV.bl.x - liveSmoothCorners.bl.x) * k;
+        liveSmoothCorners.bl.y += (targetV.bl.y - liveSmoothCorners.bl.y) * k;
+      }
+
+      const reticle = $("#cameraReticle");
+      const hint = $("#lblReticleHint");
+      const statusBadge = $("#scannerStatusBadge");
+      const statusTxt = $("#lblLiveStatus");
+      const shutter = $("#scanBtn");
+
+      if (reticle) reticle.classList.add("doc-locked");
+      if (statusBadge) statusBadge.classList.add("doc-locked");
+      if (shutter) shutter.classList.add("doc-locked");
+      if (statusTxt) statusTxt.textContent = lang === "ku" ? "🟢 پسوڵە دەستنیشانکرا" : "🟢 Document Locked";
+      if (hint) hint.textContent = lang === "ku" ? "✓ لێوارەکان دیاریکران · وێنە بگرە" : "✓ Document Locked · Tap to Capture";
+
+      const { tl, tr, br, bl } = liveSmoothCorners;
+
+      // Draw Purple translucent fill
+      octx.beginPath();
+      octx.moveTo(tl.x, tl.y);
+      octx.lineTo(tr.x, tr.y);
+      octx.lineTo(br.x, br.y);
+      octx.lineTo(bl.x, bl.y);
+      octx.closePath();
+      octx.fillStyle = `rgba(168, 85, 247, ${0.18 * liveDocConfidence})`;
+      octx.fill();
+
+      // Glowing purple borders
+      octx.shadowColor = "#9333ea";
+      octx.shadowBlur = 14;
+      octx.lineWidth = 3.5;
+      octx.strokeStyle = "#a855f7";
+      octx.lineJoin = "round";
+      octx.stroke();
+
+      // Subtle animated laser sweep
+      animSweep = (animSweep + 0.018) % 1;
+      const lx1 = tl.x + (bl.x - tl.x) * animSweep;
+      const ly1 = tl.y + (bl.y - tl.y) * animSweep;
+      const lx2 = tr.x + (br.x - tr.x) * animSweep;
+      const ly2 = tr.y + (br.y - tr.y) * animSweep;
+      const sweepGrad = octx.createLinearGradient(lx1, ly1, lx2, ly2);
+      sweepGrad.addColorStop(0, "transparent");
+      sweepGrad.addColorStop(0.5, "rgba(216, 180, 254, 0.7)");
+      sweepGrad.addColorStop(1, "transparent");
+      octx.lineWidth = 2;
+      octx.strokeStyle = sweepGrad;
+      octx.shadowColor = "#c084fc";
+      octx.shadowBlur = 8;
+      octx.beginPath();
+      octx.moveTo(lx1, ly1);
+      octx.lineTo(lx2, ly2);
+      octx.stroke();
+
+      // Glowing Purple Corner Nodes
+      const drawCorner = (pt) => {
+        octx.shadowColor = "#9333ea";
+        octx.shadowBlur = 12;
+        octx.beginPath();
+        octx.arc(pt.x, pt.y, 8, 0, Math.PI * 2);
+        octx.strokeStyle = "#c084fc";
+        octx.lineWidth = 2.5;
+        octx.fillStyle = "rgba(147, 51, 234, 0.45)";
+        octx.fill();
+        octx.stroke();
+
+        octx.shadowBlur = 0;
+        octx.beginPath();
+        octx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
+        octx.fillStyle = "#ffffff";
+        octx.fill();
+      };
+
+      drawCorner(tl);
+      drawCorner(tr);
+      drawCorner(br);
+      drawCorner(bl);
+    } else {
+      liveSmoothCorners = null;
+      const reticle = $("#cameraReticle");
+      const hint = $("#lblReticleHint");
+      const statusBadge = $("#scannerStatusBadge");
+      const statusTxt = $("#lblLiveStatus");
+      const shutter = $("#scanBtn");
+
+      if (reticle) reticle.classList.remove("doc-locked");
+      if (statusBadge) statusBadge.classList.remove("doc-locked");
+      if (shutter) shutter.classList.remove("doc-locked");
+      if (statusTxt) statusTxt.textContent = (typeof cv !== "undefined" && cv.Mat) ? (lang === "ku" ? "کامێرای ڕاستەوخۆ (ئامادەیە)" : "Live Camera (AI Ready)") : (lang === "ku" ? "کامێرای ڕاستەوخۆ" : "Live Camera Ready");
+      if (hint) hint.textContent = lang === "ku" ? "پسوڵەکە بهێنە ناو چوارچێوەکەوە" : "Align receipt within frame";
+    }
+
+    octx.restore();
+    liveDetectionRaf = requestAnimationFrame(detectionTick);
+  }
+
+  liveDetectionRaf = requestAnimationFrame(detectionTick);
+}
+
+function stopLiveDetectionLoop() {
+  if (liveDetectionRaf) {
+    cancelAnimationFrame(liveDetectionRaf);
+    liveDetectionRaf = null;
+  }
+  liveTargetCorners = null;
+  liveSmoothCorners = null;
+  liveHasDoc = false;
+  liveDocConfidence = 0;
+  const overlay = $("#liveOverlayCanvas");
+  if (overlay) {
+    const octx = overlay.getContext("2d");
+    octx.clearRect(0, 0, overlay.width, overlay.height);
+  }
+  const reticle = $("#cameraReticle");
+  if (reticle) reticle.classList.remove("doc-locked");
+  const statusBadge = $("#scannerStatusBadge");
+  if (statusBadge) statusBadge.classList.remove("doc-locked");
+  const shutter = $("#scanBtn");
+  if (shutter) shutter.classList.remove("doc-locked");
+}
+
+async function openCameraStream(facing) {
+  stopCameraStream();
+  const video = $("#camera");
+  try {
+    const constraints = {
+      video: {
+        facingMode: { ideal: facing },
+        width: { ideal: 1920 },
+        height: { ideal: 1080 }
+      },
+      audio: false
+    };
+    liveStream = await navigator.mediaDevices.getUserMedia(constraints);
+    if (video) {
+      video.srcObject = liveStream;
+      await video.play().catch(() => {});
+      startLiveDetectionLoop();
+    }
+  } catch (err) {
+    console.warn("High-res stream constraint error, falling back to standard video:", err);
+    try {
+      liveStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      if (video) {
+        video.srcObject = liveStream;
+        await video.play().catch(() => {});
+        startLiveDetectionLoop();
+      }
+    } catch (err2) {
+      console.error("Camera access failed entirely:", err2);
+      toast(lang === "ku" ? "مۆڵەتی کامێرا بەردەست نییە. پەڕگەی وێنە هەڵبژێرە." : "Camera access not available or denied. Please upload a photo.", 3500);
+      closeUnifiedScanner(null);
+      $("#inCam").click();
+    }
   }
 }
 
-$("#btnScannerClose").onclick = () => closeScanner(null);
-$("#btnScannerCancel").onclick = () => closeScanner(null);
-
-$("#btnScannerAuto").onclick = async () => {
-  if (!currentScannerRaw) return;
-  const newCorners = await detectDocCorners(currentScannerRaw);
-  currentScannerCorners = newCorners;
-  if (scannerEditor && scannerEditor.setCorners) {
-    scannerEditor.setCorners(newCorners);
+function stopCameraStream() {
+  stopLiveDetectionLoop();
+  if (liveStream) {
+    liveStream.getTracks().forEach(t => t.stop());
+    liveStream = null;
   }
-};
+  const video = $("#camera");
+  if (video) video.srcObject = null;
+}
 
-$("#btnScannerFull").onclick = () => {
-  if (!currentScannerRaw) return;
-  const fullCorners = getFullCorners(currentScannerRaw);
-  currentScannerCorners = fullCorners;
-  if (scannerEditor && scannerEditor.setCorners) {
-    scannerEditor.setCorners(fullCorners);
-  }
-};
+/* Event listeners for unified scanner */
+if ($("#btnLiveClose")) $("#btnLiveClose").onclick = () => closeUnifiedScanner(null);
+if ($("#btnFlipCam")) {
+  $("#btnFlipCam").onclick = () => {
+    currentFacingMode = (currentFacingMode === "environment" ? "user" : "environment");
+    openCameraStream(currentFacingMode);
+  };
+}
+if ($("#btnScannerRotate")) {
+  $("#btnScannerRotate").onclick = async () => {
+    if (!scannerState.raw) return;
+    if (scannerState.isAdjusting && scannerEditor && scannerEditor.getCorners) {
+      scannerState.corners = scannerEditor.getCorners();
+    }
+    scannerState.raw = rotateCanvas90(scannerState.raw);
+    scannerState.corners = await detectDocCorners(scannerState.raw);
+    if (scannerState.isAdjusting) {
+      await setScannerView("adjust");
+    } else {
+      await renderReviewCanvas();
+    }
+  };
+}
+if ($("#btnToggleAdjustCrop")) {
+  $("#btnToggleAdjustCrop").onclick = () => toggleCornerAdjustment();
+}
+if ($("#btnLiveManualAdjust")) {
+  $("#btnLiveManualAdjust").onclick = () => toggleCornerAdjustment();
+}
+if ($("#btnLiveRetake")) {
+  $("#btnLiveRetake").onclick = async () => {
+    await setScannerView("camera");
+    const video = $("#camera");
+    if (video) video.play().catch(() => {});
+    startLiveDetectionLoop();
+  };
+}
+if ($("#btnLiveFallbackUpload")) {
+  $("#btnLiveFallbackUpload").onclick = () => {
+    $("#inGal").click();
+  };
+}
 
-$("#btnScannerRotate").onclick = async () => {
-  if (!currentScannerRaw) return;
-  currentScannerRaw = rotateCanvas90(currentScannerRaw);
-  if (scannerEditor) {
-    try { scannerEditor.destroy(); } catch (e) {}
-    scannerEditor = null;
-  }
-  const host = $("#scannerHost");
-  host.innerHTML = "";
-  const newCorners = await detectDocCorners(currentScannerRaw);
-  currentScannerCorners = newCorners;
-  if (window.scanic && typeof window.scanic.createCornerEditor === "function") {
-    scannerEditor = window.scanic.createCornerEditor({
-      container: host,
-      image: currentScannerRaw,
-      corners: newCorners,
-      magnifier: { enabled: true, zoom: 2.2, size: 110, margin: 16, crosshairColor: "#ef4444", borderColor: "#fff", borderWidth: 3 },
-      nudges: { enabled: false },
-      toolbar: { enabled: false },
-      onChange: (c) => { currentScannerCorners = c; }
-    });
-  }
-};
-
-document.querySelectorAll(".scanner-filters .filter-chip").forEach(ch => {
-  ch.onclick = () => {
-    document.querySelectorAll(".scanner-filters .filter-chip").forEach(c => c.classList.remove("active"));
-    ch.classList.add("active");
-    currentScannerMode = ch.getAttribute("data-mode") || "color";
+// Filter mode chips (Normal vs Scanned, Scanned is default)
+document.querySelectorAll("#liveFilterBar .scanner-mode-chip").forEach(ch => {
+  ch.onclick = async () => {
+    scannerState.filter = ch.getAttribute("data-lmode") || "magic";
+    await renderReviewCanvas();
   };
 });
 
-$("#btnScannerApply").onclick = async () => {
-  if (!currentScannerRaw) { closeScanner(null); return; }
-  const corners = (scannerEditor && scannerEditor.getCorners) ? scannerEditor.getCorners() : (currentScannerCorners || getFullCorners(currentScannerRaw));
-  const warped = await extractWarpedDocument(currentScannerRaw, corners);
-  const scannedPage = {
-    raw: currentScannerRaw,
-    corners: corners,
-    warped: warped,
-    mode: currentScannerMode || "color",
-    rot: 0
+// Shutter button (capture & auto-warp)
+if ($("#scanBtn")) {
+  $("#scanBtn").onclick = async () => {
+    const video = $("#camera");
+    if (!video || !video.videoWidth) {
+      return toast(lang === "ku" ? "کامێرا هێشتا ئامادە نییە، کەمێک بوەستە." : "Camera is not ready yet. Please wait a moment.");
+    }
+
+    const stage = $("#liveViewStage");
+    if (stage) {
+      stage.style.filter = "brightness(2.2)";
+      setTimeout(() => { stage.style.filter = ""; }, 120);
+    }
+    navigator.vibrate?.([30, 40]);
+
+    const vw = video.videoWidth, vh = video.videoHeight;
+    const frameCanvas = document.createElement("canvas");
+    frameCanvas.width = vw;
+    frameCanvas.height = vh;
+    const fctx = frameCanvas.getContext("2d");
+    fctx.drawImage(video, 0, 0, vw, vh);
+
+    scannerState.raw = frameCanvas;
+    scannerState.filter = "magic"; // DEFAULT SCANNED!
+
+    let corners = null;
+    if (liveHasDoc && liveTargetCorners) {
+      corners = liveTargetCorners;
+    } else {
+      const scanner = getJScanner();
+      if (scanner && typeof cv !== "undefined" && cv.imread) {
+        try {
+          const img = cv.imread(frameCanvas);
+          const contour = scanner.findPaperContour(img);
+          if (contour) {
+            const pts = scanner.getCornerPoints(contour, img);
+            if (pts && pts.topLeftCorner) {
+              corners = {
+                topLeft: pts.topLeftCorner,
+                topRight: pts.topRightCorner,
+                bottomRight: pts.bottomRightCorner,
+                bottomLeft: pts.bottomLeftCorner
+              };
+            }
+            contour.delete();
+          }
+          img.delete();
+        } catch (e) {}
+      }
+    }
+
+    if (!corners) {
+      corners = await detectDocCorners(frameCanvas);
+    }
+    scannerState.corners = corners;
+
+    stopLiveDetectionLoop();
+    video.pause();
+
+    await setScannerView("preview");
+    toast(lang === "ku" ? "✓ لێوارەکانی پسوڵە دۆزرایەوە و تەختکرا!" : "✓ Document auto-detected & perspective flattened!", 2500);
   };
-  closeScanner(scannedPage);
-};
+}
+
+// Attach receipt button
+if ($("#btnLiveAccept")) {
+  $("#btnLiveAccept").onclick = async () => {
+    if (scannerState.isAdjusting) {
+      if (scannerEditor && scannerEditor.getCorners) {
+        scannerState.corners = scannerEditor.getCorners();
+      }
+      await setScannerView("preview");
+    }
+    const outCanvas = document.getElementById("outputCanvas");
+    if (!outCanvas) return closeUnifiedScanner(null);
+
+    const base64Data = outCanvas.toDataURL("image/jpeg", 0.88);
+    const scannedPage = {
+      raw: scannerState.raw,
+      corners: scannerState.corners,
+      warped: scannerState.warped,
+      mode: scannerState.filter,
+      rot: 0,
+      base64Data: base64Data
+    };
+
+    if (scannerResolve) {
+      closeUnifiedScanner(scannedPage);
+    } else {
+      pages.push(scannedPage);
+      drawPages();
+      closeUnifiedScanner(scannedPage);
+      navigator.vibrate?.([30, 60]);
+      toast(lang === "ku" ? "✓ لاپەڕەی پسوڵە زیادکرا!" : "✓ Receipt scanned & attached!", 3500);
+    }
+  };
+}
+
+// Backward-compatibility stubs for #dScanner buttons if referenced
+if ($("#btnScannerClose")) $("#btnScannerClose").onclick = () => closeUnifiedScanner(null);
+if ($("#btnScannerCancel")) $("#btnScannerCancel").onclick = () => closeUnifiedScanner(null);
+if ($("#btnScannerApply")) $("#btnScannerApply").onclick = () => $("#btnLiveAccept")?.click();
 
 async function processUploadedFiles(files) {
   let addedCount = 0;
@@ -3710,11 +4295,11 @@ async function processUploadedFiles(files) {
       toast(lang === "ku" ? "🔍 پشکنینی لێوارەکانی بەڵگەنامە…" : "🔍 Auto-detecting document edges…", 1400);
       const corners = await detectDocCorners(raw);
 
-      // Open the interactive Microsoft Teams-style scanner modal
+      // Open the interactive scanner modal
       const scannedPage = await startDocumentScanner({
         raw,
         corners,
-        mode: "color", // Vibrant natural color by default!
+        mode: "magic", // Scanned enhancement by default!
         pageIndex: idx + 1,
         totalPages: files.length
       });
@@ -3732,7 +4317,7 @@ async function processUploadedFiles(files) {
           raw,
           corners: getFullCorners(raw),
           warped: raw,
-          mode: "color",
+          mode: "magic",
           rot: 0
         });
         addedCount++;
@@ -3749,8 +4334,8 @@ async function processUploadedFiles(files) {
     navigator.vibrate?.([30, 50]);
     toast(
       lang === "ku" 
-        ? `✓ ${addedCount} لاپەڕەی پسوڵە بە ڕەنگی تەواو پشکنرا و زیادکرا!` 
-        : `✓ ${addedCount} receipt page${addedCount > 1 ? "s" : ""} scanned & attached in full color!`,
+        ? `✓ ${addedCount} لاپەڕەی پسوڵە پشکنرا و زیادکرا!` 
+        : `✓ ${addedCount} receipt page${addedCount > 1 ? "s" : ""} scanned & attached!`,
       4000
     );
   }
@@ -3811,539 +4396,6 @@ $("#vRotR").onclick = () => { pages[viewIdx].rot = (pages[viewIdx].rot + 90) % 3
 $("#vDel").onclick = () => { pages.splice(viewIdx, 1); $("#dView").close(); drawPages(); };
 $("#vClose").onclick = () => $("#dView").close();
 if ($("#vDone")) $("#vDone").onclick = () => $("#dView").close();
-/* ---------- Live Front-end Document Scanner (jscanify & OpenCV.js) ---------- */
-let liveStream = null;
-let currentFacingMode = "environment";
-let liveCapturedRaw = null;
-let liveWarpedCanvas = null;
-let liveCapturedCorners = null;
-let liveFilterMode = "color";
-
-function getJScanner() {
-  if (typeof jscanify !== "undefined" && typeof cv !== "undefined" && cv.Mat) {
-    try {
-      return new jscanify();
-    } catch (e) {
-      console.warn("jscanify init notice:", e);
-    }
-  }
-  return null;
-}
-
-async function startLiveCameraScanner() {
-  const dlg = $("#dLiveScanner");
-  if (!dlg) return;
-
-  $("#cameraWrap").hidden = false;
-  $("#captureResultWrap").hidden = true;
-  $("#liveFilterBar").hidden = true;
-  $("#liveActionsLive").hidden = false;
-  $("#liveActionsPreview").hidden = true;
-
-  const statusEl = $("#lblLiveStatus");
-  if (statusEl) {
-    statusEl.textContent = (typeof cv !== "undefined" && cv.Mat) ? "Live Camera (OpenCV Ready)" : "Live Camera Ready";
-  }
-
-  if (!dlg.open) dlg.showModal();
-
-  await openCameraStream(currentFacingMode);
-}
-
-let liveDetectionRaf = null;
-let liveTargetCorners = null; // in video pixel coordinates
-let liveSmoothCorners = null; // in viewport canvas coordinates
-let liveHasDoc = false;
-let liveDocConfidence = 0;
-let liveProcCanvas = null;
-
-function startLiveDetectionLoop() {
-  stopLiveDetectionLoop();
-  const video = $("#camera");
-  const overlay = $("#liveOverlayCanvas");
-  if (!video || !overlay) return;
-
-  if (!liveProcCanvas) {
-    liveProcCanvas = document.createElement("canvas");
-    liveProcCanvas.width = 360;
-    liveProcCanvas.height = 480;
-  }
-  const procCtx = liveProcCanvas.getContext("2d", { willReadFrequently: true });
-  const octx = overlay.getContext("2d");
-
-  let lastDetectTime = 0;
-  let animSweep = 0;
-
-  function detectionTick(now) {
-    if (!liveStream || video.paused || video.ended || video.readyState < 2) {
-      liveDetectionRaf = requestAnimationFrame(detectionTick);
-      return;
-    }
-
-    const vw = video.videoWidth || 1280;
-    const vh = video.videoHeight || 720;
-    const wrap = $("#cameraWrap");
-    if (!wrap) return;
-    const rect = wrap.getBoundingClientRect();
-    const CW = rect.width, CH = rect.height;
-
-    // Keep overlay resolution crisp
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    if (overlay.width !== Math.round(CW * dpr) || overlay.height !== Math.round(CH * dpr)) {
-      overlay.width = Math.round(CW * dpr);
-      overlay.height = Math.round(CH * dpr);
-    }
-    octx.save();
-    octx.scale(dpr, dpr);
-    octx.clearRect(0, 0, CW, CH);
-
-    // Compute object-fit: cover mapping from video coords to viewport canvas coords
-    const scale = Math.max(CW / vw, CH / vh);
-    const renderW = vw * scale;
-    const renderH = vh * scale;
-    const offsetX = (CW - renderW) / 2;
-    const offsetY = (CH - renderH) / 2;
-
-    const toView = pt => ({
-      x: pt.x * scale + offsetX,
-      y: pt.y * scale + offsetY
-    });
-
-    // 1. Process frame every ~85ms
-    if (now - lastDetectTime > 85) {
-      lastDetectTime = now;
-      try {
-        const pw = 360;
-        const ph = Math.round(360 * (vh / vw));
-        if (liveProcCanvas.width !== pw || liveProcCanvas.height !== ph) {
-          liveProcCanvas.width = pw;
-          liveProcCanvas.height = ph;
-        }
-        procCtx.drawImage(video, 0, 0, pw, ph);
-
-        let detected = null;
-        const scanner = getJScanner();
-        if (scanner && typeof cv !== "undefined" && cv.imread) {
-          const img = cv.imread(liveProcCanvas);
-          const contour = scanner.findPaperContour(img);
-          if (contour) {
-            const pts = scanner.getCornerPoints(contour, img);
-            contour.delete();
-            img.delete();
-            if (pts && pts.topLeftCorner) {
-              const sx = vw / pw, sy = vh / ph;
-              detected = {
-                topLeft: { x: pts.topLeftCorner.x * sx, y: pts.topLeftCorner.y * sy },
-                topRight: { x: pts.topRightCorner.x * sx, y: pts.topRightCorner.y * sy },
-                bottomRight: { x: pts.bottomRightCorner.x * sx, y: pts.bottomRightCorner.y * sy },
-                bottomLeft: { x: pts.bottomLeftCorner.x * sx, y: pts.bottomLeftCorner.y * sy }
-              };
-            }
-          } else {
-            img.delete();
-          }
-        } else {
-          const sc = detectDocumentCornersSmart(liveProcCanvas);
-          if (sc) {
-            const sx = vw / pw, sy = vh / ph;
-            detected = {
-              topLeft: { x: sc.topLeft.x * sx, y: sc.topLeft.y * sy },
-              topRight: { x: sc.topRight.x * sx, y: sc.topRight.y * sy },
-              bottomRight: { x: sc.bottomRight.x * sx, y: sc.bottomRight.y * sy },
-              bottomLeft: { x: sc.bottomLeft.x * sx, y: sc.bottomLeft.y * sy }
-            };
-          }
-        }
-
-        if (detected) {
-          liveTargetCorners = detected;
-          liveHasDoc = true;
-          liveDocConfidence = Math.min(1, liveDocConfidence + 0.3);
-        } else {
-          liveDocConfidence = Math.max(0, liveDocConfidence - 0.12);
-          if (liveDocConfidence < 0.2) {
-            liveHasDoc = false;
-          }
-        }
-      } catch (err) {
-        // gracefully continue
-      }
-    }
-
-    // 2. Interpolate & Render Smooth Purple Live Overlay
-    if (liveTargetCorners && liveHasDoc && liveDocConfidence > 0.1) {
-      const targetV = {
-        tl: toView(liveTargetCorners.topLeft),
-        tr: toView(liveTargetCorners.topRight),
-        br: toView(liveTargetCorners.bottomRight),
-        bl: toView(liveTargetCorners.bottomLeft)
-      };
-
-      if (!liveSmoothCorners) {
-        liveSmoothCorners = {
-          tl: { ...targetV.tl },
-          tr: { ...targetV.tr },
-          br: { ...targetV.br },
-          bl: { ...targetV.bl }
-        };
-      } else {
-        const k = 0.35;
-        liveSmoothCorners.tl.x += (targetV.tl.x - liveSmoothCorners.tl.x) * k;
-        liveSmoothCorners.tl.y += (targetV.tl.y - liveSmoothCorners.tl.y) * k;
-        liveSmoothCorners.tr.x += (targetV.tr.x - liveSmoothCorners.tr.x) * k;
-        liveSmoothCorners.tr.y += (targetV.tr.y - liveSmoothCorners.tr.y) * k;
-        liveSmoothCorners.br.x += (targetV.br.x - liveSmoothCorners.br.x) * k;
-        liveSmoothCorners.br.y += (targetV.br.y - liveSmoothCorners.br.y) * k;
-        liveSmoothCorners.bl.x += (targetV.bl.x - liveSmoothCorners.bl.x) * k;
-        liveSmoothCorners.bl.y += (targetV.bl.y - liveSmoothCorners.bl.y) * k;
-      }
-
-      const reticle = $("#cameraReticle");
-      const hint = $("#lblReticleHint");
-      const statusPill = $("#liveStatusPill");
-      const statusTxt = $("#lblLiveStatus");
-
-      if (reticle) reticle.classList.add("doc-locked");
-      if (statusPill) statusPill.classList.add("doc-locked");
-      if (statusTxt) statusTxt.textContent = lang === "ku" ? "🟣 پسوڵە دەستنیشانکرا" : "🟣 Document Locked";
-      if (hint) hint.textContent = lang === "ku" ? "✓ لێوارەکانی پسوڵە دیاریکرا · وێنە بگرە" : "✓ Document Locked · Tap to Capture";
-
-      const { tl, tr, br, bl } = liveSmoothCorners;
-
-      // Draw Purple translucent fill
-      octx.beginPath();
-      octx.moveTo(tl.x, tl.y);
-      octx.lineTo(tr.x, tr.y);
-      octx.lineTo(br.x, br.y);
-      octx.lineTo(bl.x, bl.y);
-      octx.closePath();
-      octx.fillStyle = `rgba(168, 85, 247, ${0.18 * liveDocConfidence})`;
-      octx.fill();
-
-      // Glowing purple borders
-      octx.shadowColor = "#9333ea";
-      octx.shadowBlur = 14;
-      octx.lineWidth = 3.5;
-      octx.strokeStyle = "#a855f7"; // Vibrant purple
-      octx.lineJoin = "round";
-      octx.stroke();
-
-      // Subtle animated laser sweep across the document
-      animSweep = (animSweep + 0.018) % 1;
-      const lx1 = tl.x + (bl.x - tl.x) * animSweep;
-      const ly1 = tl.y + (bl.y - tl.y) * animSweep;
-      const lx2 = tr.x + (br.x - tr.x) * animSweep;
-      const ly2 = tr.y + (br.y - tr.y) * animSweep;
-      const sweepGrad = octx.createLinearGradient(lx1, ly1, lx2, ly2);
-      sweepGrad.addColorStop(0, "transparent");
-      sweepGrad.addColorStop(0.5, "rgba(216, 180, 254, 0.7)");
-      sweepGrad.addColorStop(1, "transparent");
-      octx.lineWidth = 2;
-      octx.strokeStyle = sweepGrad;
-      octx.shadowColor = "#c084fc";
-      octx.shadowBlur = 8;
-      octx.beginPath();
-      octx.moveTo(lx1, ly1);
-      octx.lineTo(lx2, ly2);
-      octx.stroke();
-
-      // Glowing Purple Corner Nodes
-      const drawCorner = (pt) => {
-        // Outer pulsing ring
-        octx.shadowColor = "#9333ea";
-        octx.shadowBlur = 12;
-        octx.beginPath();
-        octx.arc(pt.x, pt.y, 8, 0, Math.PI * 2);
-        octx.strokeStyle = "#c084fc";
-        octx.lineWidth = 2.5;
-        octx.fillStyle = "rgba(147, 51, 234, 0.45)";
-        octx.fill();
-        octx.stroke();
-
-        // Inner white dot
-        octx.shadowBlur = 0;
-        octx.beginPath();
-        octx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
-        octx.fillStyle = "#ffffff";
-        octx.fill();
-      };
-
-      drawCorner(tl);
-      drawCorner(tr);
-      drawCorner(br);
-      drawCorner(bl);
-
-    } else {
-      liveSmoothCorners = null;
-      const reticle = $("#cameraReticle");
-      const hint = $("#lblReticleHint");
-      const statusPill = $("#liveStatusPill");
-      const statusTxt = $("#lblLiveStatus");
-
-      if (reticle) reticle.classList.remove("doc-locked");
-      if (statusPill) statusPill.classList.remove("doc-locked");
-      if (statusTxt) statusTxt.textContent = (typeof cv !== "undefined" && cv.Mat) ? "Live Scanner Ready" : "Live Camera Ready";
-      if (hint) hint.textContent = lang === "ku" ? "پسوڵەکە بهێنە ناو چوارچێوەکەوە" : "Align receipt within frame";
-    }
-
-    octx.restore();
-    liveDetectionRaf = requestAnimationFrame(detectionTick);
-  }
-
-  liveDetectionRaf = requestAnimationFrame(detectionTick);
-}
-
-function stopLiveDetectionLoop() {
-  if (liveDetectionRaf) {
-    cancelAnimationFrame(liveDetectionRaf);
-    liveDetectionRaf = null;
-  }
-  liveTargetCorners = null;
-  liveSmoothCorners = null;
-  liveHasDoc = false;
-  liveDocConfidence = 0;
-  const overlay = $("#liveOverlayCanvas");
-  if (overlay) {
-    const octx = overlay.getContext("2d");
-    octx.clearRect(0, 0, overlay.width, overlay.height);
-  }
-  const reticle = $("#cameraReticle");
-  if (reticle) reticle.classList.remove("doc-locked");
-  const statusPill = $("#liveStatusPill");
-  if (statusPill) statusPill.classList.remove("doc-locked");
-}
-
-async function openCameraStream(facing) {
-  stopCameraStream();
-  const video = $("#camera");
-  try {
-    const constraints = {
-      video: {
-        facingMode: { ideal: facing },
-        width: { ideal: 1920 },
-        height: { ideal: 1080 }
-      },
-      audio: false
-    };
-    liveStream = await navigator.mediaDevices.getUserMedia(constraints);
-    if (video) {
-      video.srcObject = liveStream;
-      await video.play().catch(() => {});
-      startLiveDetectionLoop();
-    }
-  } catch (err) {
-    console.warn("High-res stream constraint error, falling back to standard video:", err);
-    try {
-      liveStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-      if (video) {
-        video.srcObject = liveStream;
-        await video.play().catch(() => {});
-        startLiveDetectionLoop();
-      }
-    } catch (err2) {
-      console.error("Camera access failed entirely:", err2);
-      toast(lang === "ku" ? "مۆڵەتی کامێرا بەردەست نییە. پەڕگەی وێنە هەڵبژێرە." : "Camera access not available or denied. Please upload a photo.", 3500);
-      closeLiveScanner();
-      $("#inCam").click();
-    }
-  }
-}
-
-function stopCameraStream() {
-  stopLiveDetectionLoop();
-  if (liveStream) {
-    liveStream.getTracks().forEach(t => t.stop());
-    liveStream = null;
-  }
-  const video = $("#camera");
-  if (video) video.srcObject = null;
-}
-
-function closeLiveScanner() {
-  stopLiveDetectionLoop();
-  stopCameraStream();
-  const dlg = $("#dLiveScanner");
-  if (dlg && dlg.open) dlg.close();
-}
-
-$("#btnLiveClose").onclick = closeLiveScanner;
-
-$("#btnFlipCam").onclick = () => {
-  currentFacingMode = (currentFacingMode === "environment" ? "user" : "environment");
-  openCameraStream(currentFacingMode);
-};
-
-$("#btnLiveFallbackUpload").onclick = () => {
-  closeLiveScanner();
-  $("#inGal").click();
-};
-
-$("#scanBtn").onclick = async () => {
-  const video = $("#camera");
-  if (!video || !video.videoWidth) {
-    return toast(lang === "ku" ? "کامێرا هێشتا ئامادە نییە، کەمێک بوەستە." : "Camera is not ready yet. Please wait a moment.");
-  }
-
-  // Visual capture flash animation
-  const stage = $("#liveViewStage");
-  if (stage) {
-    stage.style.filter = "brightness(2.2)";
-    setTimeout(() => { stage.style.filter = ""; }, 120);
-  }
-  navigator.vibrate?.([30, 40]);
-
-  // Capture current high-res frame from video
-  const vw = video.videoWidth, vh = video.videoHeight;
-  const frameCanvas = document.createElement("canvas");
-  frameCanvas.width = vw;
-  frameCanvas.height = vh;
-  const fctx = frameCanvas.getContext("2d");
-  fctx.drawImage(video, 0, 0, vw, vh);
-
-  liveCapturedRaw = frameCanvas;
-
-  let deskewedCanvas = null;
-  let corners = null;
-
-  // If live detector already locked onto the document, use those precise corners!
-  if (liveHasDoc && liveTargetCorners) {
-    corners = liveTargetCorners;
-    try {
-      deskewedCanvas = await extractWarpedDocument(frameCanvas, corners);
-    } catch (e) {
-      console.warn("Live corners deskew fallback:", e);
-    }
-  }
-
-  stopLiveDetectionLoop();
-
-  // 1. Process frame client-side using jscanify (OpenCV.js WebAssembly) if not already warped
-  if (!deskewedCanvas) {
-    const scanner = getJScanner();
-    if (scanner) {
-      try {
-        deskewedCanvas = scanner.extractPaper(video, 800, 1100);
-        if (deskewedCanvas) {
-          try {
-            const img = cv.imread(frameCanvas);
-            const contour = scanner.findPaperContour(img);
-            if (contour) {
-              const pts = scanner.getCornerPoints(contour, img);
-              if (pts && pts.topLeftCorner) {
-                corners = {
-                  topLeft: pts.topLeftCorner,
-                  topRight: pts.topRightCorner,
-                  bottomRight: pts.bottomRightCorner,
-                  bottomLeft: pts.bottomLeftCorner
-                };
-              }
-            }
-            img.delete();
-          } catch (e) {}
-        }
-      } catch (err) {
-        console.warn("jscanify extractPaper warning:", err);
-      }
-    }
-  }
-
-  // 2. High-precision client-side ray detector fallback if paper contour was low-contrast
-  if (!deskewedCanvas) {
-    corners = await detectDocCorners(frameCanvas);
-    deskewedCanvas = await extractWarpedDocument(frameCanvas, corners);
-  }
-
-  liveWarpedCanvas = deskewedCanvas || frameCanvas;
-  liveCapturedCorners = corners || getFullCorners(frameCanvas);
-  liveFilterMode = "color";
-
-  // Pause video feed during preview
-  video.pause();
-
-  // Render deskewed document onto #outputCanvas
-  const outCanvas = document.getElementById("outputCanvas");
-  outCanvas.width = liveWarpedCanvas.width;
-  outCanvas.height = liveWarpedCanvas.height;
-  const outCtx = outCanvas.getContext("2d");
-  outCtx.drawImage(liveWarpedCanvas, 0, 0);
-
-  // Switch UI to preview mode
-  $("#cameraWrap").hidden = true;
-  $("#captureResultWrap").hidden = false;
-  $("#liveFilterBar").hidden = false;
-  $("#liveActionsLive").hidden = true;
-  $("#liveActionsPreview").hidden = false;
-
-  document.querySelectorAll("#liveFilterBar .filter-chip").forEach(ch => {
-    ch.classList.toggle("active", ch.getAttribute("data-lmode") === "color");
-  });
-
-  toast(lang === "ku" ? "✓ لێوارەکانی پسوڵە دۆزرایەوە و تەختکرا!" : "✓ Document auto-detected & perspective flattened!", 2500);
-};
-
-document.querySelectorAll("#liveFilterBar .filter-chip").forEach(ch => {
-  ch.onclick = () => {
-    document.querySelectorAll("#liveFilterBar .filter-chip").forEach(c => c.classList.remove("active"));
-    ch.classList.add("active");
-    liveFilterMode = ch.getAttribute("data-lmode") || "color";
-
-    const outCanvas = document.getElementById("outputCanvas");
-    if (!liveWarpedCanvas || !outCanvas) return;
-    outCanvas.width = liveWarpedCanvas.width;
-    outCanvas.height = liveWarpedCanvas.height;
-    const ctx = outCanvas.getContext("2d");
-    ctx.drawImage(liveWarpedCanvas, 0, 0);
-
-    if (liveFilterMode === "magic") applyMagicColor(outCanvas);
-    else if (liveFilterMode === "gray") applyGrayscale(outCanvas);
-    else if (liveFilterMode === "bw") applyBwFilter(outCanvas);
-  };
-});
-
-$("#btnLiveRetake").onclick = () => {
-  $("#cameraWrap").hidden = false;
-  $("#captureResultWrap").hidden = true;
-  $("#liveFilterBar").hidden = true;
-  $("#liveActionsLive").hidden = false;
-  $("#liveActionsPreview").hidden = true;
-  const video = $("#camera");
-  if (video) video.play().catch(() => {});
-  startLiveDetectionLoop();
-};
-
-$("#btnLiveManualAdjust").onclick = async () => {
-  closeLiveScanner();
-  const adjusted = await startDocumentScanner({
-    raw: liveCapturedRaw,
-    corners: liveCapturedCorners,
-    mode: liveFilterMode
-  });
-  if (adjusted) {
-    pages.push(adjusted);
-    drawPages();
-    toast(lang === "ku" ? "✓ پسوڵە زیادکرا!" : "✓ Receipt attached!");
-  }
-};
-
-$("#btnLiveAccept").onclick = async () => {
-  const outCanvas = document.getElementById("outputCanvas");
-  // Convert to Base64 image data (as requested)
-  const base64Data = outCanvas.toDataURL("image/jpeg", 0.85);
-
-  pages.push({
-    raw: liveCapturedRaw,
-    corners: liveCapturedCorners,
-    warped: liveWarpedCanvas,
-    mode: liveFilterMode,
-    rot: 0,
-    base64Data: base64Data
-  });
-
-  drawPages();
-  closeLiveScanner();
-  navigator.vibrate?.([30, 60]);
-  toast(lang === "ku" ? "✓ لاپەڕەی پسوڵە بە سەرکەوتوویی زیادکرا!" : "✓ Receipt scanned & attached in full color!", 3500);
-};
 
 $("#btnCam").onclick = () => {
   startLiveCameraScanner();
