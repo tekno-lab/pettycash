@@ -1151,8 +1151,11 @@ dialog.dlg-live-scanner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 14px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 100%);
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;
+  background: rgba(15, 23, 20, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   pointer-events: none;
 }
 .scanner-top-nav > * {
@@ -1204,10 +1207,10 @@ dialog.dlg-live-scanner {
   transition: all 0.25s ease;
 }
 .scanner-status-badge.doc-locked {
-  background: rgba(88, 28, 135, 0.88);
-  border-color: #a855f7;
-  color: #f5f3ff;
-  box-shadow: 0 0 16px rgba(168, 85, 247, 0.6);
+  background: rgba(8, 80, 59, 0.88);
+  border-color: #10b981;
+  color: #ffffff;
+  box-shadow: none;
 }
 
 .scanner-top-actions {
@@ -1261,7 +1264,7 @@ dialog.dlg-live-scanner {
   position: absolute;
   width: 32px;
   height: 32px;
-  border-color: #38bdf8;
+  border-color: #10b981;
   border-style: solid;
 }
 .reticle-corner.tl { top: 0; left: 0; border-width: 3.5px 0 0 3.5px; border-top-left-radius: 10px; }
@@ -1273,8 +1276,8 @@ dialog.dlg-live-scanner {
   left: 4%;
   right: 4%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #38bdf8, #a855f7, transparent);
-  box-shadow: 0 0 12px #38bdf8;
+  background: linear-gradient(90deg, transparent, #10b981, transparent);
+  box-shadow: none;
   animation: scanLaser 2.2s ease-in-out infinite alternate;
 }
 @keyframes scanLaser {
@@ -1295,7 +1298,7 @@ dialog.dlg-live-scanner {
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-/* Live Document Detector Overlay (Purple Borders) */
+/* Live Document Detector Overlay */
 .live-overlay-canvas {
   position: absolute;
   top: 0;
@@ -1306,17 +1309,17 @@ dialog.dlg-live-scanner {
   z-index: 4;
 }
 .camera-reticle.doc-locked .reticle-corner {
-  border-color: #c084fc;
-  opacity: 0.35;
+  border-color: #10b981;
+  opacity: 0.85;
 }
 .camera-reticle.doc-locked .reticle-laser {
   display: none;
 }
 .camera-reticle.doc-locked .reticle-hint {
-  background: rgba(88, 28, 135, 0.9);
-  border: 1px solid #a855f7;
-  color: #f5f3ff;
-  box-shadow: 0 0 16px rgba(168, 85, 247, 0.65);
+  background: rgba(8, 80, 59, 0.92);
+  border: 1px solid #10b981;
+  color: #ffffff;
+  box-shadow: none;
 }
 
 .scanner-review-wrap {
@@ -1327,7 +1330,7 @@ dialog.dlg-live-scanner {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: calc(68px + env(safe-area-inset-top, 0px)) 16px calc(150px + env(safe-area-inset-bottom, 0px));
+  padding: calc(64px + env(safe-area-inset-top, 0px)) 6px calc(130px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 
@@ -1343,12 +1346,12 @@ dialog.dlg-live-scanner {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
-  border-radius: 6px;
+  border-radius: 4px;
   display: block;
 }
 
-#scannerHost {
+#scannerHost,
+.scanic-corner-editor {
   width: 100%;
   height: 100%;
   position: relative;
@@ -1358,6 +1361,12 @@ dialog.dlg-live-scanner {
   overflow: hidden;
   user-select: none;
   touch-action: none;
+  --scanic-mask: transparent !important;
+  --scanic-handle-shadow: none !important;
+  --scanic-handle-active-shadow: none !important;
+  --scanic-accent: #10b981 !important;
+  --scanic-edge-color: #10b981 !important;
+  --scanic-handle-ring-color: #08503b !important;
 }
 #scannerHost canvas {
   max-width: 100%;
@@ -1368,7 +1377,7 @@ dialog.dlg-live-scanner {
 /* Filter Mode Pills (Normal / Scanned) */
 .scanner-filter-bar {
   position: absolute;
-  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(76px + env(safe-area-inset-bottom, 0px));
   left: 0;
   right: 0;
   z-index: 25;
@@ -1380,17 +1389,16 @@ dialog.dlg-live-scanner {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(15, 23, 42, 0.82);
+  background: rgba(15, 23, 20, 0.75);
   padding: 4px;
   border-radius: 99px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   pointer-events: auto;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 .scanner-mode-chip {
-  padding: 7px 16px;
+  padding: 6px 14px;
   border-radius: 99px;
   border: none;
   background: transparent;
@@ -1406,7 +1414,6 @@ dialog.dlg-live-scanner {
 .scanner-mode-chip.active {
   background: var(--accent);
   color: #ffffff;
-  box-shadow: 0 2px 10px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
 /* Floating Bottom Controls */
@@ -1419,8 +1426,11 @@ dialog.dlg-live-scanner {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding: 16px 20px calc(20px + env(safe-area-inset-bottom, 0px));
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
+  padding: 12px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+  background: rgba(15, 23, 20, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   pointer-events: none;
 }
 .scanner-bottom-bar > * {
@@ -1453,11 +1463,11 @@ dialog.dlg-live-scanner {
   transition: all 0.2s ease;
 }
 .scanner-shutter-btn.doc-locked {
-  border-color: #c084fc;
-  box-shadow: 0 0 24px rgba(168, 85, 247, 0.7);
+  border-color: #10b981;
+  box-shadow: none;
 }
 .scanner-shutter-btn.doc-locked .shutter-inner {
-  background: #a855f7;
+  background: #10b981;
 }
 
 .scanner-gallery-btn {
@@ -1895,7 +1905,7 @@ dialog.dlg-live-scanner {
     </div>
     <div style="display:flex;flex-direction:column;justify-content:center;line-height:1.15;">
       <h1 id="appTitle">Petty Cash</h1>
-      <span class="app-version" id="appVersion">v2.2.4</span>
+      <span class="app-version" id="appVersion">v2.2.6</span>
     </div>
   </div>
   <button class="btn-lang" id="btnLang" aria-label="Language Toggle" title="Switch English / کوردی" type="button">
@@ -2033,13 +2043,13 @@ dialog.dlg-live-scanner {
       </div>
       <div class="form-group">
         <label for="fVoucher" id="lblFVoucher">Voucher / Receipt No</label>
-        <input id="fVoucher" type="text" autocomplete="off" placeholder="e.g. 1042">
+        <input id="fVoucher" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="e.g. 1042">
       </div>
     </div>
 
     <div class="form-group input-amount-wrap">
       <label for="fAmount" id="lblFAmount">Amount <span class="cur" id="fAmountCur"></span></label>
-      <input id="fAmount" class="amount" type="number" inputmode="decimal" step="1" min="0" placeholder="0">
+      <input id="fAmount" class="amount" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="0">
     </div>
 
     <div class="form-group">
@@ -2171,7 +2181,7 @@ dialog.dlg-live-scanner {
         </div>
         <div class="form-group">
           <label for="cAmt" id="lblCAmt">Amount <span class="cur" id="cCur"></span></label>
-          <input id="cAmt" class="amount" type="number" inputmode="decimal" step="1" min="0" placeholder="0">
+          <input id="cAmt" class="amount" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="0">
         </div>
       </div>
       <div class="form-group">
@@ -2279,16 +2289,19 @@ dialog.dlg-live-scanner {
         <span id="lblLiveStatus">Live Camera Ready</span>
       </div>
 
-      <!-- Right controls (Flip camera, Rotate, Adjust) -->
+      <!-- Right controls (Flip camera, Auto-detect, Full, Rotate) -->
       <div class="scanner-top-actions">
         <button class="scanner-nav-btn" id="btnFlipCam" type="button" title="Flip Camera" aria-label="Flip Camera">
           <svg viewBox="0 0 24 24"><path d="M20 16v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4m16-8V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v4m14 4H4m4-4l-4 4 4 4m8-8l4 4-4 4"/></svg>
         </button>
+        <button class="scanner-nav-btn" id="btnScannerAuto" type="button" title="Auto-Detect Edges" aria-label="Auto-Detect Edges" hidden>
+          <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </button>
+        <button class="scanner-nav-btn" id="btnScannerFull" type="button" title="Full Image" aria-label="Full Image" hidden>
+          <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        </button>
         <button class="scanner-nav-btn" id="btnScannerRotate" type="button" title="Rotate 90°" aria-label="Rotate" hidden>
           <svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-        </button>
-        <button class="scanner-nav-btn" id="btnToggleAdjustCrop" type="button" title="Adjust Edges" aria-label="Adjust Edges" hidden>
-          <svg viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
         </button>
       </div>
     </div>
@@ -2306,29 +2319,23 @@ dialog.dlg-live-scanner {
           <div class="reticle-corner tr"></div>
           <div class="reticle-corner br"></div>
           <div class="reticle-corner bl"></div>
-          <div class="reticle-laser"></div>
           <div class="reticle-hint" id="lblReticleHint">Align receipt within frame</div>
         </div>
       </div>
 
-      <!-- 2. Full-Width Scanned Review View (Shown after capture or image upload) -->
+      <!-- 2. Full-Width Interactive Corner Editor (Directly shown after capture or image upload) -->
       <div class="scanner-review-wrap" id="captureResultWrap" hidden>
-        <!-- Flattened preview canvas -->
-        <div class="review-canvas-stage" id="reviewCanvasStage">
-          <canvas id="outputCanvas"></canvas>
-        </div>
-        <!-- Interactive corner adjustment container -->
-        <div id="scannerHost" hidden></div>
+        <div id="scannerHost"></div>
       </div>
     </div>
 
-    <!-- Filter Mode Pills (Normal / Scanned, default Scanned) -->
+    <!-- Filter Mode Pills (Normal / Scanned) -->
     <div class="scanner-filter-bar" id="liveFilterBar" hidden>
       <div class="scanner-filter-group">
-        <button type="button" class="scanner-mode-chip" data-lmode="color" id="lModeColor">
+        <button type="button" class="scanner-mode-chip active" data-lmode="color" id="lModeColor">
           <span>📷</span> <span id="lblFilterColor">Normal</span>
         </button>
-        <button type="button" class="scanner-mode-chip active" data-lmode="magic" id="lModeMagic">
+        <button type="button" class="scanner-mode-chip" data-lmode="magic" id="lModeMagic">
           <span>✨</span> <span id="lblFilterMagic">Scanned</span>
         </button>
       </div>
@@ -2359,11 +2366,7 @@ dialog.dlg-live-scanner {
         <span id="lblLiveRetake">Retake</span>
       </button>
 
-      <button type="button" class="btn small" id="btnLiveManualAdjust">
-        <span id="lblLiveManual">📐 Adjust Edges</span>
-      </button>
-
-      <button type="button" class="btn primary" id="btnLiveAccept" style="flex:1.4;min-height:48px;font-weight:750;font-size:15px;">
+      <button type="button" class="btn primary" id="btnLiveAccept" style="flex:1.8;min-height:48px;font-weight:750;font-size:15px;">
         <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>
         <span id="lblLiveAccept">Attach Receipt</span>
       </button>
@@ -2375,8 +2378,8 @@ dialog.dlg-live-scanner {
 <dialog id="dScanner" class="dlg-scanner" style="display:none;" hidden>
   <button id="btnScannerClose" type="button"></button>
   <button id="btnScannerCancel" type="button"></button>
-  <button id="btnScannerAuto" type="button"></button>
-  <button id="btnScannerFull" type="button"></button>
+  <button id="btnScannerAutoStub" type="button"></button>
+  <button id="btnScannerFullStub" type="button"></button>
   <button id="btnScannerApply" type="button"></button>
   <span id="scannerPageIndicator"></span>
 </dialog>
@@ -3419,7 +3422,7 @@ function warpQuadFallback(canvas, corners) {
   const topW = Math.hypot(p1.x - p0.x, p1.y - p0.y);
   const botW = Math.hypot(p2.x - p3.x, p2.y - p3.y);
   const leftH = Math.hypot(p3.x - p0.x, p3.y - p0.y);
-  const rightH = Math.hypot(p2.x - p1.y, p2.y - p1.y);
+  const rightH = Math.hypot(p2.x - p1.x, p2.y - p1.y);
   const W = Math.max(10, Math.round(Math.max(topW, botW)));
   const H = Math.max(10, Math.round(Math.max(leftH, rightH)));
 
@@ -3482,32 +3485,18 @@ async function extractWarpedDocument(canvas, corners) {
 
 function applyMagicColor(c) {
   const W = c.width, H = c.height, x = c.getContext("2d");
-  const sw = Math.max(1, W >> 3), sh = Math.max(1, H >> 3);
-  const small = document.createElement("canvas");
-  small.width = sw; small.height = sh;
-  small.getContext("2d").drawImage(c, 0, 0, sw, sh);
-  const blurred = document.createElement("canvas");
-  blurred.width = sw; blurred.height = sh;
-  const bx = blurred.getContext("2d");
-  bx.filter = "blur(4px)";
-  bx.drawImage(small, 0, 0);
-  const bg = document.createElement("canvas");
-  bg.width = W; bg.height = H;
-  const gx = bg.getContext("2d");
-  gx.imageSmoothingQuality = "high";
-  gx.drawImage(blurred, 0, 0, W, H);
   const img = x.getImageData(0, 0, W, H), d = img.data;
-  const b = gx.getImageData(0, 0, W, H).data;
+  // Clean, crisp document enhancement (zero murky shadows or halos)
+  const contrast = 1.25;
+  const brightness = 14;
   for (let i = 0; i < d.length; i += 4) {
-    const bgLum = Math.max(45, 0.299 * b[i] + 0.587 * b[i + 1] + 0.114 * b[i + 2]);
-    // Scanned filter: crisp paper contrast, dialed back slightly to prevent over-bright blowout
-    const factor = Math.min(1.88, 226 / bgLum);
-    let r = (d[i] * factor - 10) * 1.03;
-    let g = (d[i + 1] * factor - 10) * 1.03;
-    let bVal = (d[i + 2] * factor - 10) * 1.03;
+    let r = d[i], g = d[i + 1], b = d[i + 2];
+    r = ((r - 132) * contrast + 132) + brightness;
+    g = ((g - 132) * contrast + 132) + brightness;
+    b = ((b - 132) * contrast + 132) + brightness;
     d[i] = r < 0 ? 0 : r > 255 ? 255 : r;
     d[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
-    d[i + 2] = bVal < 0 ? 0 : bVal > 255 ? 255 : bVal;
+    d[i + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
   }
   x.putImageData(img, 0, 0);
 }
@@ -3632,12 +3621,11 @@ let liveDocConfidence = 0;
 let liveProcCanvas = null;
 
 const scannerState = {
-  view: "camera", // "camera" | "preview" | "adjust"
+  view: "camera", // "camera" | "review"
   raw: null,
   corners: null,
   warped: null,
-  filter: "magic", // DEFAULT IS SCANNED!
-  isAdjusting: false
+  filter: "color" // Default to Normal vibrant color (zero dirty shadows)
 };
 
 function getJScanner() {
@@ -3658,7 +3646,6 @@ function closeUnifiedScanner(result) {
     try { scannerEditor.destroy(); } catch (e) {}
     scannerEditor = null;
   }
-  scannerState.isAdjusting = false;
   const dlg = $("#dLiveScanner");
   if (dlg && dlg.open) dlg.close();
   if (scannerResolve) {
@@ -3668,51 +3655,68 @@ function closeUnifiedScanner(result) {
   }
 }
 
-async function renderReviewCanvas() {
-  const outCanvas = document.getElementById("outputCanvas");
-  if (!outCanvas || !scannerState.raw || !scannerState.corners) return;
+function mountScannerEditor() {
+  const host = $("#scannerHost");
+  if (!host || !scannerState.raw || !scannerState.corners) return;
 
-  try {
-    scannerState.warped = await extractWarpedDocument(scannerState.raw, scannerState.corners);
-  } catch (err) {
-    console.warn("extractWarpedDocument fallback:", err);
-    scannerState.warped = scannerState.raw;
+  if (scannerEditor) {
+    try { scannerEditor.destroy(); } catch (e) {}
+    scannerEditor = null;
+  }
+  host.innerHTML = "";
+
+  if (window.scanic && typeof window.scanic.createCornerEditor === "function") {
+    try {
+      scannerEditor = window.scanic.createCornerEditor({
+        container: host,
+        image: scannerState.raw,
+        corners: scannerState.corners,
+        magnifier: { enabled: true, zoom: 2.2, size: 110, margin: 16, crosshairColor: "#ef4444", borderColor: "#ffffff", borderWidth: 3 },
+        nudges: { enabled: false },
+        toolbar: { enabled: false },
+        theme: {
+          accent: "#08503b",
+          edgeColor: "#10b981",
+          edgeWidth: 2.5,
+          mask: "transparent",
+          handleSize: 26,
+          handleHit: 48,
+          handleColor: "#ffffff",
+          handleRingColor: "#08503b"
+        },
+        onChange: (c) => { scannerState.corners = c; }
+      });
+    } catch (err) {
+      console.warn("Scanic corner editor mount error:", err);
+    }
   }
 
-  outCanvas.width = scannerState.warped.width;
-  outCanvas.height = scannerState.warped.height;
-  const ctx = outCanvas.getContext("2d");
-  ctx.drawImage(scannerState.warped, 0, 0);
-
-  // Apply active filter (magic = Scanned, color = Normal)
-  if (scannerState.filter === "magic") {
-    applyMagicColor(outCanvas);
+  if (!scannerEditor) {
+    const c = document.createElement("canvas");
+    c.width = scannerState.raw.width;
+    c.height = scannerState.raw.height;
+    const ctx = c.getContext("2d");
+    ctx.drawImage(scannerState.raw, 0, 0);
+    host.appendChild(c);
   }
-
-  // Update filter buttons
-  document.querySelectorAll("#liveFilterBar .scanner-mode-chip").forEach(ch => {
-    ch.classList.toggle("active", ch.getAttribute("data-lmode") === scannerState.filter);
-  });
 }
 
 async function setScannerView(view) {
   scannerState.view = view;
   const cameraWrap = $("#cameraWrap");
   const captureResultWrap = $("#captureResultWrap");
-  const reviewCanvasStage = $("#reviewCanvasStage");
   const host = $("#scannerHost");
   const liveFilterBar = $("#liveFilterBar");
   const liveActionsLive = $("#liveActionsLive");
   const liveActionsPreview = $("#liveActionsPreview");
   const btnFlipCam = $("#btnFlipCam");
+  const btnAuto = $("#btnScannerAuto");
+  const btnFull = $("#btnScannerFull");
   const btnRotate = $("#btnScannerRotate");
-  const btnAdjustCrop = $("#btnToggleAdjustCrop");
   const statusBadge = $("#scannerStatusBadge");
   const statusTxt = $("#lblLiveStatus");
-  const lblManual = $("#lblLiveManual");
 
   if (view === "camera") {
-    scannerState.isAdjusting = false;
     if (scannerEditor) {
       try { scannerEditor.destroy(); } catch (e) {}
       scannerEditor = null;
@@ -3723,83 +3727,32 @@ async function setScannerView(view) {
     if (liveActionsLive) liveActionsLive.hidden = false;
     if (liveActionsPreview) liveActionsPreview.hidden = true;
     if (btnFlipCam) btnFlipCam.hidden = false;
+    if (btnAuto) btnAuto.hidden = true;
+    if (btnFull) btnFull.hidden = true;
     if (btnRotate) btnRotate.hidden = true;
-    if (btnAdjustCrop) btnAdjustCrop.hidden = true;
     if (statusBadge) statusBadge.classList.remove("doc-locked");
     if (statusTxt) statusTxt.textContent = (typeof cv !== "undefined" && cv.Mat) ? (lang === "ku" ? "کامێرای ڕاستەوخۆ (ئامادەیە)" : "Live Camera (AI Ready)") : (lang === "ku" ? "کامێرای ڕاستەوخۆ" : "Live Camera Ready");
-  } else if (view === "preview") {
-    scannerState.isAdjusting = false;
-    if (scannerEditor) {
-      try { scannerEditor.destroy(); } catch (e) {}
-      scannerEditor = null;
-    }
+  } else if (view === "review") {
     stopLiveDetectionLoop();
     if (cameraWrap) cameraWrap.hidden = true;
     if (captureResultWrap) captureResultWrap.hidden = false;
-    if (reviewCanvasStage) reviewCanvasStage.hidden = false;
-    if (host) host.hidden = true;
+    if (host) host.hidden = false;
     if (liveFilterBar) liveFilterBar.hidden = false;
     if (liveActionsLive) liveActionsLive.hidden = true;
     if (liveActionsPreview) liveActionsPreview.hidden = false;
     if (btnFlipCam) btnFlipCam.hidden = true;
+    if (btnAuto) btnAuto.hidden = false;
+    if (btnFull) btnFull.hidden = false;
     if (btnRotate) btnRotate.hidden = false;
-    if (btnAdjustCrop) btnAdjustCrop.hidden = false;
     if (statusBadge) statusBadge.classList.remove("doc-locked");
-    if (statusTxt) statusTxt.textContent = lang === "ku" ? "✓ پسوڵە سکانکرا" : "✓ Receipt Scanned";
-    if (lblManual) lblManual.textContent = lang === "ku" ? "📐 دەستکاری لێوارەکان" : "📐 Adjust Edges";
-    await renderReviewCanvas();
-  } else if (view === "adjust") {
-    scannerState.isAdjusting = true;
-    stopLiveDetectionLoop();
-    if (cameraWrap) cameraWrap.hidden = true;
-    if (captureResultWrap) captureResultWrap.hidden = false;
-    if (reviewCanvasStage) reviewCanvasStage.hidden = true;
-    if (host) host.hidden = false;
-    if (liveFilterBar) liveFilterBar.hidden = true;
-    if (liveActionsLive) liveActionsLive.hidden = true;
-    if (liveActionsPreview) liveActionsPreview.hidden = false;
-    if (btnFlipCam) btnFlipCam.hidden = true;
-    if (btnRotate) btnRotate.hidden = false;
-    if (btnAdjustCrop) btnAdjustCrop.hidden = false;
-    if (statusBadge) statusBadge.classList.remove("doc-locked");
-    if (statusTxt) statusTxt.textContent = lang === "ku" ? "📐 ڕێکخستنی گۆشەکان" : "📐 Drag Corners";
-    if (lblManual) lblManual.textContent = lang === "ku" ? "✓ تەواوکردن" : "✓ Apply Edges";
+    if (statusTxt) statusTxt.textContent = lang === "ku" ? "📐 دەستکاری لێوارەکان" : "📐 Adjust Corners";
 
-    if (host) {
-      host.innerHTML = "";
-      if (window.scanic && typeof window.scanic.createCornerEditor === "function") {
-        scannerEditor = window.scanic.createCornerEditor({
-          container: host,
-          image: scannerState.raw,
-          corners: scannerState.corners,
-          magnifier: { enabled: true, zoom: 2.2, size: 110, margin: 16, crosshairColor: "#ef4444", borderColor: "#fff", borderWidth: 3 },
-          nudges: { enabled: false },
-          toolbar: { enabled: false },
-          theme: {
-            accent: "#2563eb",
-            edgeColor: "#38bdf8",
-            edgeWidth: 2.5,
-            mask: "rgba(15, 23, 42, 0.65)",
-            handleSize: 26,
-            handleHit: 48,
-            handleColor: "#ffffff",
-            handleRingColor: "#2563eb"
-          },
-          onChange: (c) => { scannerState.corners = c; }
-        });
-      }
-    }
-  }
-}
+    // Update filter pills active class
+    document.querySelectorAll("#liveFilterBar .scanner-mode-chip").forEach(ch => {
+      ch.classList.toggle("active", ch.getAttribute("data-lmode") === scannerState.filter);
+    });
 
-async function toggleCornerAdjustment() {
-  if (scannerState.isAdjusting) {
-    if (scannerEditor && scannerEditor.getCorners) {
-      scannerState.corners = scannerEditor.getCorners();
-    }
-    await setScannerView("preview");
-  } else {
-    await setScannerView("adjust");
+    mountScannerEditor();
   }
 }
 
@@ -3810,12 +3763,12 @@ async function startDocumentScanner(opts) {
     let corners = opts.corners;
     if (!corners) corners = await detectDocCorners(opts.raw);
     scannerState.corners = corners;
-    scannerState.filter = opts.mode || "magic"; // DEFAULT SCANNED!
+    scannerState.filter = opts.mode || "color";
 
     stopCameraStream();
     const dlg = $("#dLiveScanner");
     if (dlg && !dlg.open) dlg.showModal();
-    await setScannerView("preview");
+    await setScannerView("review");
   });
 }
 
@@ -3824,7 +3777,7 @@ async function startLiveCameraScanner() {
   if (!dlg) return;
 
   scannerResolve = null;
-  scannerState.filter = "magic"; // DEFAULT SCANNED!
+  scannerState.filter = "color";
   if (!dlg.open) dlg.showModal();
   await setScannerView("camera");
   await openCameraStream(currentFacingMode);
@@ -3845,7 +3798,6 @@ function startLiveDetectionLoop() {
   const octx = overlay.getContext("2d");
 
   let lastDetectTime = 0;
-  let animSweep = 0;
 
   function detectionTick(now) {
     if (!liveStream || video.paused || video.ended || video.readyState < 2) {
@@ -3880,7 +3832,7 @@ function startLiveDetectionLoop() {
       y: pt.y * scale + offsetY
     });
 
-    if (now - lastDetectTime > 85) {
+    if (now - lastDetectTime > 90) {
       lastDetectTime = now;
       try {
         const pw = 360;
@@ -3974,65 +3926,32 @@ function startLiveDetectionLoop() {
       if (reticle) reticle.classList.add("doc-locked");
       if (statusBadge) statusBadge.classList.add("doc-locked");
       if (shutter) shutter.classList.add("doc-locked");
-      if (statusTxt) statusTxt.textContent = lang === "ku" ? "🟢 پسوڵە دەستنیشانکرا" : "🟢 Document Locked";
-      if (hint) hint.textContent = lang === "ku" ? "✓ لێوارەکان دیاریکران · وێنە بگرە" : "✓ Document Locked · Tap to Capture";
+      if (statusTxt) statusTxt.textContent = lang === "ku" ? "🟢 پسوڵە دەستنیشانکرا" : "🟢 Document Detected";
+      if (hint) hint.textContent = lang === "ku" ? "✓ لێوارەکان دیاریکران · وێنە بگرە" : "✓ Document Detected · Tap to Capture";
 
       const { tl, tr, br, bl } = liveSmoothCorners;
 
-      // Draw Purple translucent fill
+      // Clean crisp border outline (NO translucent fill shadow over receipt!)
+      octx.lineWidth = 2.8;
+      octx.strokeStyle = "#10b981";
+      octx.lineJoin = "round";
       octx.beginPath();
       octx.moveTo(tl.x, tl.y);
       octx.lineTo(tr.x, tr.y);
       octx.lineTo(br.x, br.y);
       octx.lineTo(bl.x, bl.y);
       octx.closePath();
-      octx.fillStyle = `rgba(168, 85, 247, ${0.18 * liveDocConfidence})`;
-      octx.fill();
-
-      // Glowing purple borders
-      octx.shadowColor = "#9333ea";
-      octx.shadowBlur = 14;
-      octx.lineWidth = 3.5;
-      octx.strokeStyle = "#a855f7";
-      octx.lineJoin = "round";
       octx.stroke();
 
-      // Subtle animated laser sweep
-      animSweep = (animSweep + 0.018) % 1;
-      const lx1 = tl.x + (bl.x - tl.x) * animSweep;
-      const ly1 = tl.y + (bl.y - tl.y) * animSweep;
-      const lx2 = tr.x + (br.x - tr.x) * animSweep;
-      const ly2 = tr.y + (br.y - tr.y) * animSweep;
-      const sweepGrad = octx.createLinearGradient(lx1, ly1, lx2, ly2);
-      sweepGrad.addColorStop(0, "transparent");
-      sweepGrad.addColorStop(0.5, "rgba(216, 180, 254, 0.7)");
-      sweepGrad.addColorStop(1, "transparent");
-      octx.lineWidth = 2;
-      octx.strokeStyle = sweepGrad;
-      octx.shadowColor = "#c084fc";
-      octx.shadowBlur = 8;
-      octx.beginPath();
-      octx.moveTo(lx1, ly1);
-      octx.lineTo(lx2, ly2);
-      octx.stroke();
-
-      // Glowing Purple Corner Nodes
+      // Clean corner nodes
       const drawCorner = (pt) => {
-        octx.shadowColor = "#9333ea";
-        octx.shadowBlur = 12;
         octx.beginPath();
-        octx.arc(pt.x, pt.y, 8, 0, Math.PI * 2);
-        octx.strokeStyle = "#c084fc";
-        octx.lineWidth = 2.5;
-        octx.fillStyle = "rgba(147, 51, 234, 0.45)";
-        octx.fill();
-        octx.stroke();
-
-        octx.shadowBlur = 0;
-        octx.beginPath();
-        octx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
+        octx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
         octx.fillStyle = "#ffffff";
         octx.fill();
+        octx.lineWidth = 2;
+        octx.strokeStyle = "#10b981";
+        octx.stroke();
       };
 
       drawCorner(tl);
@@ -4137,26 +4056,38 @@ if ($("#btnFlipCam")) {
     openCameraStream(currentFacingMode);
   };
 }
-if ($("#btnScannerRotate")) {
-  $("#btnScannerRotate").onclick = async () => {
+if ($("#btnScannerAuto")) {
+  $("#btnScannerAuto").onclick = async () => {
     if (!scannerState.raw) return;
-    if (scannerState.isAdjusting && scannerEditor && scannerEditor.getCorners) {
-      scannerState.corners = scannerEditor.getCorners();
-    }
-    scannerState.raw = rotateCanvas90(scannerState.raw);
-    scannerState.corners = await detectDocCorners(scannerState.raw);
-    if (scannerState.isAdjusting) {
-      await setScannerView("adjust");
+    const newCorners = await detectDocCorners(scannerState.raw);
+    scannerState.corners = newCorners;
+    if (scannerEditor && scannerEditor.setCorners) {
+      scannerEditor.setCorners(newCorners);
     } else {
-      await renderReviewCanvas();
+      mountScannerEditor();
+    }
+    toast(lang === "ku" ? "✓ لێوارەکانی پسوڵە نوێکرانەوە" : "✓ Corners auto-detected", 1400);
+  };
+}
+if ($("#btnScannerFull")) {
+  $("#btnScannerFull").onclick = () => {
+    if (!scannerState.raw) return;
+    const full = getFullCorners(scannerState.raw);
+    scannerState.corners = full;
+    if (scannerEditor && scannerEditor.setCorners) {
+      scannerEditor.setCorners(full);
+    } else {
+      mountScannerEditor();
     }
   };
 }
-if ($("#btnToggleAdjustCrop")) {
-  $("#btnToggleAdjustCrop").onclick = () => toggleCornerAdjustment();
-}
-if ($("#btnLiveManualAdjust")) {
-  $("#btnLiveManualAdjust").onclick = () => toggleCornerAdjustment();
+if ($("#btnScannerRotate")) {
+  $("#btnScannerRotate").onclick = async () => {
+    if (!scannerState.raw) return;
+    scannerState.raw = rotateCanvas90(scannerState.raw);
+    scannerState.corners = await detectDocCorners(scannerState.raw);
+    mountScannerEditor();
+  };
 }
 if ($("#btnLiveRetake")) {
   $("#btnLiveRetake").onclick = async () => {
@@ -4172,15 +4103,17 @@ if ($("#btnLiveFallbackUpload")) {
   };
 }
 
-// Filter mode chips (Normal vs Scanned, Scanned is default)
+// Filter mode chips (Normal vs Scanned)
 document.querySelectorAll("#liveFilterBar .scanner-mode-chip").forEach(ch => {
-  ch.onclick = async () => {
-    scannerState.filter = ch.getAttribute("data-lmode") || "magic";
-    await renderReviewCanvas();
+  ch.onclick = () => {
+    scannerState.filter = ch.getAttribute("data-lmode") || "color";
+    document.querySelectorAll("#liveFilterBar .scanner-mode-chip").forEach(c => {
+      c.classList.toggle("active", c.getAttribute("data-lmode") === scannerState.filter);
+    });
   };
 });
 
-// Shutter button (capture & auto-warp)
+// Shutter button (capture & open corner editor)
 if ($("#scanBtn")) {
   $("#scanBtn").onclick = async () => {
     const video = $("#camera");
@@ -4188,11 +4121,6 @@ if ($("#scanBtn")) {
       return toast(lang === "ku" ? "کامێرا هێشتا ئامادە نییە، کەمێک بوەستە." : "Camera is not ready yet. Please wait a moment.");
     }
 
-    const stage = $("#liveViewStage");
-    if (stage) {
-      stage.style.filter = "brightness(2.2)";
-      setTimeout(() => { stage.style.filter = ""; }, 120);
-    }
     navigator.vibrate?.([30, 40]);
 
     const vw = video.videoWidth, vh = video.videoHeight;
@@ -4203,64 +4131,53 @@ if ($("#scanBtn")) {
     fctx.drawImage(video, 0, 0, vw, vh);
 
     scannerState.raw = frameCanvas;
-    scannerState.filter = "magic"; // DEFAULT SCANNED!
+    scannerState.filter = "color";
 
     let corners = null;
     if (liveHasDoc && liveTargetCorners) {
       corners = liveTargetCorners;
     } else {
-      const scanner = getJScanner();
-      if (scanner && typeof cv !== "undefined" && cv.imread) {
-        try {
-          const img = cv.imread(frameCanvas);
-          const contour = scanner.findPaperContour(img);
-          if (contour) {
-            const pts = scanner.getCornerPoints(contour, img);
-            if (pts && pts.topLeftCorner) {
-              corners = {
-                topLeft: pts.topLeftCorner,
-                topRight: pts.topRightCorner,
-                bottomRight: pts.bottomRightCorner,
-                bottomLeft: pts.bottomLeftCorner
-              };
-            }
-            contour.delete();
-          }
-          img.delete();
-        } catch (e) {}
-      }
-    }
-
-    if (!corners) {
       corners = await detectDocCorners(frameCanvas);
     }
-    scannerState.corners = corners;
+    scannerState.corners = corners || getFullCorners(frameCanvas);
 
     stopLiveDetectionLoop();
     video.pause();
 
-    await setScannerView("preview");
-    toast(lang === "ku" ? "✓ لێوارەکانی پسوڵە دۆزرایەوە و تەختکرا!" : "✓ Document auto-detected & perspective flattened!", 2500);
+    await setScannerView("review");
   };
 }
 
 // Attach receipt button
 if ($("#btnLiveAccept")) {
   $("#btnLiveAccept").onclick = async () => {
-    if (scannerState.isAdjusting) {
-      if (scannerEditor && scannerEditor.getCorners) {
-        scannerState.corners = scannerEditor.getCorners();
-      }
-      await setScannerView("preview");
+    if (!scannerState.raw) return closeUnifiedScanner(null);
+    const corners = (scannerEditor && scannerEditor.getCorners) ? scannerEditor.getCorners() : (scannerState.corners || getFullCorners(scannerState.raw));
+    scannerState.corners = corners;
+
+    let warped;
+    try {
+      warped = await extractWarpedDocument(scannerState.raw, corners);
+    } catch (e) {
+      console.warn("Warp fallback:", e);
+      warped = warpQuadFallback(scannerState.raw, corners);
     }
-    const outCanvas = document.getElementById("outputCanvas");
-    if (!outCanvas) return closeUnifiedScanner(null);
+
+    const outCanvas = document.createElement("canvas");
+    outCanvas.width = warped.width;
+    outCanvas.height = warped.height;
+    const ctx = outCanvas.getContext("2d");
+    ctx.drawImage(warped, 0, 0);
+
+    if (scannerState.filter === "magic") {
+      applyMagicColor(outCanvas);
+    }
 
     const base64Data = outCanvas.toDataURL("image/jpeg", 0.88);
     const scannedPage = {
       raw: scannerState.raw,
-      corners: scannerState.corners,
-      warped: scannerState.warped,
+      corners: corners,
+      warped: warped,
       mode: scannerState.filter,
       rot: 0,
       base64Data: base64Data
@@ -4968,6 +4885,84 @@ const btnSubIn = $("#btnSubmitInline");
 if (btnSubIn) btnSubIn.onclick = () => $("#btnSubmit").click();
 const btnDraftIn = $("#btnDraftInline");
 if (btnDraftIn) btnDraftIn.onclick = () => $("#btnDraft").click();
+
+/* Helper to normalize Kurdish/Arabic numbers (٠-٩, ۰-۹) to standard digits 0-9 */
+function toStandardDigits(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/[٠۰]/g, "0")
+    .replace(/[١۱]/g, "1")
+    .replace(/[٢۲]/g, "2")
+    .replace(/[٣۳]/g, "3")
+    .replace(/[٤۴]/g, "4")
+    .replace(/[٥۵]/g, "5")
+    .replace(/[٦۶]/g, "6")
+    .replace(/[٧۷]/g, "7")
+    .replace(/[٨۸]/g, "8")
+    .replace(/[٩۹]/g, "9");
+}
+
+function enforceNumericOnly(inputEl, allowDecimal = false) {
+  if (!inputEl) return;
+
+  const sanitize = () => {
+    let val = toStandardDigits(inputEl.value);
+    if (allowDecimal && fmtDec > 0) {
+      val = val.replace(/,/g, ".");
+      val = val.replace(/[^0-9.]/g, "");
+      const parts = val.split(".");
+      if (parts.length > 2) {
+        val = parts[0] + "." + parts.slice(1).join("");
+      }
+      if (parts[1] && parts[1].length > fmtDec) {
+        val = parts[0] + "." + parts[1].slice(0, fmtDec);
+      }
+    } else {
+      val = val.replace(/[^0-9]/g, "");
+    }
+    if (inputEl.value !== val) {
+      inputEl.value = val;
+    }
+  };
+
+  inputEl.addEventListener("input", sanitize);
+  inputEl.addEventListener("paste", () => {
+    setTimeout(sanitize, 0);
+  });
+  inputEl.addEventListener("keydown", (e) => {
+    if (
+      e.key === "Backspace" ||
+      e.key === "Delete" ||
+      e.key === "Tab" ||
+      e.key === "Escape" ||
+      e.key === "Enter" ||
+      e.key === "ArrowLeft" ||
+      e.key === "ArrowRight" ||
+      e.key === "ArrowUp" ||
+      e.key === "ArrowDown" ||
+      e.key === "Home" ||
+      e.key === "End" ||
+      e.ctrlKey ||
+      e.metaKey
+    ) {
+      return;
+    }
+    if (allowDecimal && fmtDec > 0 && (e.key === "." || e.key === ",")) {
+      if (inputEl.value.includes(".")) {
+        e.preventDefault();
+      }
+      return;
+    }
+    const stdKey = toStandardDigits(e.key);
+    if (!/^[0-9]$/.test(stdKey)) {
+      e.preventDefault();
+    }
+  });
+}
+
+enforceNumericOnly($("#fVoucher"), false);
+enforceNumericOnly($("#fAmount"), true);
+enforceNumericOnly($("#cAmt"), true);
 
 ["#fAmount", "#fVoucher", "#fDate", "#fDesc", "#fNote"].forEach(sel => {
   const el = $(sel);
