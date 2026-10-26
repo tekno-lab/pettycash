@@ -1436,6 +1436,13 @@ dialog.dlg-live-scanner {
 .scanner-bottom-bar > * {
   pointer-events: auto;
 }
+.scanner-bottom-bar[hidden],
+.scanner-review-wrap[hidden],
+.scanner-filter-bar[hidden],
+.camera-stream-wrap[hidden],
+.seg[hidden] {
+  display: none !important;
+}
 
 /* Camera Mode Shutter Button */
 .scanner-shutter-btn {
@@ -1905,7 +1912,7 @@ dialog.dlg-live-scanner {
     </div>
     <div style="display:flex;flex-direction:column;justify-content:center;line-height:1.15;">
       <h1 id="appTitle">Petty Cash</h1>
-      <span class="app-version" id="appVersion">v2.2.6</span>
+      <span class="app-version" id="appVersion">v2.2.7</span>
     </div>
   </div>
   <button class="btn-lang" id="btnLang" aria-label="Language Toggle" title="Switch English / کوردی" type="button">
@@ -2435,13 +2442,13 @@ dialog.dlg-live-scanner {
     <div class="seg">
       <button class="btn small" id="btnTest" type="button">Test Connection</button>
     </div>
-    <div class="seg" id="mgrTools" hidden>
+    <div class="seg" id="mgrTools" style="display:none;" hidden>
       <button class="btn small" id="btnLink" type="button">Copy Setup Link for Expense User</button>
     </div>
-    <div class="seg" id="mgrTools2" hidden>
+    <div class="seg" id="mgrTools2" style="display:none;" hidden>
       <button class="btn small danger" id="btnRotate" type="button">Rotate Expense User's Key</button>
     </div>
-    <div id="mgrCats" hidden style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);">
+    <div id="mgrCats" style="display:none;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);" hidden>
       <label id="lblMgrCompanies" style="font-weight:700;font-size:13px;text-transform:uppercase;color:var(--muted);letter-spacing:0.4px;">Manage Companies</label>
       <p class="hint" id="lblMgrCompaniesHint" style="margin:2px 0 8px;">Companies and their brand colors are stored in the <strong>Companies</strong> tab of your Google Sheet:</p>
       <div id="catChipsList" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;"></div>
@@ -2453,6 +2460,12 @@ dialog.dlg-live-scanner {
     </div>
     <div class="seg" style="margin-top:16px;">
       <button class="btn primary" id="btnSetSave" type="button" style="width:100%;">Save Settings</button>
+    </div>
+    <div class="seg" style="margin-top:8px;">
+      <button class="btn small danger" id="btnClearCache" type="button" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;">
+        <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        <span id="lblClearCache">Clear All Cache</span>
+      </button>
     </div>
   </div>
 </dialog>
@@ -2693,6 +2706,7 @@ const I18N = {
     settings: "App Settings",
     testConn: "Test Connection",
     saveClose: "Save Settings",
+    clearCache: "Clear All Cache",
     manageCompanies: "Manage Companies",
     manageCompaniesHint: "Companies and their brand colors are stored in the Companies tab of your Google Sheet:",
     addCompany: "Add",
@@ -2848,6 +2862,7 @@ const I18N = {
     settings: "ڕێکخستنەکانی ئەپ",
     testConn: "پشکنینی پەیوەندی",
     saveClose: "پاشەکەوتکردن",
+    clearCache: "سڕینەوەی هەموو کاش",
     manageCompanies: "بەڕێوەبردنی کۆمپانیاکان",
     manageCompaniesHint: "کۆمپانیاکان و ڕەنگەکانیان لە تابی کۆمپانیاکان (Companies) لە گووگڵ شیت پاشەکەوت دەکرێن:",
     addCompany: "زیادکردن",
@@ -3038,6 +3053,7 @@ function applyLang() {
   if ($("#newCatInput")) $("#newCatInput").placeholder = t("newCompPlaceholder");
   if ($("#btnAddCatBtn")) $("#btnAddCatBtn").textContent = "➕ " + t("addCompany");
   if ($("#btnSetSave")) $("#btnSetSave").textContent = t("saveClose");
+  if ($("#lblClearCache")) $("#lblClearCache").textContent = t("clearCache");
 
   // iOS Install Modal
   if ($("#lblIosTitle")) $("#lblIosTitle").textContent = t("pwaIosTitle");
@@ -3721,11 +3737,11 @@ async function setScannerView(view) {
       try { scannerEditor.destroy(); } catch (e) {}
       scannerEditor = null;
     }
-    if (cameraWrap) cameraWrap.hidden = false;
-    if (captureResultWrap) captureResultWrap.hidden = true;
-    if (liveFilterBar) liveFilterBar.hidden = true;
-    if (liveActionsLive) liveActionsLive.hidden = false;
-    if (liveActionsPreview) liveActionsPreview.hidden = true;
+    if (cameraWrap) { cameraWrap.hidden = false; cameraWrap.style.display = "flex"; }
+    if (captureResultWrap) { captureResultWrap.hidden = true; captureResultWrap.style.display = "none"; }
+    if (liveFilterBar) { liveFilterBar.hidden = true; liveFilterBar.style.display = "none"; }
+    if (liveActionsLive) { liveActionsLive.hidden = false; liveActionsLive.style.display = "flex"; }
+    if (liveActionsPreview) { liveActionsPreview.hidden = true; liveActionsPreview.style.display = "none"; }
     if (btnFlipCam) btnFlipCam.hidden = false;
     if (btnAuto) btnAuto.hidden = true;
     if (btnFull) btnFull.hidden = true;
@@ -3734,12 +3750,12 @@ async function setScannerView(view) {
     if (statusTxt) statusTxt.textContent = (typeof cv !== "undefined" && cv.Mat) ? (lang === "ku" ? "کامێرای ڕاستەوخۆ (ئامادەیە)" : "Live Camera (AI Ready)") : (lang === "ku" ? "کامێرای ڕاستەوخۆ" : "Live Camera Ready");
   } else if (view === "review") {
     stopLiveDetectionLoop();
-    if (cameraWrap) cameraWrap.hidden = true;
-    if (captureResultWrap) captureResultWrap.hidden = false;
-    if (host) host.hidden = false;
-    if (liveFilterBar) liveFilterBar.hidden = false;
-    if (liveActionsLive) liveActionsLive.hidden = true;
-    if (liveActionsPreview) liveActionsPreview.hidden = false;
+    if (cameraWrap) { cameraWrap.hidden = true; cameraWrap.style.display = "none"; }
+    if (captureResultWrap) { captureResultWrap.hidden = false; captureResultWrap.style.display = "flex"; }
+    if (host) { host.hidden = false; host.style.display = "flex"; }
+    if (liveFilterBar) { liveFilterBar.hidden = false; liveFilterBar.style.display = "flex"; }
+    if (liveActionsLive) { liveActionsLive.hidden = true; liveActionsLive.style.display = "none"; }
+    if (liveActionsPreview) { liveActionsPreview.hidden = false; liveActionsPreview.style.display = "flex"; }
     if (btnFlipCam) btnFlipCam.hidden = true;
     if (btnAuto) btnAuto.hidden = false;
     if (btnFull) btnFull.hidden = false;
@@ -4151,46 +4167,88 @@ if ($("#scanBtn")) {
 // Attach receipt button
 if ($("#btnLiveAccept")) {
   $("#btnLiveAccept").onclick = async () => {
-    if (!scannerState.raw) return closeUnifiedScanner(null);
-    const corners = (scannerEditor && scannerEditor.getCorners) ? scannerEditor.getCorners() : (scannerState.corners || getFullCorners(scannerState.raw));
-    scannerState.corners = corners;
-
-    let warped;
     try {
-      warped = await extractWarpedDocument(scannerState.raw, corners);
-    } catch (e) {
-      console.warn("Warp fallback:", e);
-      warped = warpQuadFallback(scannerState.raw, corners);
-    }
+      const video = $("#camera");
+      if (!scannerState.raw && video && video.videoWidth > 0) {
+        // Auto-capture current video frame on the fly
+        const frameCanvas = document.createElement("canvas");
+        frameCanvas.width = video.videoWidth;
+        frameCanvas.height = video.videoHeight;
+        const fctx = frameCanvas.getContext("2d");
+        fctx.drawImage(video, 0, 0, frameCanvas.width, frameCanvas.height);
+        scannerState.raw = frameCanvas;
+        scannerState.corners = liveTargetCorners || (await detectDocCorners(frameCanvas)) || getFullCorners(frameCanvas);
+      }
 
-    const outCanvas = document.createElement("canvas");
-    outCanvas.width = warped.width;
-    outCanvas.height = warped.height;
-    const ctx = outCanvas.getContext("2d");
-    ctx.drawImage(warped, 0, 0);
+      if (!scannerState.raw) {
+        closeUnifiedScanner(null);
+        return;
+      }
 
-    if (scannerState.filter === "magic") {
-      applyMagicColor(outCanvas);
-    }
+      const corners = (scannerEditor && scannerEditor.getCorners) 
+        ? scannerEditor.getCorners() 
+        : (scannerState.corners || getFullCorners(scannerState.raw));
+      scannerState.corners = corners;
 
-    const base64Data = outCanvas.toDataURL("image/jpeg", 0.88);
-    const scannedPage = {
-      raw: scannerState.raw,
-      corners: corners,
-      warped: warped,
-      mode: scannerState.filter,
-      rot: 0,
-      base64Data: base64Data
-    };
+      let warped;
+      try {
+        warped = await extractWarpedDocument(scannerState.raw, corners);
+      } catch (e) {
+        console.warn("Warp fallback:", e);
+        warped = warpQuadFallback(scannerState.raw, corners);
+      }
+      if (!warped) warped = scannerState.raw;
 
-    if (scannerResolve) {
-      closeUnifiedScanner(scannedPage);
-    } else {
+      const outCanvas = document.createElement("canvas");
+      outCanvas.width = warped.width || scannerState.raw.width;
+      outCanvas.height = warped.height || scannerState.raw.height;
+      const ctx = outCanvas.getContext("2d");
+      ctx.drawImage(warped, 0, 0);
+
+      if (scannerState.filter === "magic") {
+        applyMagicColor(outCanvas);
+      }
+
+      let base64Data = "";
+      try {
+        base64Data = outCanvas.toDataURL("image/jpeg", 0.88);
+      } catch (e) {}
+
+      const scannedPage = {
+        raw: scannerState.raw,
+        corners: corners,
+        warped: outCanvas,
+        mode: scannerState.filter || "color",
+        rot: 0,
+        base64Data: base64Data
+      };
+
       pages.push(scannedPage);
       drawPages();
+
+      if (scannerResolve) {
+        const res = scannerResolve;
+        scannerResolve = null;
+        res(scannedPage);
+      }
+
       closeUnifiedScanner(scannedPage);
       navigator.vibrate?.([30, 60]);
       toast(lang === "ku" ? "✓ لاپەڕەی پسوڵە زیادکرا!" : "✓ Receipt scanned & attached!", 3500);
+    } catch (err) {
+      console.error("Error attaching receipt:", err);
+      if (scannerState.raw) {
+        pages.push({
+          raw: scannerState.raw,
+          corners: getFullCorners(scannerState.raw),
+          warped: scannerState.raw,
+          mode: "color",
+          rot: 0
+        });
+        drawPages();
+        toast(lang === "ku" ? "✓ لاپەڕەی پسوڵە زیادکرا!" : "✓ Receipt scanned & attached!", 3500);
+      }
+      closeUnifiedScanner(null);
     }
   };
 }
@@ -4511,7 +4569,7 @@ const form = () => ({
   category: cat,
   date: $("#fDate").value,
   voucher: $("#fVoucher").value.trim(),
-  amount: $("#fAmount").value.trim(),
+  amount: $("#fAmount").value.replace(/,/g, "").trim(),
   description: $("#fDesc").value.trim(),
   note: ($("#fNote") ? $("#fNote").value.trim() : "")
 });
@@ -4800,7 +4858,7 @@ async function editDraft(it) {
   cat = it.category || "";
   $("#fDate").value = it.date || today();
   $("#fVoucher").value = it.voucher || "";
-  $("#fAmount").value = it.amount || "";
+  $("#fAmount").value = formatThousands(it.amount || "", true);
   $("#fDesc").value = it.description || "";
   if ($("#fNote")) $("#fNote").value = it.note || "";
   for (const pd of it.pageData || []) {
@@ -4888,7 +4946,7 @@ if (btnDraftIn) btnDraftIn.onclick = () => $("#btnDraft").click();
 
 /* Helper to normalize Kurdish/Arabic numbers (٠-٩, ۰-۹) to standard digits 0-9 */
 function toStandardDigits(str) {
-  if (!str) return "";
+  if (str === null || str === undefined) return "";
   return String(str)
     .replace(/[٠۰]/g, "0")
     .replace(/[١۱]/g, "1")
@@ -4902,26 +4960,66 @@ function toStandardDigits(str) {
     .replace(/[٩۹]/g, "9");
 }
 
-function enforceNumericOnly(inputEl, allowDecimal = false) {
+function formatThousands(val, allowDecimal = false) {
+  if (val === "" || val === null || val === undefined) return "";
+  let clean = toStandardDigits(String(val)).trim();
+  if (allowDecimal && fmtDec > 0) {
+    clean = clean.replace(/,/g, ".");
+    clean = clean.replace(/[^0-9.]/g, "");
+    const parts = clean.split(".");
+    let intPart = parts[0] || "";
+    intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    if (parts.length > 1) {
+      let decPart = parts.slice(1).join("").slice(0, fmtDec);
+      return intPart + "." + decPart;
+    }
+    return intPart;
+  } else {
+    clean = clean.replace(/[^0-9]/g, "");
+    return clean.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+}
+
+function enforceNumericOnly(inputEl, allowDecimal = false, useThousands = false) {
   if (!inputEl) return;
 
   const sanitize = () => {
-    let val = toStandardDigits(inputEl.value);
-    if (allowDecimal && fmtDec > 0) {
-      val = val.replace(/,/g, ".");
-      val = val.replace(/[^0-9.]/g, "");
-      const parts = val.split(".");
-      if (parts.length > 2) {
-        val = parts[0] + "." + parts.slice(1).join("");
+    const origVal = inputEl.value;
+    const selStart = inputEl.selectionStart || 0;
+
+    if (useThousands) {
+      const beforeCaret = origVal.slice(0, selStart);
+      const pureBefore = toStandardDigits(beforeCaret).replace(/,/g, "").length;
+
+      const formatted = formatThousands(origVal, allowDecimal);
+      inputEl.value = formatted;
+
+      let newPos = 0;
+      let pureSeen = 0;
+      for (let i = 0; i < formatted.length; i++) {
+        if (formatted[i] !== ",") pureSeen++;
+        if (pureSeen === pureBefore) {
+          newPos = i + 1;
+          break;
+        }
       }
-      if (parts[1] && parts[1].length > fmtDec) {
-        val = parts[0] + "." + parts[1].slice(0, fmtDec);
-      }
+      if (pureBefore === 0) newPos = 0;
+      if (newPos > formatted.length) newPos = formatted.length;
+      try { inputEl.setSelectionRange(newPos, newPos); } catch (e) {}
     } else {
-      val = val.replace(/[^0-9]/g, "");
-    }
-    if (inputEl.value !== val) {
-      inputEl.value = val;
+      let val = toStandardDigits(origVal);
+      if (allowDecimal && fmtDec > 0) {
+        val = val.replace(/,/g, ".");
+        val = val.replace(/[^0-9.]/g, "");
+        const parts = val.split(".");
+        if (parts.length > 2) val = parts[0] + "." + parts.slice(1).join("");
+        if (parts[1] && parts[1].length > fmtDec) val = parts[0] + "." + parts[1].slice(0, fmtDec);
+      } else {
+        val = val.replace(/[^0-9]/g, "");
+      }
+      if (inputEl.value !== val) {
+        inputEl.value = val;
+      }
     }
   };
 
@@ -4960,9 +5058,9 @@ function enforceNumericOnly(inputEl, allowDecimal = false) {
   });
 }
 
-enforceNumericOnly($("#fVoucher"), false);
-enforceNumericOnly($("#fAmount"), true);
-enforceNumericOnly($("#cAmt"), true);
+enforceNumericOnly($("#fVoucher"), false, false);
+enforceNumericOnly($("#fAmount"), true, true);
+enforceNumericOnly($("#cAmt"), true, true);
 
 ["#fAmount", "#fVoucher", "#fDate", "#fDesc", "#fNote"].forEach(sel => {
   const el = $(sel);
@@ -5759,7 +5857,7 @@ $("#btnGive").onclick = async () => {
     return;
   }
   const type = $("#cType").value;
-  const amt = parseFloat($("#cAmt").value);
+  const amt = parseFloat($("#cAmt").value.replace(/,/g, ""));
   const date = $("#cDate").value;
   const note = $("#cNote").value.trim();
 
@@ -5945,7 +6043,9 @@ function applyRole() {
   const m = isManager();
   $("#tabCash").hidden = !m;
   if (!m && curTab === "cash") showTab("new");
-  $("#mgrCats").hidden = !m;
+  if ($("#mgrCats")) { $("#mgrCats").hidden = !m; $("#mgrCats").style.display = m ? "block" : "none"; }
+  if ($("#mgrTools")) { $("#mgrTools").hidden = !m; $("#mgrTools").style.display = m ? "flex" : "none"; }
+  if ($("#mgrTools2")) { $("#mgrTools2").hidden = !m; $("#mgrTools2").style.display = m ? "flex" : "none"; }
 }
 
 function renderAll() {
@@ -6028,9 +6128,10 @@ function renderConn() {
     ? (isKu ? "ناونیشانی سکریپت و کلیل بنووسە، دواتر پشکنینی پەیوەندی دابگرە." : "Enter the script address and key, then tap Test connection.")
     : role ? (isKu ? ("پەیوەستکراوە وەک " + (role === "manager" ? "بەڕێوەبەر (دەسەڵاتی تەواو)" : "بەکارهێنەری خەرجی") + ".") : ("Connected as " + (role === "manager" ? "Manager (Full Access)" : "Expense User") + "."))
     : (isKu ? "ڕێکخستنەکان پاشەکەوت کران. پشکنینی پەیوەندی دابگرە بۆ دڵنیابوونەوە." : "Settings saved. Tap Test connection to verify.");
-  $("#mgrTools").hidden = !isManager();
-  $("#mgrTools2").hidden = !isManager();
-  $("#mgrCats").hidden = !isManager();
+  const m = isManager();
+  if ($("#mgrTools")) { $("#mgrTools").hidden = !m; $("#mgrTools").style.display = m ? "flex" : "none"; }
+  if ($("#mgrTools2")) { $("#mgrTools2").hidden = !m; $("#mgrTools2").style.display = m ? "flex" : "none"; }
+  if ($("#mgrCats")) { $("#mgrCats").hidden = !m; $("#mgrCats").style.display = m ? "block" : "none"; }
 }
 
 function fillSettings() {
@@ -6120,6 +6221,43 @@ $("#btnSetSave").onclick = async () => {
   await start2();
   toast(lang === "ku" ? "ڕێکخستنەکان پاشەکەوت کران" : "Settings saved");
 };
+
+if ($("#btnClearCache")) {
+  $("#btnClearCache").onclick = async () => {
+    const isKu = (lang === "ku");
+    const confirmMsg = isKu
+      ? "دڵنیایت لە سڕینەوەی تەواوی کاش و داتای پاشەکەوتکراو؟ ئەمە پێشنووسەکان و داتای کۆنکراوە لەسەر ئەم ئامێرە دەسڕێتەوە."
+      : "Are you sure you want to clear all local cache? This will clear locally cached data, offline drafts, and reset app cache.";
+    if (!confirm(confirmMsg)) return;
+
+    try {
+      localStorage.removeItem("pc:data");
+      localStorage.removeItem("pc:companies");
+      localStorage.removeItem("pc:role");
+      data = { received: [], paid: [], expenses: [], currency: "IQD", at: null };
+      serverCompanies = [];
+      local = [];
+      try {
+        if (window.indexedDB) {
+          const dbs = ["pettycash", "pc:store", "pc_db"];
+          dbs.forEach(name => { try { indexedDB.deleteDatabase(name); } catch(e){} });
+        }
+      } catch (e) {}
+      if ("caches" in window) {
+        try {
+          const keys = await caches.keys();
+          for (const k of keys) await caches.delete(k);
+        } catch (e) {}
+      }
+      resetForm();
+      renderAll();
+      $("#dSet").close();
+      toast(isKu ? "✓ تەواوی کاش بە سەرکەوتوویی سڕایەوە!" : "✓ All cache cleared successfully!", 3500);
+    } catch (err) {
+      toast("Error clearing cache: " + err.message, 4000);
+    }
+  };
+}
 
 $("#btnLink").onclick = async () => {
   try {
