@@ -1922,7 +1922,7 @@ dialog.dlg-live-scanner {
     </div>
     <div style="display:flex;flex-direction:column;justify-content:center;line-height:1.15;">
       <h1 id="appTitle">Petty Cash</h1>
-      <span class="app-version" id="appVersion">v2.2.8</span>
+      <span class="app-version" id="appVersion">v2.2.9</span>
     </div>
   </div>
   <button class="btn-lang" id="btnLang" aria-label="Language Toggle" title="Switch English / کوردی" type="button">
@@ -3803,10 +3803,115 @@ async function startLiveCameraScanner() {
   if (!dlg) return;
 
   scannerResolve = null;
-  scannerState.filter = "color";
+  scannerState.filter = "magic";
   if (!dlg.open) dlg.showModal();
   await setScannerView("camera");
   await openCameraStream(currentFacingMode);
+}
+
+function getGuidanceRoiInVideo(video, wrapEl, reticleEl) {
+  if (!video || !wrapEl || !reticleEl) return null;
+  const vw = video.videoWidth || 1280;
+  const vh = video.videoHeight || 720;
+  const wRect = wrapEl.getBoundingClientRect();
+  const rRect = reticleEl.getBoundingClientRect();
+  if (wRect.width <= 0 || wRect.height <= 0 || rRect.width <= 0 || rRect.height <= 0) return null;
+
+  const CW = wRect.width, CH = wRect.height;
+  const scale = Math.max(CW / vw, CH / vh);
+  const renderW = vw * scale;
+  const renderH = vh * scale;
+  const offsetX = (CW - renderW) / 2;
+  const offsetY = (CH - renderH) / 2;
+
+  // Reticle relative to wrap
+  const frameX = rRect.left - wRect.left;
+  const frameY = rRect.top - wRect.top;
+  const frameW = rRect.width;
+  const frameH = rRect.height;
+
+  // Look strictly inside the Guidance Frame with minimal 2.5% breathing margin
+  const padX = frameW * 0.025;
+  const padY = frameH * 0.025;
+
+  const vX = Math.max(0, (frameX - padX - offsetX) / scale);
+  const vY = Math.max(0, (frameY - padY - offsetY) / scale);
+  const vW = Math.min(vw - vX, (frameW + padX * 2) / scale);
+  const vH = Math.min(vh - vY, (frameH + padY * 2) / scale);
+
+  const innerVx = (frameX - offsetX) / scale;
+  const innerVy = (frameY - offsetY) / scale;
+  const innerVw = frameW / scale;
+  const innerVh = frameH / scale;
+
+  return {
+    x: Math.round(vX),
+    y: Math.round(vY),
+    w: Math.round(vW),
+    h: Math.round(vH),
+    inner: {
+      topLeft: { x: Math.max(0, Math.round(innerVx)), y: Math.max(0, Math.round(innerVy)) },
+      topRight: { x: Math.min(vw, Math.round(innerVx + innerVw)), y: Math.max(0, Math.round(innerVy)) },
+      bottomRight: { x: Math.min(vw, Math.round(innerVx + innerVw)), y: Math.min(vh, Math.round(innerVy + innerVh)) },
+      bottomLeft: { x: Math.max(0, Math.round(innerVx)), y: Math.min(vh, Math.round(innerVy + innerVh)) }
+    }
+  };
+}
+
+async function detectDocCornersInRoi(canvas, roi) {
+  if (!canvas || !roi || roi.w < 30 || roi.h < 30) return null;
+  const roiCanvas = document.createElement("canvas");
+  roiCanvas.width = roi.w;
+  roiCanvas.height = roi.h;
+  const rctx = roiCanvas.getContext("2d");
+  rctx.drawImage(canvas, roi.x, roi.y, roi.w, roi.h, 0, 0, roi.w, roi.h);
+
+  const scanner = getJScanner();
+  if (scanner && typeof cv !== "undefined" && cv.imread) {
+    try {
+      const img = cv.imread(roiCanvas);
+      const contour = scanner.findPaperContour(img);
+      if (contour) {
+        const pts = scanner.getCornerPoints(contour, img);
+        contour.delete();
+        img.delete();
+        if (pts && pts.topLeftCorner) {
+          const area = 0.5 * Math.abs(
+            (pts.topLeftCorner.x * pts.topRightCorner.y - pts.topRightCorner.x * pts.topLeftCorner.y) +
+            (pts.topRightCorner.x * pts.bottomRightCorner.y - pts.bottomRightCorner.x * pts.topRightCorner.y) +
+            (pts.bottomRightCorner.x * pts.bottomLeftCorner.y - pts.bottomLeftCorner.x * pts.bottomRightCorner.y) +
+            (pts.bottomLeftCorner.x * pts.topLeftCorner.y - pts.topLeftCorner.x * pts.bottomLeftCorner.y)
+          );
+          if (area >= (roi.w * roi.h * 0.18) && area <= (roi.w * roi.h * 0.98)) {
+            return {
+              topLeft: { x: Math.round(roi.x + pts.topLeftCorner.x), y: Math.round(roi.y + pts.topLeftCorner.y) },
+              topRight: { x: Math.round(roi.x + pts.topRightCorner.x), y: Math.round(roi.y + pts.topRightCorner.y) },
+              bottomRight: { x: Math.round(roi.x + pts.bottomRightCorner.x), y: Math.round(roi.y + pts.bottomRightCorner.y) },
+              bottomLeft: { x: Math.round(roi.x + pts.bottomLeftCorner.x), y: Math.round(roi.y + pts.bottomLeftCorner.y) }
+            };
+          }
+        }
+      } else {
+        img.delete();
+      }
+    } catch (e) {
+      console.warn("ROI corner detection notice:", e);
+    }
+  }
+
+  try {
+    const sc = detectDocumentCornersSmart(roiCanvas);
+    if (sc) {
+      return {
+        topLeft: { x: Math.round(roi.x + sc.topLeft.x), y: Math.round(roi.y + sc.topLeft.y) },
+        topRight: { x: Math.round(roi.x + sc.topRight.x), y: Math.round(roi.y + sc.topRight.y) },
+        bottomRight: { x: Math.round(roi.x + sc.bottomRight.x), y: Math.round(roi.y + sc.bottomRight.y) },
+        bottomLeft: { x: Math.round(roi.x + sc.bottomLeft.x), y: Math.round(roi.y + sc.bottomLeft.y) }
+      };
+    }
+  } catch (e) {}
+
+  return null;
 }
 
 function startLiveDetectionLoop() {
@@ -3858,57 +3963,72 @@ function startLiveDetectionLoop() {
       y: pt.y * scale + offsetY
     });
 
-    if (now - lastDetectTime > 90) {
+    if (now - lastDetectTime > 80) {
       lastDetectTime = now;
       try {
-        const pw = 360;
-        const ph = Math.round(360 * (vh / vw));
-        if (liveProcCanvas.width !== pw || liveProcCanvas.height !== ph) {
-          liveProcCanvas.width = pw;
-          liveProcCanvas.height = ph;
-        }
-        procCtx.drawImage(video, 0, 0, pw, ph);
+        const reticle = $("#cameraReticle");
+        const roi = getGuidanceRoiInVideo(video, wrap, reticle);
 
         let detected = null;
-        const scanner = getJScanner();
-        if (scanner && typeof cv !== "undefined" && cv.imread) {
-          const img = cv.imread(liveProcCanvas);
-          const contour = scanner.findPaperContour(img);
-          if (contour) {
-            const pts = scanner.getCornerPoints(contour, img);
-            contour.delete();
-            img.delete();
-            if (pts && pts.topLeftCorner) {
-              const sx = vw / pw, sy = vh / ph;
-              detected = {
-                topLeft: { x: pts.topLeftCorner.x * sx, y: pts.topLeftCorner.y * sy },
-                topRight: { x: pts.topRightCorner.x * sx, y: pts.topRightCorner.y * sy },
-                bottomRight: { x: pts.bottomRightCorner.x * sx, y: pts.bottomRightCorner.y * sy },
-                bottomLeft: { x: pts.bottomLeftCorner.x * sx, y: pts.bottomLeftCorner.y * sy }
-              };
+        if (roi && roi.w > 30 && roi.h > 30) {
+          const pw = 360;
+          const ph = Math.round(360 * (roi.h / roi.w));
+          if (liveProcCanvas.width !== pw || liveProcCanvas.height !== ph) {
+            liveProcCanvas.width = pw;
+            liveProcCanvas.height = ph;
+          }
+          // Scan strictly inside the Guidance Frame ROI!
+          procCtx.drawImage(video, roi.x, roi.y, roi.w, roi.h, 0, 0, pw, ph);
+
+          const scanner = getJScanner();
+          if (scanner && typeof cv !== "undefined" && cv.imread) {
+            const img = cv.imread(liveProcCanvas);
+            const contour = scanner.findPaperContour(img);
+            if (contour) {
+              const pts = scanner.getCornerPoints(contour, img);
+              contour.delete();
+              img.delete();
+              if (pts && pts.topLeftCorner) {
+                const area = 0.5 * Math.abs(
+                  (pts.topLeftCorner.x * pts.topRightCorner.y - pts.topRightCorner.x * pts.topLeftCorner.y) +
+                  (pts.topRightCorner.x * pts.bottomRightCorner.y - pts.bottomRightCorner.x * pts.topRightCorner.y) +
+                  (pts.bottomRightCorner.x * pts.bottomLeftCorner.y - pts.bottomLeftCorner.x * pts.bottomRightCorner.y) +
+                  (pts.bottomLeftCorner.x * pts.topLeftCorner.y - pts.topLeftCorner.x * pts.bottomLeftCorner.y)
+                );
+                // Require reasonable receipt coverage inside the Guidance Frame (20% to 98%)
+                if (area >= (pw * ph * 0.20) && area <= (pw * ph * 0.98)) {
+                  const sx = roi.w / pw, sy = roi.h / ph;
+                  detected = {
+                    topLeft: { x: roi.x + pts.topLeftCorner.x * sx, y: roi.y + pts.topLeftCorner.y * sy },
+                    topRight: { x: roi.x + pts.topRightCorner.x * sx, y: roi.y + pts.topRightCorner.y * sy },
+                    bottomRight: { x: roi.x + pts.bottomRightCorner.x * sx, y: roi.y + pts.bottomRightCorner.y * sy },
+                    bottomLeft: { x: roi.x + pts.bottomLeftCorner.x * sx, y: roi.y + pts.bottomLeftCorner.y * sy }
+                  };
+                }
+              }
+            } else {
+              img.delete();
             }
           } else {
-            img.delete();
-          }
-        } else {
-          const sc = detectDocumentCornersSmart(liveProcCanvas);
-          if (sc) {
-            const sx = vw / pw, sy = vh / ph;
-            detected = {
-              topLeft: { x: sc.topLeft.x * sx, y: sc.topLeft.y * sy },
-              topRight: { x: sc.topRight.x * sx, y: sc.topRight.y * sy },
-              bottomRight: { x: sc.bottomRight.x * sx, y: sc.bottomRight.y * sy },
-              bottomLeft: { x: sc.bottomLeft.x * sx, y: sc.bottomLeft.y * sy }
-            };
+            const sc = detectDocumentCornersSmart(liveProcCanvas);
+            if (sc) {
+              const sx = roi.w / pw, sy = roi.h / ph;
+              detected = {
+                topLeft: { x: roi.x + sc.topLeft.x * sx, y: roi.y + sc.topLeft.y * sy },
+                topRight: { x: roi.x + sc.topRight.x * sx, y: roi.y + sc.topRight.y * sy },
+                bottomRight: { x: roi.x + sc.bottomRight.x * sx, y: roi.y + sc.bottomRight.y * sy },
+                bottomLeft: { x: roi.x + sc.bottomLeft.x * sx, y: roi.y + sc.bottomLeft.y * sy }
+              };
+            }
           }
         }
 
         if (detected) {
           liveTargetCorners = detected;
           liveHasDoc = true;
-          liveDocConfidence = Math.min(1, liveDocConfidence + 0.3);
+          liveDocConfidence = Math.min(1, liveDocConfidence + 0.35);
         } else {
-          liveDocConfidence = Math.max(0, liveDocConfidence - 0.12);
+          liveDocConfidence = Math.max(0, liveDocConfidence - 0.15);
           if (liveDocConfidence < 0.2) {
             liveHasDoc = false;
           }
@@ -4157,13 +4277,20 @@ if ($("#scanBtn")) {
     fctx.drawImage(video, 0, 0, vw, vh);
 
     scannerState.raw = frameCanvas;
-    scannerState.filter = "color";
+    scannerState.filter = "magic";
+
+    const wrap = $("#cameraWrap");
+    const reticle = $("#cameraReticle");
+    const roi = getGuidanceRoiInVideo(video, wrap, reticle);
 
     let corners = null;
     if (liveHasDoc && liveTargetCorners) {
       corners = liveTargetCorners;
-    } else {
-      corners = await detectDocCorners(frameCanvas);
+    } else if (roi) {
+      corners = await detectDocCornersInRoi(frameCanvas, roi);
+    }
+    if (!corners && roi) {
+      corners = roi.inner;
     }
     scannerState.corners = corners || getFullCorners(frameCanvas);
 
@@ -4187,7 +4314,21 @@ if ($("#btnLiveAccept")) {
         const fctx = frameCanvas.getContext("2d");
         fctx.drawImage(video, 0, 0, frameCanvas.width, frameCanvas.height);
         scannerState.raw = frameCanvas;
-        scannerState.corners = liveTargetCorners || (await detectDocCorners(frameCanvas)) || getFullCorners(frameCanvas);
+
+        const wrap = $("#cameraWrap");
+        const reticle = $("#cameraReticle");
+        const roi = getGuidanceRoiInVideo(video, wrap, reticle);
+
+        let corners = null;
+        if (liveHasDoc && liveTargetCorners) {
+          corners = liveTargetCorners;
+        } else if (roi) {
+          corners = await detectDocCornersInRoi(frameCanvas, roi);
+        }
+        if (!corners && roi) {
+          corners = roi.inner;
+        }
+        scannerState.corners = corners || getFullCorners(frameCanvas);
       }
 
       if (!scannerState.raw) {
