@@ -1240,6 +1240,7 @@ dialog.dlg-live-scanner {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 .camera-stream-wrap video {
   width: 100%;
@@ -1250,27 +1251,34 @@ dialog.dlg-live-scanner {
 
 .camera-reticle {
   position: absolute;
-  top: 8%;
-  left: 8%;
-  right: 8%;
-  bottom: 8%;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(84vw, 360px);
+  height: min(64vh, 520px);
+  max-height: calc(100% - 190px);
   pointer-events: none;
   box-sizing: border-box;
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  border-radius: 18px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.44);
+  border: 1.5px dashed rgba(255, 255, 255, 0.35);
+  transition: border-color 0.25s ease, border-style 0.25s ease;
+  z-index: 5;
 }
 .reticle-corner {
   position: absolute;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-color: #10b981;
   border-style: solid;
 }
-.reticle-corner.tl { top: 0; left: 0; border-width: 3.5px 0 0 3.5px; border-top-left-radius: 10px; }
-.reticle-corner.tr { top: 0; right: 0; border-width: 3.5px 3.5px 0 0; border-top-right-radius: 10px; }
-.reticle-corner.br { bottom: 0; right: 0; border-width: 0 3.5px 3.5px 0; border-bottom-right-radius: 10px; }
-.reticle-corner.bl { bottom: 0; left: 0; border-width: 0 0 3.5px 3.5px; border-bottom-left-radius: 10px; }
+.reticle-corner.tl { top: -2px; left: -2px; border-width: 4px 0 0 4px; border-top-left-radius: 18px; }
+.reticle-corner.tr { top: -2px; right: -2px; border-width: 4px 4px 0 0; border-top-right-radius: 18px; }
+.reticle-corner.br { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; border-bottom-right-radius: 18px; }
+.reticle-corner.bl { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; border-bottom-left-radius: 18px; }
 .reticle-laser {
   position: absolute;
   left: 4%;
@@ -1286,16 +1294,18 @@ dialog.dlg-live-scanner {
   100% { top: 92%; opacity: 0.3; }
 }
 .reticle-hint {
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 700;
   color: #ffffff;
-  background: rgba(15, 23, 42, 0.75);
-  padding: 5px 14px;
+  background: rgba(15, 23, 42, 0.85);
+  padding: 6px 16px;
   border-radius: 99px;
-  margin-bottom: 90px;
+  margin-bottom: 24px;
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   letter-spacing: 0.3px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
 }
 
 /* Live Document Detector Overlay */
@@ -1912,7 +1922,7 @@ dialog.dlg-live-scanner {
     </div>
     <div style="display:flex;flex-direction:column;justify-content:center;line-height:1.15;">
       <h1 id="appTitle">Petty Cash</h1>
-      <span class="app-version" id="appVersion">v2.2.7</span>
+      <span class="app-version" id="appVersion">v2.2.8</span>
     </div>
   </div>
   <button class="btn-lang" id="btnLang" aria-label="Language Toggle" title="Switch English / کوردی" type="button">
@@ -4205,9 +4215,7 @@ if ($("#btnLiveAccept")) {
       const ctx = outCanvas.getContext("2d");
       ctx.drawImage(warped, 0, 0);
 
-      if (scannerState.filter === "magic") {
-        applyMagicColor(outCanvas);
-      }
+      const pageFilter = scannerState.filter || "magic";
 
       let base64Data = "";
       try {
@@ -4218,7 +4226,7 @@ if ($("#btnLiveAccept")) {
         raw: scannerState.raw,
         corners: corners,
         warped: outCanvas,
-        mode: scannerState.filter || "color",
+        mode: pageFilter,
         rot: 0,
         base64Data: base64Data
       };
@@ -4242,7 +4250,7 @@ if ($("#btnLiveAccept")) {
           raw: scannerState.raw,
           corners: getFullCorners(scannerState.raw),
           warped: scannerState.raw,
-          mode: "color",
+          mode: "magic",
           rot: 0
         });
         drawPages();
