@@ -1922,7 +1922,7 @@ dialog.dlg-live-scanner {
     </div>
     <div style="display:flex;flex-direction:column;justify-content:center;line-height:1.15;">
       <h1 id="appTitle">Petty Cash</h1>
-      <span class="app-version" id="appVersion">v2.2.9</span>
+      <span class="app-version" id="appVersion">v2.2.10</span>
     </div>
   </div>
   <button class="btn-lang" id="btnLang" aria-label="Language Toggle" title="Switch English / کوردی" type="button">
@@ -3511,19 +3511,83 @@ async function extractWarpedDocument(canvas, corners) {
 
 function applyMagicColor(c) {
   const W = c.width, H = c.height, x = c.getContext("2d");
-  const img = x.getImageData(0, 0, W, H), d = img.data;
-  // Clean, crisp document enhancement (zero murky shadows or halos)
-  const contrast = 1.25;
-  const brightness = 14;
-  for (let i = 0; i < d.length; i += 4) {
-    let r = d[i], g = d[i + 1], b = d[i + 2];
-    r = ((r - 132) * contrast + 132) + brightness;
-    g = ((g - 132) * contrast + 132) + brightness;
-    b = ((b - 132) * contrast + 132) + brightness;
-    d[i] = r < 0 ? 0 : r > 255 ? 255 : r;
-    d[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
-    d[i + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
+  const img = x.getImageData(0, 0, W, H);
+  const d = img.data;
+  const len = d.length;
+
+  // 1. Adaptive white and black point estimation from image sample distribution
+  const step = Math.max(4, Math.floor(len / 4000) * 4);
+  const samples = [];
+  for (let i = 0; i < len; i += step) {
+    const lum = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+    samples.push(lum);
   }
+  samples.sort((a, b) => a - b);
+  const n = samples.length;
+  // Estimate dark ink (5th percentile) and paper background (80th percentile)
+  let bp = n > 50 ? samples[Math.floor(n * 0.05)] : 35;
+  let wp = n > 50 ? samples[Math.floor(n * 0.80)] : 180;
+
+  bp = Math.max(15, Math.min(65, bp));
+  wp = Math.max(145, Math.min(215, wp));
+  if (wp - bp < 50) { bp = 30; wp = 180; }
+
+  const range = wp - bp;
+  const satBoost = 1.35; // Keep colored signatures, stamps, and headers vibrant
+
+  // 2. Precompute bright document curve LUT (power 0.72 aggressively lifts paper to clean bright white)
+  const lut = new Uint8Array(256);
+  for (let v = 0; v < 256; v++) {
+    let norm = (v - bp) / range;
+    norm = Math.max(0, Math.min(1, norm));
+    lut[v] = Math.round(Math.pow(norm, 0.72) * 255);
+  }
+
+  // 3. Contrast, whitening, and color preservation pass
+  for (let i = 0; i < len; i += 4) {
+    const r = d[i], g = d[i + 1], b = d[i + 2];
+    const lum = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+    const newLum = lut[lum];
+    if (lum > 2) {
+      const ratio = newLum / lum;
+      let nr = newLum + (r - lum) * satBoost * Math.min(1.4, ratio);
+      let ng = newLum + (g - lum) * satBoost * Math.min(1.4, ratio);
+      let nb = newLum + (b - lum) * satBoost * Math.min(1.4, ratio);
+      d[i]     = nr < 0 ? 0 : nr > 255 ? 255 : nr;
+      d[i + 1] = ng < 0 ? 0 : ng > 255 ? 255 : ng;
+      d[i + 2] = nb < 0 ? 0 : nb > 255 ? 255 : nb;
+    } else {
+      d[i] = d[i + 1] = d[i + 2] = 0;
+    }
+  }
+
+  // 4. Razor-sharp spatial unsharp-mask pass for crisp text, numbers, and barcodes
+  const sharpAmount = 0.65;
+  if (W >= 3 && H >= 3 && sharpAmount > 0) {
+    const orig = new Uint8ClampedArray(d);
+    const rowBytes = W * 4;
+    for (let y = 1; y < H - 1; y++) {
+      const rOff = y * rowBytes;
+      const tOff = (y - 1) * rowBytes;
+      const bOff = (y + 1) * rowBytes;
+      for (let x = 1; x < W - 1; x++) {
+        const idx = rOff + (x << 2);
+        const center = orig[idx];
+        // Leave pure white background untouched to avoid grain noise
+        if (center > 248) {
+          d[idx] = d[idx + 1] = d[idx + 2] = 255;
+          continue;
+        }
+        for (let c = 0; c < 3; c++) {
+          const cVal = orig[idx + c];
+          const edgeSum = orig[tOff + (x << 2) + c] + orig[bOff + (x << 2) + c] + orig[idx - 4 + c] + orig[idx + 4 + c];
+          const val = cVal + sharpAmount * (cVal * 4 - edgeSum);
+          d[idx + c] = val < 0 ? 0 : val > 255 ? 255 : val;
+        }
+      }
+    }
+  }
+
   x.putImageData(img, 0, 0);
 }
 
@@ -3532,7 +3596,7 @@ function applyGrayscale(c) {
   const img = x.getImageData(0, 0, W, H), d = img.data;
   for (let i = 0; i < d.length; i += 4) {
     let g = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-    g = (g - 15) * 1.12;
+    g = (g - 15) * 1.15 + 10;
     g = g < 0 ? 0 : g > 255 ? 255 : g;
     d[i] = d[i + 1] = d[i + 2] = g;
   }
@@ -3568,7 +3632,7 @@ function applyBwFilter(c) {
   x.putImageData(img, 0, 0);
 }
 
-function render(p, maxSide) {
+function render(p, maxSide, voucherText = "", pageIdx = 0, totalPages = 1) {
   const base = p.warped || p.src || p.raw;
   const rot = (p.rot || 0) % 360, swap = rot === 90 || rot === 270;
   const w = swap ? base.height : base.width, h = swap ? base.width : base.height;
@@ -3585,11 +3649,46 @@ function render(p, maxSide) {
   x.drawImage(base, -dw / 2, -dh / 2, dw, dh);
   x.setTransform(1, 0, 0, 1, 0, 0);
 
-  const m = p.mode || "color";
+  // Default filter mode is "magic" (Scanned document enhancement)
+  const m = p.mode || "magic";
   if (m === "magic") applyMagicColor(c);
   else if (m === "gray") applyGrayscale(c);
   else if (m === "bw") applyBwFilter(c);
-  // Default "color" mode preserves natural vibrant full color!
+
+  // Subtle voucher number watermark in the corner of every page for the PDF
+  if (voucherText && String(voucherText).trim()) {
+    const vStr = String(voucherText).trim();
+    let vLabel = "Voucher #" + vStr;
+    if (totalPages > 1 && pageIdx !== undefined) {
+      vLabel += " · " + (pageIdx + 1) + "/" + totalPages;
+    }
+    x.save();
+    const fontSize = Math.max(14, Math.round(W * 0.024));
+    x.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+    const padX = Math.round(fontSize * 0.85);
+    const padY = Math.round(fontSize * 0.45);
+    const metrics = x.measureText(vLabel);
+    const boxW = Math.round(metrics.width + padX * 2);
+    const boxH = Math.round(fontSize + padY * 2);
+    const margin = Math.max(16, Math.round(W * 0.028));
+    const bx = W - boxW - margin;
+    const by = margin;
+
+    // Subtle dark translucent pill badge
+    x.fillStyle = "rgba(15, 23, 42, 0.72)";
+    if (typeof x.roundRect === "function") {
+      x.beginPath();
+      x.roundRect(bx, by, boxW, boxH, boxH / 2);
+      x.fill();
+    } else {
+      x.fillRect(bx, by, boxW, boxH);
+    }
+    x.fillStyle = "#ffffff";
+    x.textBaseline = "middle";
+    x.fillText(vLabel, bx + padX, by + boxH / 2);
+    x.restore();
+  }
+
   return c;
 }
 
@@ -3789,7 +3888,7 @@ async function startDocumentScanner(opts) {
     let corners = opts.corners;
     if (!corners) corners = await detectDocCorners(opts.raw);
     scannerState.corners = corners;
-    scannerState.filter = opts.mode || "color";
+    scannerState.filter = opts.mode || "magic";
 
     stopCameraStream();
     const dlg = $("#dLiveScanner");
@@ -3882,7 +3981,7 @@ async function detectDocCornersInRoi(canvas, roi) {
             (pts.bottomRightCorner.x * pts.bottomLeftCorner.y - pts.bottomLeftCorner.x * pts.bottomRightCorner.y) +
             (pts.bottomLeftCorner.x * pts.topLeftCorner.y - pts.topLeftCorner.x * pts.bottomLeftCorner.y)
           );
-          if (area >= (roi.w * roi.h * 0.18) && area <= (roi.w * roi.h * 0.98)) {
+          if (area >= (roi.w * roi.h * 0.10) && area <= (roi.w * roi.h * 0.99)) {
             return {
               topLeft: { x: Math.round(roi.x + pts.topLeftCorner.x), y: Math.round(roi.y + pts.topLeftCorner.y) },
               topRight: { x: Math.round(roi.x + pts.topRightCorner.x), y: Math.round(roi.y + pts.topRightCorner.y) },
@@ -3995,8 +4094,8 @@ function startLiveDetectionLoop() {
                   (pts.bottomRightCorner.x * pts.bottomLeftCorner.y - pts.bottomLeftCorner.x * pts.bottomRightCorner.y) +
                   (pts.bottomLeftCorner.x * pts.topLeftCorner.y - pts.topLeftCorner.x * pts.bottomLeftCorner.y)
                 );
-                // Require reasonable receipt coverage inside the Guidance Frame (20% to 98%)
-                if (area >= (pw * ph * 0.20) && area <= (pw * ph * 0.98)) {
+                // Require reasonable receipt coverage inside the Guidance Frame (10% to 99%)
+                if (area >= (pw * ph * 0.10) && area <= (pw * ph * 0.99)) {
                   const sx = roi.w / pw, sy = roi.h / ph;
                   detected = {
                     topLeft: { x: roi.x + pts.topLeftCorner.x * sx, y: roi.y + pts.topLeftCorner.y * sy },
@@ -4473,7 +4572,7 @@ function openView(i) {
   viewIdx = i;
   const p = pages[i];
   $("#viewTitle").textContent = (t("pageOf") || "Page") + " " + (i + 1) + " of " + pages.length;
-  updateViewerFilterActive(p.mode || "color");
+  updateViewerFilterActive(p.mode || "magic");
   const w = $("#viewCanvasWrap");
   w.innerHTML = "";
   w.appendChild(render(p, 1000));
@@ -5054,7 +5153,10 @@ $("#btnSubmit").onclick = async () => {
 
   try {
     const blobs = [];
-    for (const p of pages) blobs.push(await toBlob(render(p, MAX_SIDE), JPEG_Q));
+    const vText = f.voucher || "";
+    for (let pi = 0; pi < pages.length; pi++) {
+      blobs.push(await toBlob(render(pages[pi], MAX_SIDE, vText, pi, pages.length), JPEG_Q));
+    }
     const pdf = await buildPdf(blobs), th = render(pages[0], 160);
     const old = editId ? local.find(i => i.id === editId) : null, t = iso();
     const it = Object.assign({}, old || {}, f, {

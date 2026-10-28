@@ -65,14 +65,14 @@
         cv.bitwise_not(thresh, thresh);
       }
 
-      // Morphological closing with a large 21x21 kernel bridges internal table borders & text
-      const closeKernel = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(21, 21));
+      // Morphological closing with an optimal 9x9 kernel bridges text without rounding document corners
+      const closeKernel = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(9, 9));
       const closed = new cv.Mat();
       cv.morphologyEx(thresh, closed, cv.MORPH_CLOSE, closeKernel);
 
-      // Strategy 2: Canny edge detection + dilation envelope (fallback for low-contrast backgrounds)
+      // Strategy 2: Canny edge detection with sensitive thresholds (detects receipts on light tables)
       const edges = new cv.Mat();
-      cv.Canny(blur, edges, 25, 90);
+      cv.Canny(blur, edges, 18, 70);
       const edgeKernel = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(7, 7));
       const closedEdges = new cv.Mat();
       cv.morphologyEx(edges, closedEdges, cv.MORPH_CLOSE, edgeKernel);
@@ -93,8 +93,8 @@
         for (let i = 0; i < contours.size(); ++i) {
           const c = contours.get(i);
           const area = cv.contourArea(c);
-          // Paper sheets typically take 15% - 98% of the camera frame
-          if (area < imgArea * 0.12 || area > imgArea * 0.99) continue;
+          // Receipts take 10% - 98% of the camera frame
+          if (area < imgArea * 0.10 || area > imgArea * 0.99) continue;
 
           const hull = new cv.Mat();
           cv.convexHull(c, hull, false, true);
@@ -109,10 +109,10 @@
           const rh = Math.min(rect.size.width, rect.size.height);
           const aspect = rh > 0 ? rw / rh : 1;
 
-          // Score prefers larger outer area (full sheet > inner table) and standard paper proportions
+          // Score prefers larger outer area and receipt proportions (up to 4.8:1 for long thermal receipts)
           let score = hullArea / imgArea;
-          if (approx.rows >= 4 && approx.rows <= 6) score *= 1.4;
-          if (aspect >= 1.05 && aspect <= 3.2) score *= 1.25;
+          if (approx.rows >= 4 && approx.rows <= 8) score *= 1.4;
+          if (aspect >= 1.05 && aspect <= 4.8) score *= 1.3;
 
           if (score > bestScore) {
             bestScore = score;
