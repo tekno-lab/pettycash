@@ -1922,7 +1922,7 @@ dialog.dlg-live-scanner {
     </div>
     <div style="display:flex;flex-direction:column;justify-content:center;line-height:1.15;">
       <h1 id="appTitle">Petty Cash</h1>
-      <span class="app-version" id="appVersion">v2.2.10</span>
+      <span class="app-version" id="appVersion">v2.2.11</span>
     </div>
   </div>
   <button class="btn-lang" id="btnLang" aria-label="Language Toggle" title="Switch English / کوردی" type="button">
@@ -3269,106 +3269,113 @@ function detectDocumentCornersSmart(canvas) {
   const imgData = sctx.getImageData(0, 0, sw, sh);
   const data = imgData.data;
 
-  // 1. Grayscale luminance
-  const gray = new Float32Array(sw * sh);
+  // 1. Grayscale luminance buffer
+  const gray = new Uint8Array(sw * sh);
   for (let i = 0, j = 0; i < data.length; i += 4, j++) {
-    gray[j] = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+    gray[j] = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
   }
 
-  // 2. Sobel gradients
-  const grad = new Float32Array(sw * sh);
-  let maxGrad = 0;
-  for (let y = 1; y < sh - 1; y++) {
-    for (let x = 1; x < sw - 1; x++) {
+  // 2. High-speed Orthogonal Boundary Rakes (perpendicular rays scanning inward from 4 borders)
+  const topPts = [], botPts = [], leftPts = [], rightPts = [];
+  const thresh = 20; // Edge luminance delta threshold
+
+  // Top edge: scan downward from y=3
+  const stepX = Math.max(3, Math.floor(sw / 45));
+  for (let x = Math.floor(sw * 0.10); x < sw * 0.90; x += stepX) {
+    for (let y = 3; y < sh * 0.45; y++) {
       const idx = y * sw + x;
-      const gx = -gray[idx - sw - 1] + gray[idx - sw + 1]
-                 -2 * gray[idx - 1]   + 2 * gray[idx + 1]
-                 -gray[idx + sw - 1] + gray[idx + sw + 1];
-      const gy = -gray[idx - sw - 1] - 2 * gray[idx - sw] - gray[idx - sw + 1]
-                 +gray[idx + sw - 1] + 2 * gray[idx + sw] + gray[idx + sw + 1];
-      const mag = Math.hypot(gx, gy);
-      grad[idx] = mag;
-      if (mag > maxGrad) maxGrad = mag;
-    }
-  }
-
-  if (maxGrad < 14) return null; // Very low contrast image
-
-  const threshold = Math.max(12, maxGrad * 0.20);
-  const cx = sw / 2, cy = sh / 2;
-  const numRays = 72;
-  const topPts = [], rightPts = [], bottomPts = [], leftPts = [];
-
-  for (let r = 0; r < numRays; r++) {
-    const angle = (r * 360 / numRays) * (Math.PI / 180);
-    const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
-    const maxDist = Math.min(
-      cos > 0 ? (sw - 2 - cx) / cos : (2 - cx) / cos,
-      sin > 0 ? (sh - 2 - cy) / sin : (2 - cy) / sin
-    );
-
-    let foundPt = null;
-    // Scan inward from outer perimeter toward center so outermost paper edges are detected first, ignoring inner tables
-    const startDist = Math.max(10, Math.round(maxDist - 4));
-    const endDist = Math.max(16, Math.round(maxDist * 0.25));
-    for (let dist = startDist; dist >= endDist; dist -= 2) {
-      const px = Math.round(cx + cos * dist);
-      const py = Math.round(cy + sin * dist);
-      if (px < 1 || px >= sw - 1 || py < 1 || py >= sh - 1) continue;
-      if (grad[py * sw + px] >= threshold) {
-        foundPt = { x: px / scale, y: py / scale };
+      const diff = Math.abs(gray[idx] - gray[(y - 3) * sw + x]);
+      if (diff > thresh) {
+        topPts.push({ x: x / scale, y: y / scale });
         break;
       }
     }
+  }
 
-    if (foundPt) {
-      const deg = (r * 360 / numRays) % 360;
-      if (deg >= 45 && deg < 135) bottomPts.push(foundPt);
-      else if (deg >= 135 && deg < 225) leftPts.push(foundPt);
-      else if (deg >= 225 && deg < 315) topPts.push(foundPt);
-      else rightPts.push(foundPt);
+  // Bottom edge: scan upward from y=sh-4
+  for (let x = Math.floor(sw * 0.10); x < sw * 0.90; x += stepX) {
+    for (let y = sh - 4; y > sh * 0.55; y--) {
+      const idx = y * sw + x;
+      const diff = Math.abs(gray[idx] - gray[(y + 3) * sw + x]);
+      if (diff > thresh) {
+        botPts.push({ x: x / scale, y: y / scale });
+        break;
+      }
     }
   }
 
-  function fitLine(points, isVertical) {
-    if (points.length < 3) return null;
-    let sumX = 0, sumY = 0, sumXX = 0, sumYY = 0, sumXY = 0;
-    const N = points.length;
-    for (const p of points) {
-      sumX += p.x; sumY += p.y;
-      sumXX += p.x * p.x; sumYY += p.y * p.y;
-      sumXY += p.x * p.y;
+  // Left edge: scan rightward from x=3
+  const stepY = Math.max(3, Math.floor(sh / 45));
+  for (let y = Math.floor(sh * 0.10); y < sh * 0.90; y += stepY) {
+    for (let x = 3; x < sw * 0.45; x++) {
+      const idx = y * sw + x;
+      const diff = Math.abs(gray[idx] - gray[y * sw + (x - 3)]);
+      if (diff > thresh) {
+        leftPts.push({ x: x / scale, y: y / scale });
+        break;
+      }
     }
-    if (!isVertical) {
-      const denom = N * sumXX - sumX * sumX;
-      if (Math.abs(denom) < 1e-4) return { a: 1, b: 0, c: -(sumX / N) };
-      const m = (N * sumXY - sumX * sumY) / denom;
-      const k = (sumY - m * sumX) / N;
-      return { a: m, b: -1, c: k };
-    } else {
-      const denom = N * sumYY - sumY * sumY;
-      if (Math.abs(denom) < 1e-4) return { a: 0, b: 1, c: -(sumY / N) };
-      const m = (N * sumXY - sumX * sumY) / denom;
-      const k = (sumX - m * sumY) / N;
-      return { a: 1, b: -m, c: -k };
+  }
+
+  // Right edge: scan leftward from x=sw-4
+  for (let y = Math.floor(sh * 0.10); y < sh * 0.90; y += stepY) {
+    for (let x = sw - 4; x > sw * 0.55; x--) {
+      const idx = y * sw + x;
+      const diff = Math.abs(gray[idx] - gray[y * sw + (x + 3)]);
+      if (diff > thresh) {
+        rightPts.push({ x: x / scale, y: y / scale });
+        break;
+      }
     }
+  }
+
+  // 3. Robust RANSAC line fitting (rejects outlier shadows, fingers, and clips)
+  function fitLineRansac(pts, isVertical) {
+    if (pts.length < 5) return null;
+    let bestLine = null, maxInliers = -1;
+    const iters = Math.min(50, pts.length * 3);
+    for (let it = 0; it < iters; it++) {
+      const i1 = Math.floor(Math.random() * pts.length);
+      let i2 = Math.floor(Math.random() * pts.length);
+      if (i1 === i2) continue;
+      const p1 = pts[i1], p2 = pts[i2];
+      const dx = p2.x - p1.x, dy = p2.y - p1.y;
+      if (Math.hypot(dx, dy) < 18) continue;
+      if (!isVertical && Math.abs(dy) > Math.abs(dx) * 0.8) continue;
+      if (isVertical && Math.abs(dx) > Math.abs(dy) * 0.8) continue;
+
+      const a = -dy, b = dx, c = dy * p1.x - dx * p1.y;
+      const norm = Math.hypot(a, b);
+      if (norm < 1e-4) continue;
+      let inliers = 0;
+      const invNorm = 1 / norm;
+      for (let i = 0; i < pts.length; i++) {
+        const p = pts[i];
+        const dist = Math.abs(a * p.x + b * p.y + c) * invNorm;
+        if (dist < 6.0) inliers++;
+      }
+      if (inliers > maxInliers) {
+        maxInliers = inliers;
+        bestLine = { a: a * invNorm, b: b * invNorm, c: c * invNorm };
+      }
+    }
+    return maxInliers >= 4 ? bestLine : null;
   }
 
   function intersectLines(l1, l2) {
     if (!l1 || !l2) return null;
     const d = l1.a * l2.b - l1.b * l2.a;
-    if (Math.abs(d) < 1e-6) return null;
+    if (Math.abs(d) < 1e-5) return null;
     return {
       x: (l1.b * l2.c - l2.b * l1.c) / d,
       y: (l2.a * l1.c - l1.a * l2.c) / d
     };
   }
 
-  const lTop = fitLine(topPts, false);
-  const lBot = fitLine(bottomPts, false);
-  const lLeft = fitLine(leftPts, true);
-  const lRight = fitLine(rightPts, true);
+  const lTop = fitLineRansac(topPts, false);
+  const lBot = fitLineRansac(botPts, false);
+  const lLeft = fitLineRansac(leftPts, true);
+  const lRight = fitLineRansac(rightPts, true);
 
   const tl = intersectLines(lTop, lLeft);
   const tr = intersectLines(lTop, lRight);
@@ -3399,7 +3406,7 @@ function detectDocumentCornersSmart(canvas) {
     (res.bottomRight.x * res.bottomLeft.y - res.bottomLeft.x * res.bottomRight.y) +
     (res.bottomLeft.x * res.topLeft.y - res.topLeft.x * res.bottomLeft.y)
   );
-  if (area < (W * H * 0.15) || area > (W * H * 0.98)) return null;
+  if (area < (W * H * 0.10) || area > (W * H * 0.99)) return null;
 
   return res;
 }
@@ -3965,6 +3972,20 @@ async function detectDocCornersInRoi(canvas, roi) {
   const rctx = roiCanvas.getContext("2d");
   rctx.drawImage(canvas, roi.x, roi.y, roi.w, roi.h, 0, 0, roi.w, roi.h);
 
+  // Pass 1: High-precision Orthogonal Rake + RANSAC (immune to text, shadows, and fingers)
+  try {
+    const sc = detectDocumentCornersSmart(roiCanvas);
+    if (sc) {
+      return {
+        topLeft: { x: Math.round(roi.x + sc.topLeft.x), y: Math.round(roi.y + sc.topLeft.y) },
+        topRight: { x: Math.round(roi.x + sc.topRight.x), y: Math.round(roi.y + sc.topRight.y) },
+        bottomRight: { x: Math.round(roi.x + sc.bottomRight.x), y: Math.round(roi.y + sc.bottomRight.y) },
+        bottomLeft: { x: Math.round(roi.x + sc.bottomLeft.x), y: Math.round(roi.y + sc.bottomLeft.y) }
+      };
+    }
+  } catch (e) {}
+
+  // Pass 2: OpenCV Adaptive Hull & Morphological Contour
   const scanner = getJScanner();
   if (scanner && typeof cv !== "undefined" && cv.imread) {
     try {
@@ -3997,18 +4018,6 @@ async function detectDocCornersInRoi(canvas, roi) {
       console.warn("ROI corner detection notice:", e);
     }
   }
-
-  try {
-    const sc = detectDocumentCornersSmart(roiCanvas);
-    if (sc) {
-      return {
-        topLeft: { x: Math.round(roi.x + sc.topLeft.x), y: Math.round(roi.y + sc.topLeft.y) },
-        topRight: { x: Math.round(roi.x + sc.topRight.x), y: Math.round(roi.y + sc.topRight.y) },
-        bottomRight: { x: Math.round(roi.x + sc.bottomRight.x), y: Math.round(roi.y + sc.bottomRight.y) },
-        bottomLeft: { x: Math.round(roi.x + sc.bottomLeft.x), y: Math.round(roi.y + sc.bottomLeft.y) }
-      };
-    }
-  } catch (e) {}
 
   return null;
 }
@@ -4079,45 +4088,46 @@ function startLiveDetectionLoop() {
           // Scan strictly inside the Guidance Frame ROI!
           procCtx.drawImage(video, roi.x, roi.y, roi.w, roi.h, 0, 0, pw, ph);
 
-          const scanner = getJScanner();
-          if (scanner && typeof cv !== "undefined" && cv.imread) {
-            const img = cv.imread(liveProcCanvas);
-            const contour = scanner.findPaperContour(img);
-            if (contour) {
-              const pts = scanner.getCornerPoints(contour, img);
-              contour.delete();
-              img.delete();
-              if (pts && pts.topLeftCorner) {
-                const area = 0.5 * Math.abs(
-                  (pts.topLeftCorner.x * pts.topRightCorner.y - pts.topRightCorner.x * pts.topLeftCorner.y) +
-                  (pts.topRightCorner.x * pts.bottomRightCorner.y - pts.bottomRightCorner.x * pts.topRightCorner.y) +
-                  (pts.bottomRightCorner.x * pts.bottomLeftCorner.y - pts.bottomLeftCorner.x * pts.bottomRightCorner.y) +
-                  (pts.bottomLeftCorner.x * pts.topLeftCorner.y - pts.topLeftCorner.x * pts.bottomLeftCorner.y)
-                );
-                // Require reasonable receipt coverage inside the Guidance Frame (10% to 99%)
-                if (area >= (pw * ph * 0.10) && area <= (pw * ph * 0.99)) {
-                  const sx = roi.w / pw, sy = roi.h / ph;
-                  detected = {
-                    topLeft: { x: roi.x + pts.topLeftCorner.x * sx, y: roi.y + pts.topLeftCorner.y * sy },
-                    topRight: { x: roi.x + pts.topRightCorner.x * sx, y: roi.y + pts.topRightCorner.y * sy },
-                    bottomRight: { x: roi.x + pts.bottomRightCorner.x * sx, y: roi.y + pts.bottomRightCorner.y * sy },
-                    bottomLeft: { x: roi.x + pts.bottomLeftCorner.x * sx, y: roi.y + pts.bottomLeftCorner.y * sy }
-                  };
-                }
-              }
-            } else {
-              img.delete();
-            }
+          // Pass 1: Orthogonal Boundary Rake + RANSAC (ultra-fast, immune to text and fingers)
+          const sc = detectDocumentCornersSmart(liveProcCanvas);
+          if (sc) {
+            const sx = roi.w / pw, sy = roi.h / ph;
+            detected = {
+              topLeft: { x: roi.x + sc.topLeft.x * sx, y: roi.y + sc.topLeft.y * sy },
+              topRight: { x: roi.x + sc.topRight.x * sx, y: roi.y + sc.topRight.y * sy },
+              bottomRight: { x: roi.x + sc.bottomRight.x * sx, y: roi.y + sc.bottomRight.y * sy },
+              bottomLeft: { x: roi.x + sc.bottomLeft.x * sx, y: roi.y + sc.bottomLeft.y * sy }
+            };
           } else {
-            const sc = detectDocumentCornersSmart(liveProcCanvas);
-            if (sc) {
-              const sx = roi.w / pw, sy = roi.h / ph;
-              detected = {
-                topLeft: { x: roi.x + sc.topLeft.x * sx, y: roi.y + sc.topLeft.y * sy },
-                topRight: { x: roi.x + sc.topRight.x * sx, y: roi.y + sc.topRight.y * sy },
-                bottomRight: { x: roi.x + sc.bottomRight.x * sx, y: roi.y + sc.bottomRight.y * sy },
-                bottomLeft: { x: roi.x + sc.bottomLeft.x * sx, y: roi.y + sc.bottomLeft.y * sy }
-              };
+            // Pass 2: OpenCV Adaptive Hull & Morphological Contour
+            const scanner = getJScanner();
+            if (scanner && typeof cv !== "undefined" && cv.imread) {
+              const img = cv.imread(liveProcCanvas);
+              const contour = scanner.findPaperContour(img);
+              if (contour) {
+                const pts = scanner.getCornerPoints(contour, img);
+                contour.delete();
+                img.delete();
+                if (pts && pts.topLeftCorner) {
+                  const area = 0.5 * Math.abs(
+                    (pts.topLeftCorner.x * pts.topRightCorner.y - pts.topRightCorner.x * pts.topLeftCorner.y) +
+                    (pts.topRightCorner.x * pts.bottomRightCorner.y - pts.bottomRightCorner.x * pts.topRightCorner.y) +
+                    (pts.bottomRightCorner.x * pts.bottomLeftCorner.y - pts.bottomLeftCorner.x * pts.bottomRightCorner.y) +
+                    (pts.bottomLeftCorner.x * pts.topLeftCorner.y - pts.topLeftCorner.x * pts.bottomLeftCorner.y)
+                  );
+                  if (area >= (pw * ph * 0.10) && area <= (pw * ph * 0.99)) {
+                    const sx = roi.w / pw, sy = roi.h / ph;
+                    detected = {
+                      topLeft: { x: roi.x + pts.topLeftCorner.x * sx, y: roi.y + pts.topLeftCorner.y * sy },
+                      topRight: { x: roi.x + pts.topRightCorner.x * sx, y: roi.y + pts.topRightCorner.y * sy },
+                      bottomRight: { x: roi.x + pts.bottomRightCorner.x * sx, y: roi.y + pts.bottomRightCorner.y * sy },
+                      bottomLeft: { x: roi.x + pts.bottomLeftCorner.x * sx, y: roi.y + pts.bottomLeftCorner.y * sy }
+                    };
+                  }
+                }
+              } else {
+                img.delete();
+              }
             }
           }
         }
